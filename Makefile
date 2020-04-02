@@ -17,13 +17,13 @@ else
 	RANLIB = ranlib
 	ARCHFLAG = -fPIC
 	LINKFLAGS = -fPIC -shared -ldl -lm -s
-	DLLEND = _i386.so
+	DLLEND = .so
 	ZLIB_OSFLAGS = -DNO_UNDERLINE -DZ_PREFIX
 endif
 
 TARGET = jk_botti_mm
-BASEFLAGS = -Wall -Wno-write-strings
-ARCHFLAG += -march=i686 -mtune=generic -msse -msse2 -msse3
+BASEFLAGS = -Wall -Wno-write-strings -Wno-aggressive-loop-optimizations
+ARCHFLAG += -march=i686 -mtune=generic -msse -msse2 -mmmx -s -pipe -mfpmath=sse
 
 ifeq ($(DBG_FLGS),1)
 	OPTFLAGS = -O0 -g
@@ -79,7 +79,7 @@ clean:
 	rm -f zlib/Makefile
 
 distclean:
-	rm -f Rules.depend ${TARGET}.dll ${TARGET}_i386.so addons/jk_botti/dlls/* zlib/*.exe
+	rm -f Rules.depend ${TARGET}.dll ${TARGET}.so addons/jk_botti/dlls/* zlib/*.exe
 	(cd zlib; $(MAKE) distclean; cd ..)
 
 #waypoint.o: waypoint.cpp
