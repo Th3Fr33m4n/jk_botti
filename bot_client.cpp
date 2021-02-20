@@ -123,8 +123,7 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
       {
          if (iState == 1)
          {
-            bot_weapon_select_t *pSelect = NULL;
-            int found = 0;
+	         int found = 0;
             
             bots[bot_index].current_weapon.iId = iId;
             bots[bot_index].current_weapon.iClip = iClip;
@@ -133,7 +132,7 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
             bots[bot_index].current_weapon.iAmmo1 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo1];
             bots[bot_index].current_weapon.iAmmo2 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo2];
 
-            pSelect = &weapon_select[0];
+            bot_weapon_select_t* pSelect = &weapon_select[0];
             
             for(int i = 0; pSelect && pSelect[i].iId; i++) 
             {
@@ -194,7 +193,6 @@ void BotClient_Valve_AmmoX(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int index;
    static int ammount;
-   int ammo_index;
 
    if (state == 0)
    {
@@ -209,7 +207,7 @@ void BotClient_Valve_AmmoX(void *p, int bot_index)
 
       bots[bot_index].m_rgAmmo[index] = ammount;  // store it away
 
-      ammo_index = bots[bot_index].current_weapon.iId;
+      int ammo_index = bots[bot_index].current_weapon.iId;
 
       // update the ammo counts for this weapon...
       bots[bot_index].current_weapon.iAmmo1 =
@@ -229,7 +227,6 @@ void BotClient_Valve_AmmoPickup(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int index;
    static int ammount;
-   int ammo_index;
 
    if (state == 0)
    {
@@ -244,7 +241,7 @@ void BotClient_Valve_AmmoPickup(void *p, int bot_index)
 
       bots[bot_index].m_rgAmmo[index] = ammount;
 
-      ammo_index = bots[bot_index].current_weapon.iId;
+      int ammo_index = bots[bot_index].current_weapon.iId;
 
       // update the ammo counts for this weapon...
       bots[bot_index].current_weapon.iAmmo1 =
@@ -340,11 +337,11 @@ void BotClient_Valve_Damage(void *p, int bot_index)
 
          // if the bot doesn't have an enemy and someone is shooting at it then
          // turn in the attacker's direction...
-         if (bots[bot_index].pBotEnemy == NULL || !FPredictedVisible(bots[bot_index]))
+         if (bots[bot_index].pBotEnemy == nullptr || !FPredictedVisible(bots[bot_index]))
          {
             // face the attacker...
-            Vector v_enemy = damage_origin - bots[bot_index].pEdict->v.origin;
-            Vector bot_angles = UTIL_VecToAngles( v_enemy );
+            const Vector v_enemy = damage_origin - bots[bot_index].pEdict->v.origin;
+            const Vector bot_angles = UTIL_VecToAngles( v_enemy );
 
             bots[bot_index].pEdict->v.ideal_yaw = bot_angles.y;
 
@@ -400,7 +397,7 @@ void BotClient_Valve_DeathMsg(void *p, int bot_index)
                bots[index].f_spray_logo_time = gpGlobals->time;
             }
 
-            if (victim_edict != NULL)
+            if (victim_edict != nullptr)
             {
                BotChatTaunt(bots[index], victim_edict);
             }
@@ -417,7 +414,7 @@ void BotClient_Valve_DeathMsg(void *p, int bot_index)
          if ((killer_index == 0) || (killer_index == victim_index))
          {
             // bot killed by world (worldspawn) or bot killed self...
-            bots[index].killer_edict = NULL;
+            bots[index].killer_edict = nullptr;
          }
          else
          {
@@ -434,8 +431,6 @@ void BotClient_Valve_ScreenFade(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int duration;
    static int hold_time;
-   //static int fade_flags;
-   int length;
 
    if (state == 0)
    {
@@ -456,7 +451,7 @@ void BotClient_Valve_ScreenFade(void *p, int bot_index)
    {
       state = 0;
 
-      length = (duration + hold_time) / 4096;
+      int length = (duration + hold_time) / 4096;
       bots[bot_index].blinded_time = gpGlobals->time + length - 2.0;
    }
    else

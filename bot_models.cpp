@@ -58,13 +58,13 @@ static HANDLE FindDirectory(HANDLE hFile, char *dirname, int sizeof_dirname, cha
 {
    WIN32_FIND_DATA pFindFileData;
 
-   if (hFile == NULL)
+   if (hFile == nullptr)
    {
       hFile = FindFirstFile(dirspec, &pFindFileData);
 
       if (hFile == INVALID_HANDLE_VALUE)
       {
-         hFile = NULL;
+         hFile = nullptr;
 	 return hFile; // bugfix
       }
 
@@ -73,7 +73,7 @@ static HANDLE FindDirectory(HANDLE hFile, char *dirname, int sizeof_dirname, cha
          if (FindNextFile(hFile, &pFindFileData) == 0)
          {
             FindClose(hFile);
-            hFile = NULL;
+            hFile = nullptr;
             return hFile;
          }
       }
@@ -87,7 +87,7 @@ static HANDLE FindDirectory(HANDLE hFile, char *dirname, int sizeof_dirname, cha
       if (FindNextFile(hFile, &pFindFileData) == 0)
       {
          FindClose(hFile);
-         hFile = NULL;
+         hFile = nullptr;
          return hFile;
       }
 
@@ -96,7 +96,7 @@ static HANDLE FindDirectory(HANDLE hFile, char *dirname, int sizeof_dirname, cha
          if (FindNextFile(hFile, &pFindFileData) == 0)
          {
             FindClose(hFile);
-            hFile = NULL;
+            hFile = nullptr;
             return hFile;
          }
       }
@@ -144,7 +144,7 @@ static DIR *FindDirectory(DIR *directory, char *dirname, int sizeof_dirname, cha
 
 
 //
-void LoadBotModels(void)
+void LoadBotModels()
 {
    char game_dir[256];
    char path[MAX_PATH];
@@ -154,7 +154,7 @@ void LoadBotModels(void)
    int index;
    struct stat stat_str;
 #ifndef __linux__
-   HANDLE directory = NULL;
+   HANDLE directory = nullptr;
 #else
    DIR *directory = NULL;
 #endif
@@ -189,7 +189,7 @@ void LoadBotModels(void)
    strcpy(search_path, path);
 #endif
 
-   while ((directory = FindDirectory(directory, dirname, sizeof(dirname), search_path)) != NULL)
+   while ((directory = FindDirectory(directory, dirname, sizeof(dirname), search_path)) != nullptr)
    {
       if ((strcmp(dirname, ".") == 0) || (strcmp(dirname, "..") == 0))
          continue;

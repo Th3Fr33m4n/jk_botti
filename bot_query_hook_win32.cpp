@@ -53,14 +53,14 @@ static unsigned char sendto_old_bytes[BYTES_SIZE];
 static CRITICAL_SECTION mutex_replacement_sendto;
 
 //restores old sendto
-inline void restore_original_sendto(void)
+inline void restore_original_sendto()
 {
 	//Copy old sendto bytes back
 	memcpy((void*)sendto_original, sendto_old_bytes, BYTES_SIZE);
 }
 
 //resets new sendto
-inline void reset_sendto_hook(void)
+inline void reset_sendto_hook()
 {
 	//Copy new sendto bytes back
 	memcpy((void*)sendto_original, sendto_new_bytes, BYTES_SIZE);
@@ -79,9 +79,8 @@ ssize_t PASCAL call_original_sendto(int socket, const void *message, size_t leng
 	iov.buf = (char*)message;
 	iov.len = length;
 	DWORD num_sent = 0;
-	int err;
 
-	err = WSASendTo(socket, &iov, 1, &num_sent, flags, dest_addr, dest_len, NULL, NULL);
+	int err = WSASendTo(socket, &iov, 1, &num_sent, flags, dest_addr, dest_len, nullptr, nullptr);
 	if (err == SOCKET_ERROR) {
 		errno = WSAGetLastError();
 		return -1;
@@ -91,7 +90,7 @@ ssize_t PASCAL call_original_sendto(int socket, const void *message, size_t leng
 }
 
 //
-bool hook_sendto_function(void)
+bool hook_sendto_function()
 {
 	DWORD tmp = 0;
 	
@@ -127,7 +126,7 @@ bool hook_sendto_function(void)
 }
 
 //
-bool unhook_sendto_function(void)
+bool unhook_sendto_function()
 {
 	if(!is_sendto_hook_setup)
 		return(true);

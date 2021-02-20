@@ -36,20 +36,17 @@ const int max_drop_height = 800;
 float BotChangePitch( bot_t &pBot, float speed )
 {
    edict_t *pEdict = pBot.pEdict;
-   float ideal;
-   float current;
    float current_180;  // current +/- 180 degrees
-   float diff;
 
    // turn from the current v_angle pitch to the idealpitch by selecting
    // the quickest way to turn to face that direction
    
-   current = pEdict->v.v_angle.x;
+   float current = pEdict->v.v_angle.x;
 
-   ideal = pEdict->v.idealpitch;
+   float ideal = pEdict->v.idealpitch;
 
    // find the difference in the current and ideal angle
-   diff = fabs(current - ideal);
+   float diff = fabs(current - ideal);
 
    speed = speed * pBot.f_frame_time;  // angles per second
 
@@ -109,20 +106,17 @@ float BotChangePitch( bot_t &pBot, float speed )
 float BotChangeYaw( bot_t &pBot, float speed )
 {
    edict_t *pEdict = pBot.pEdict;
-   float ideal;
-   float current;
    float current_180;  // current +/- 180 degrees
-   float diff;
 
    // turn from the current v_angle yaw to the ideal_yaw by selecting
    // the quickest way to turn to face that direction
 
-   current = pEdict->v.v_angle.y;
+   float current = pEdict->v.v_angle.y;
 
-   ideal = pEdict->v.ideal_yaw;
+   float ideal = pEdict->v.ideal_yaw;
 
    // find the difference in the current and ideal angle
-   diff = fabs(current - ideal);
+   float diff = fabs(current - ideal);
 
    // speed that we can turn during this frame...
    speed = speed * pBot.f_frame_time;
@@ -181,9 +175,9 @@ float BotChangeYaw( bot_t &pBot, float speed )
 
 static qboolean BotFindWaypoint( bot_t &pBot )
 {
-   int index, select_index;
+   int index;
    int path_index = -1;
-   float distance, min_distance[3];
+   float min_distance[3];
    int min_index[3];
 
    edict_t *pEdict = pBot.pEdict;
@@ -207,7 +201,7 @@ static qboolean BotFindWaypoint( bot_t &pBot )
           (index != pBot.prev_waypoint_index[4]))
       {
          // find the distance from the bot to this waypoint
-         distance = (pEdict->v.origin - waypoints[index].origin).Length();
+         float distance = (pEdict->v.origin - waypoints[index].origin).Length();
 
          if (distance < min_distance[0])
          {
@@ -239,7 +233,7 @@ static qboolean BotFindWaypoint( bot_t &pBot )
       index = WaypointFindPath(path_index, pBot.curr_waypoint_index);
    }
 
-   select_index = -1;
+   int select_index = -1;
 
    // about 20% of the time choose a waypoint at random
    // (don't do this any more often than every 10 seconds)
@@ -308,15 +302,13 @@ static int BotGetSoundWaypoint( bot_t &pBot, edict_t *pTrackSoundEdict, edict_t 
    edict_t *pEdict = pBot.pEdict;
    
    int index = -1;
-   int iSound;
    CSound *pCurrentSound;
-   float mindistance;
-   edict_t *pMinDistanceEdict = NULL;
+   edict_t *pMinDistanceEdict = nullptr;
    
-   mindistance = WAYPOINT_UNREACHABLE;
+   float mindistance = WAYPOINT_UNREACHABLE;
       
    // walk through active sound linked list
-   for(iSound = CSoundEnt::ActiveList(); iSound != SOUNDLIST_EMPTY; iSound = pCurrentSound->m_iNext)
+   for(int iSound = CSoundEnt::ActiveList(); iSound != SOUNDLIST_EMPTY; iSound = pCurrentSound->m_iNext)
    {
       pCurrentSound = CSoundEnt::SoundPointerForIndex( iSound );
       
@@ -332,11 +324,11 @@ static int BotGetSoundWaypoint( bot_t &pBot, edict_t *pTrackSoundEdict, edict_t 
          continue;
       
       // is sound too far away? (bot cannot hear)
-      float s_distance = (pCurrentSound->m_vecOrigin - pEdict->v.origin).Length();
+      const float s_distance = (pCurrentSound->m_vecOrigin - pEdict->v.origin).Length();
       if(s_distance > pCurrentSound->m_iVolume * skill_settings[pBot.bot_skill].hearing_sensitivity)
          continue;
-      
-      int temp_index = WaypointFindNearest(pCurrentSound->m_vecOrigin, pEdict, REACHABLE_RANGE, TRUE);
+
+      const int temp_index = WaypointFindNearest(pCurrentSound->m_vecOrigin, pEdict, REACHABLE_RANGE, TRUE);
          
       // get distance
       if (temp_index > -1 && temp_index < num_waypoints)
@@ -353,7 +345,7 @@ static int BotGetSoundWaypoint( bot_t &pBot, edict_t *pTrackSoundEdict, edict_t 
          {
             mindistance = distance;
             index = temp_index;
-            pMinDistanceEdict = FNullEnt(pCurrentSound->m_pEdict)?NULL:pCurrentSound->m_pEdict;
+            pMinDistanceEdict = FNullEnt(pCurrentSound->m_pEdict)? nullptr:pCurrentSound->m_pEdict;
          }
       }
    }
@@ -388,15 +380,15 @@ qboolean BotUpdateTrackSoundGoal( bot_t &pBot )
       pBot.waypoint_goal = -1;
       pBot.wpt_goal_type = WPT_GOAL_NONE;
       
-      pBot.pTrackSoundEdict = NULL;
+      pBot.pTrackSoundEdict = nullptr;
       pBot.f_track_sound_time = -1;
       
       return FALSE;
    }
    
    // get waypoint close to sound of track-sound-edict
-   edict_t* pNew = NULL;
-   int waypoint = BotGetSoundWaypoint( pBot, pBot.pTrackSoundEdict, &pNew );
+   edict_t* pNew = nullptr;
+   const int waypoint = BotGetSoundWaypoint( pBot, pBot.pTrackSoundEdict, &pNew );
    
    if(FNullEnt(pBot.pTrackSoundEdict) && !FNullEnt(pNew))
       pBot.pTrackSoundEdict = pNew;
@@ -435,13 +427,13 @@ static void BotFindWaypointGoal( bot_t &pBot )
       goto exit;
    }
    
-   if (pBot.pBotEnemy == NULL)
+   if (pBot.pBotEnemy == nullptr)
    {
       int goal_type = 0;
       int ammoflags;
       int weaponflags;
       float mindistance = WAYPOINT_UNREACHABLE;
-      edict_t* pTrackSoundEdict = NULL;
+      edict_t* pTrackSoundEdict = nullptr;
       
       // only if not engaging
       
@@ -449,13 +441,13 @@ static void BotFindWaypointGoal( bot_t &pBot )
       if(!pBot.b_low_health && pBot.b_has_enough_ammo_for_good_weapon)
       {
          // find nearest interesting sound that isn't visible
-         int temp_index = BotGetSoundWaypoint(pBot, NULL, &pTrackSoundEdict);
+         const int temp_index = BotGetSoundWaypoint(pBot, nullptr, &pTrackSoundEdict);
          
          if(temp_index != -1)
          {
             if(RANDOM_FLOAT2(0.0, 1.0) < 0.5f)
             {
-               float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
+	            const float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
                
                // don't try get other objects
                pBot.wpt_goal_type = WPT_GOAL_TRACK_SOUND;
@@ -468,7 +460,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
             }
             else
             {
-               float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
+	            const float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
                
                if (distance < mindistance)
                {
@@ -491,7 +483,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
             // get distance
             if (temp_index > -1 && temp_index < num_waypoints)
             {
-               float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
+	            const float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
                
                if (distance < mindistance)
                {
@@ -514,7 +506,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
             // get distance
             if (temp_index > -1 && temp_index < num_waypoints)
             {
-               float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
+	            const float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
                
                if (distance < mindistance)
                {
@@ -537,7 +529,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
          // get distance
          if (temp_index > -1 && temp_index < num_waypoints)
          {
-            float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
+	         const float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index);
             
             if (distance < mindistance)
             {
@@ -576,7 +568,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
 
             if (temp_index != -1)
             {
-               float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index); 
+	            const float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index); 
                               
                if (distance < mindistance)
                {
@@ -592,7 +584,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
       else if (((ammoflags = BotGetLowAmmoFlags(pBot, &(weaponflags=0), TRUE)) != 0 && weaponflags != 0) || 
       	       ((ammoflags = BotGetLowAmmoFlags(pBot, &(weaponflags=0), FALSE)) != 0 && weaponflags != 0))
       {
-         int flags = (ammoflags ? W_FL_AMMO : 0) | (weaponflags ? W_FL_WEAPON : 0);
+	      const int flags = (ammoflags ? W_FL_AMMO : 0) | (weaponflags ? W_FL_WEAPON : 0);
          
          // find ammo for that we don't have enough yet
          int temp_index = WaypointFindNearestGoal(pEdict, pBot.curr_waypoint_index, flags, ammoflags|weaponflags, pBot.exclude_points);
@@ -602,7 +594,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
                   
          if (temp_index != -1)
          {
-            float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index); 
+	         const float distance = WaypointDistanceFromTo(pBot.curr_waypoint_index, temp_index); 
                         
             if (distance < mindistance)
             {
@@ -620,12 +612,12 @@ static void BotFindWaypointGoal( bot_t &pBot )
          
          if(goal_type != WPT_GOAL_TRACK_SOUND)
          {
-            pBot.pTrackSoundEdict = NULL;
+            pBot.pTrackSoundEdict = nullptr;
             pBot.f_track_sound_time = -1;
          }
          else
          {
-            float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
+	         const float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
             
             pBot.pTrackSoundEdict = pTrackSoundEdict;
             pBot.f_track_sound_time = gpGlobals->time + track_time;
@@ -643,7 +635,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
       {
          pBot.wpt_goal_type = WPT_GOAL_ENEMY;
          pBot.waypoint_goal = index;
-         pBot.pTrackSoundEdict = NULL;
+         pBot.pTrackSoundEdict = nullptr;
          pBot.f_track_sound_time = -1;
          
          goto exit;
@@ -659,7 +651,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
       {
          pBot.wpt_goal_type = WPT_GOAL_LOCATION;
          pBot.waypoint_goal = index;
-         pBot.pTrackSoundEdict = NULL;
+         pBot.pTrackSoundEdict = nullptr;
          pBot.f_track_sound_time = -1;
          
          goto exit;
@@ -929,7 +921,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
             pBot.f_last_item_found = gpGlobals->time;
          }
 
-         if (pBot.pBotEnemy != NULL)
+         if (pBot.pBotEnemy != nullptr)
             pBot.f_waypoint_goal_time = gpGlobals->time + 0.25;
          else   // a little delay time, since we'll touch the waypoint before we actually get what it has
             pBot.f_waypoint_goal_time = gpGlobals->time + 0.25;
@@ -995,11 +987,11 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
       }
       
       // if the bot doesn't have a goal waypoint then pick one...
-      if ((pBot.waypoint_goal == -1 || pBot.pBotEnemy != NULL) &&
+      if ((pBot.waypoint_goal == -1 || pBot.pBotEnemy != nullptr) &&
           (pBot.f_waypoint_goal_time < gpGlobals->time))
       {
          // tracking something, pick goal much more often
-         if (pBot.pBotEnemy != NULL)
+         if (pBot.pBotEnemy != nullptr)
             pBot.f_waypoint_goal_time = gpGlobals->time + 0.5;
          else // don't pick a goal more often than every 120 seconds...
             pBot.f_waypoint_goal_time = gpGlobals->time + 120.0;
@@ -1088,26 +1080,24 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
 void BotOnLadder( bot_t &pBot, float moved_distance )
 {
    static float search_angles[] = { 0.0f, 0.0f, 90.0f, -90.0f, 45.0f, -45.0f, 60.0f, -30.0f, 30.0f, -60.0f, 10.0f, -10.0f, 20.0f, -20.0f, 40.0f, -40.0f, 50.0f, -50.0f, 70.0f, -70.0f, 80.0f, -80.0f, 9999.9f };
-   Vector v_src, v_dest, view_angles;
+   Vector view_angles;
    TraceResult tr;
-   float angle, search_dir;
    qboolean done = FALSE;
-   int i;
 
    edict_t *pEdict = pBot.pEdict;
 
    // check if the bot has JUST touched this ladder...
    if (pBot.ladder_dir == LADDER_UNKNOWN)
    {
-      i = 0;
-      search_dir = RANDOM_LONG2(0, 1) ? 1.0f : -1.0f;      
+      int i = 0;
+      float search_dir = RANDOM_LONG2(0, 1) ? 1.0f : -1.0f;      
       search_angles[0] = 0.0f;
       
       // add special case to angles, check towards next waypoint
       if(pBot.curr_waypoint_index != -1)
       {
-         Vector v_dir = waypoints[pBot.curr_waypoint_index].origin - pEdict->v.origin;
-         Vector v_to_wp = UTIL_VecToAngles(v_dir);
+	      const Vector v_dir = waypoints[pBot.curr_waypoint_index].origin - pEdict->v.origin;
+	      const Vector v_to_wp = UTIL_VecToAngles(v_dir);
          
          search_angles[0] = v_to_wp.y * search_dir;
       }
@@ -1118,15 +1108,15 @@ void BotOnLadder( bot_t &pBot, float moved_distance )
       // try to square up the bot on the ladder...
       while ((!done) && (search_angles[i] <= 90.0f))
       {
-         angle = search_angles[i] * search_dir;
+         float angle = search_angles[i] * search_dir;
          
          // try looking in one direction (forward + angle)
          view_angles.x = pEdict->v.v_angle.x;
          view_angles.y = UTIL_WrapAngle(pEdict->v.v_angle.y + angle);
          view_angles.z = 0;
          
-         v_src = pEdict->v.origin + pEdict->v.view_ofs;
-         v_dest = v_src + UTIL_AnglesToForward(view_angles) * 30;
+         Vector v_src = pEdict->v.origin + pEdict->v.view_ofs;
+         Vector v_dest = v_src + UTIL_AnglesToForward(view_angles) * 30;
 
          UTIL_TraceMove( v_src, v_dest, dont_ignore_monsters, 
                          pEdict->v.pContainingEntity, &tr);
@@ -1261,10 +1251,8 @@ void BotUnderWater( bot_t &pBot )
       // there is a surface the bot can jump up onto to get out of the
       // water.  bots DON'T like water!
 
-      Vector v_src, v_forward;
       TraceResult tr;
-      int contents;
-   
+
       // swim up towards the surface
       pEdict->v.v_angle.x = -60;  // look upwards
    
@@ -1274,8 +1262,8 @@ void BotUnderWater( bot_t &pBot )
       // look from eye position straight forward (remember: the bot is looking
       // upwards at a 60 degree angle so TraceLine will go out and up...
    
-      v_src = pEdict->v.origin + pEdict->v.view_ofs;  // EyePosition()
-      v_forward = v_src + UTIL_AnglesToForward(pEdict->v.v_angle) * 90;
+      Vector v_src = pEdict->v.origin + pEdict->v.view_ofs;  // EyePosition()
+      Vector v_forward = v_src + UTIL_AnglesToForward(pEdict->v.v_angle) * 90;
    
       // trace from the bot's eyes straight forward...
       UTIL_TraceMove( v_src, v_forward, dont_ignore_monsters, 
@@ -1285,7 +1273,7 @@ void BotUnderWater( bot_t &pBot )
       if (tr.flFraction > 0.999999f)
       {
          // find out what the contents is of the end of the trace...
-         contents = POINT_CONTENTS( tr.vecEndPos );
+         int contents = POINT_CONTENTS(tr.vecEndPos);
    
          // check if the trace endpoint is in open space...
          if (contents == CONTENTS_EMPTY)
@@ -1469,19 +1457,18 @@ void BotUseLift( bot_t &pBot, float moved_distance )
 qboolean BotStuckInCorner( bot_t &pBot )
 {
    TraceResult tr;
-   Vector v_src, v_dest;
    edict_t *pEdict = pBot.pEdict;
    const float offsets[1] = {0};
-   int right_first = RANDOM_LONG2(0,1);
+   const int right_first = RANDOM_LONG2(0,1);
    Vector v_forward, v_right, v_up;
    
    UTIL_MakeVectorsPrivate(pEdict->v.v_angle, v_forward, v_right, v_up);
 
    for(int i = 0; i < 1; i++) {
      // trace 45 degrees to the right...
-     v_src = pEdict->v.origin;
+     Vector v_src = pEdict->v.origin;
      v_src.z += offsets[i];
-     v_dest = v_src + v_forward*20 + (v_right*20) * (right_first?1:-1);
+     Vector v_dest = v_src + v_forward * 20 + (v_right * 20) * (right_first ? 1 : -1);
      
      UTIL_TraceMove( v_src, v_dest, dont_ignore_monsters,  pEdict->v.pContainingEntity, &tr);
      
@@ -1504,19 +1491,18 @@ qboolean BotStuckInCorner( bot_t &pBot )
 void BotTurnAtWall( bot_t &pBot, TraceResult *tr, qboolean negative )
 {
    edict_t *pEdict = pBot.pEdict;
-   Vector Normal;
-   float Y, Y1, Y2, D1, D2, Z;
+   float Z;
 
    // Find the normal vector from the trace result.  The normal vector will
    // be a vector that is perpendicular to the surface from the TraceResult.
 
-   Normal = UTIL_VecToAngles(tr->vecPlaneNormal);
+   Vector Normal = UTIL_VecToAngles(tr->vecPlaneNormal);
 
    // Since the bot keeps it's view angle in -180 < x < 180 degrees format,
    // and since TraceResults are 0 < x < 360, we convert the bot's view
    // angle (yaw) to the same format at TraceResult.
 
-   Y = pEdict->v.v_angle.y;
+   float Y = pEdict->v.v_angle.y;
    Y = Y + 180;
    if (Y > 359) Y -= 360;
 
@@ -1539,14 +1525,14 @@ void BotTurnAtWall( bot_t &pBot, TraceResult *tr, qboolean negative )
    // least amount of turning (saves time) and have the bot head off in that
    // direction.
 
-   Y1 = Normal.y - 90;
+   float Y1 = Normal.y - 90;
    if (RANDOM_LONG2(1, 100) <= 50)
    {
       Y1 = Y1 - RANDOM_FLOAT2(5.0, 20.0);
    }
    if (Y1 < 0) Y1 += 360;
 
-   Y2 = Normal.y + 90;
+   float Y2 = Normal.y + 90;
    if (RANDOM_LONG2(1, 100) <= 50)
    {
       Y2 = Y2 + RANDOM_FLOAT2(5.0, 20.0);
@@ -1556,9 +1542,9 @@ void BotTurnAtWall( bot_t &pBot, TraceResult *tr, qboolean negative )
    // D1 and D2 are the difference (in degrees) between the bot's current
    // angle and Y1 or Y2 (respectively).
 
-   D1 = fabs(Y - Y1);
+   float D1 = fabs(Y - Y1);
    if (D1 > 179) D1 = fabs(D1 - 360);
-   D2 = fabs(Y - Y2);
+   float D2 = fabs(Y - Y2);
    if (D2 > 179) D2 = fabs(D2 - 360);
 
    // If difference 1 (D1) is more than difference 2 (D2) then the bot will
@@ -1592,17 +1578,15 @@ qboolean BotCantMoveForward( bot_t &pBot, TraceResult *tr )
    // use some TraceLines to determine if anything is blocking the current
    // path of the bot.
 
-   Vector v_src, v_forward, v_angle_forward;
-
-   v_angle_forward = UTIL_AnglesToForward( pEdict->v.v_angle );
+   Vector v_angle_forward = UTIL_AnglesToForward(pEdict->v.v_angle);
 
    // first do a trace from the bot's eyes forward...
    // bot's head is clear, check at waist level...
    const Vector offsets[2] = {pEdict->v.view_ofs, Vector(0,0,0)};
 
    for(int i = 0; i < 2; i++) {
-      v_src = pEdict->v.origin + offsets[i];  // EyePosition()
-      v_forward = v_src + v_angle_forward * 40;
+      Vector v_src = pEdict->v.origin + offsets[i];  // EyePosition()
+      Vector v_forward = v_src + v_angle_forward * 40;
 
       UTIL_TraceMove( v_src, v_forward, dont_ignore_monsters,  pEdict->v.pContainingEntity, tr);
 
@@ -1816,12 +1800,12 @@ qboolean BotCanDuckUnder( bot_t &pBot )
    // we can duck under it.
 
    TraceResult tr;
-   Vector v_duck, v_source, v_dest, v_forward, v_right, v_up;
+   Vector v_forward, v_right, v_up;
    edict_t *pEdict = pBot.pEdict;
 
    // convert current view angle to vectors for TraceLine math...
 
-   v_duck = pEdict->v.v_angle;
+   Vector v_duck = pEdict->v.v_angle;
    v_duck.x = 0;  // reset pitch to 0 (level horizontally)
    v_duck.z = 0;  // reset roll to 0 (straight up and down)
 
@@ -1830,8 +1814,8 @@ qboolean BotCanDuckUnder( bot_t &pBot )
    // use center of the body first...
 
    // duck height is 36, so check one unit above that (37)
-   v_source = pEdict->v.origin + Vector(0, 0, -36 + 37);
-   v_dest = v_source + v_forward * 24;
+   Vector v_source = pEdict->v.origin + Vector(0, 0, -36 + 37);
+   Vector v_dest = v_source + v_forward * 24;
 
    // trace a line forward at duck height...
    UTIL_TraceMove( v_source, v_dest, dont_ignore_monsters, 
@@ -1927,11 +1911,10 @@ qboolean BotEdgeForward( bot_t &pBot, const Vector &v_move_dir )
    //       if hit ground -> no edge
 
    TraceResult tr;
-   Vector v_source, v_dest, v_forward, v_ground;
 
    // convert current view angle to vectors for TraceLine math...
 
-   v_forward = v_move_dir;
+   Vector v_forward = v_move_dir;
    v_forward.z = 0;
    if(v_forward.Length() <= 1)
       return(FALSE);
@@ -1939,12 +1922,12 @@ qboolean BotEdgeForward( bot_t &pBot, const Vector &v_move_dir )
    v_forward = v_forward.Normalize();
    
    // trace down to ground 
-   v_source = pEdict->v.origin;
-   v_dest = v_source - Vector(0, 0, 72/2);
+   Vector v_source = pEdict->v.origin;
+   Vector v_dest = v_source - Vector(0, 0, 72 / 2);
    
    UTIL_TraceDuck( v_source, v_dest, dont_ignore_monsters, pEdict->v.pContainingEntity, &tr);
    
-   v_ground = tr.vecEndPos;
+   Vector v_ground = tr.vecEndPos;
    v_ground.z += 1.0f;
       
    // 32 units forward
@@ -1987,24 +1970,23 @@ qboolean BotEdgeRight( bot_t &pBot, const Vector &v_move_dir )
    //       if hit ground -> no edge
 
    TraceResult tr;
-   Vector v_source, v_dest, v_forward, v_right, v_ground;
 
    // convert current view angle to vectors for TraceLine math...
 
-   v_forward = v_move_dir;
+   Vector v_forward = v_move_dir;
    v_forward.z = 0;
    if(v_forward.Length() <= 1)
       return(FALSE);
    
-   v_right = UTIL_AnglesToRight(UTIL_VecToAngles(v_forward.Normalize()));
+   Vector v_right = UTIL_AnglesToRight(UTIL_VecToAngles(v_forward.Normalize()));
    
    // trace down to ground
-   v_source = pEdict->v.origin;
-   v_dest = v_source - Vector(0, 0, 72/2);
+   Vector v_source = pEdict->v.origin;
+   Vector v_dest = v_source - Vector(0, 0, 72 / 2);
    
    UTIL_TraceDuck( v_source, v_dest, dont_ignore_monsters, pEdict->v.pContainingEntity, &tr);
    
-   v_ground = tr.vecEndPos;
+   Vector v_ground = tr.vecEndPos;
    v_ground.z += 1.0f;
       
    // 32 units right
@@ -2047,24 +2029,23 @@ qboolean BotEdgeLeft( bot_t &pBot, const Vector &v_move_dir )
    //       if hit ground -> no edge
 
    TraceResult tr;
-   Vector v_source, v_dest, v_forward, v_right, v_ground;
 
    // convert current view angle to vectors for TraceLine math...
 
-   v_forward = v_move_dir;
+   Vector v_forward = v_move_dir;
    v_forward.z = 0;
    if(v_forward.Length() <= 1)
       return(FALSE);
       
-   v_right = UTIL_AnglesToRight(UTIL_VecToAngles(v_forward.Normalize()));
+   Vector v_right = UTIL_AnglesToRight(UTIL_VecToAngles(v_forward.Normalize()));
    
    // trace down to ground
-   v_source = pEdict->v.origin;
-   v_dest = v_source - Vector(0, 0, 72/2);
+   Vector v_source = pEdict->v.origin;
+   Vector v_dest = v_source - Vector(0, 0, 72 / 2);
    
    UTIL_TraceDuck( v_source, v_dest, dont_ignore_monsters, pEdict->v.pContainingEntity, &tr);
    
-   v_ground = tr.vecEndPos;
+   Vector v_ground = tr.vecEndPos;
    v_ground.z += 1.0f;
       
    // 32 units right
@@ -2117,13 +2098,12 @@ void BotRandomTurn( bot_t &pBot )
 qboolean BotCheckWallOnLeft( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   Vector v_src, v_left;
    TraceResult tr;
 
    // do a trace to the left...
 
-   v_src = pEdict->v.origin;
-   v_left = v_src + UTIL_AnglesToRight(pEdict->v.v_angle) * -40;  // 40 units to the left
+   Vector v_src = pEdict->v.origin;
+   Vector v_left = v_src + UTIL_AnglesToRight(pEdict->v.v_angle) * -40;  // 40 units to the left
 
    UTIL_TraceMove( v_src, v_left, dont_ignore_monsters,  pEdict->v.pContainingEntity, &tr);
 
@@ -2143,13 +2123,12 @@ qboolean BotCheckWallOnLeft( bot_t &pBot )
 qboolean BotCheckWallOnRight( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   Vector v_src, v_right;
    TraceResult tr;
 
    // do a trace to the right...
 
-   v_src = pEdict->v.origin;
-   v_right = v_src + UTIL_AnglesToRight(pEdict->v.v_angle) * 40;  // 40 units to the right
+   Vector v_src = pEdict->v.origin;
+   Vector v_right = v_src + UTIL_AnglesToRight(pEdict->v.v_angle) * 40;  // 40 units to the right
 
    UTIL_TraceMove( v_src, v_right, dont_ignore_monsters,  pEdict->v.pContainingEntity, &tr);
 
@@ -2169,13 +2148,12 @@ qboolean BotCheckWallOnRight( bot_t &pBot )
 qboolean BotCheckWallOnForward( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   Vector v_src, v_right;
    TraceResult tr;
 
    // do a trace to the right...
 
-   v_src = pEdict->v.origin;
-   v_right = v_src + UTIL_AnglesToForward(pEdict->v.v_angle) * 40;  // 40 units to the forawrd
+   Vector v_src = pEdict->v.origin;
+   Vector v_right = v_src + UTIL_AnglesToForward(pEdict->v.v_angle) * 40;  // 40 units to the forawrd
 
    UTIL_TraceMove( v_src, v_right, dont_ignore_monsters,  pEdict->v.pContainingEntity, &tr);
 
@@ -2195,13 +2173,12 @@ qboolean BotCheckWallOnForward( bot_t &pBot )
 qboolean BotCheckWallOnBack( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   Vector v_src, v_right;
    TraceResult tr;
 
    // do a trace to the right...
 
-   v_src = pEdict->v.origin;
-   v_right = v_src + UTIL_AnglesToForward(pEdict->v.v_angle) * -40;  // 40 units to the back
+   Vector v_src = pEdict->v.origin;
+   Vector v_right = v_src + UTIL_AnglesToForward(pEdict->v.v_angle) * -40;  // 40 units to the back
 
    UTIL_TraceMove( v_src, v_right, dont_ignore_monsters,  pEdict->v.pContainingEntity, &tr);
 
@@ -2222,20 +2199,16 @@ void BotLookForDrop( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
 
-   Vector v_src, v_dest, v_ahead;
-   float scale, direction;
+   float direction;
    TraceResult tr;
-   int contents;
-   qboolean need_to_turn, done;
-   int turn_count;
 
-   scale = 80 + (pBot.f_max_speed / 10);
+   float scale = 80 + (pBot.f_max_speed / 10);
 
-   v_ahead = pEdict->v.v_angle;
+   Vector v_ahead = pEdict->v.v_angle;
    v_ahead.x = 0;  // set pitch to level horizontally
 
-   v_src = pEdict->v.origin;
-   v_dest = v_src + UTIL_AnglesToForward(v_ahead) * scale;
+   Vector v_src = pEdict->v.origin;
+   Vector v_dest = v_src + UTIL_AnglesToForward(v_ahead) * scale;
 
    UTIL_TraceMove( v_src, v_dest, ignore_monsters,  pEdict->v.pContainingEntity, &tr );
 
@@ -2247,7 +2220,7 @@ void BotLookForDrop( bot_t &pBot )
 
       UTIL_TraceMove( v_src, v_dest, ignore_monsters,  pEdict->v.pContainingEntity, &tr );
 
-      need_to_turn = FALSE;
+      qboolean need_to_turn = FALSE;
 
       // if trace did not hit anything then drop is TOO FAR...
       if (tr.flFraction > 0.999999f) 
@@ -2257,7 +2230,7 @@ void BotLookForDrop( bot_t &pBot )
       else
       {
          // we've hit something, see if it's water or lava
-         contents = POINT_CONTENTS( tr.vecEndPos );
+         int contents = POINT_CONTENTS(tr.vecEndPos);
 
          if (contents == CONTENTS_LAVA)
          {
@@ -2321,8 +2294,8 @@ void BotLookForDrop( bot_t &pBot )
             v_ahead = pEdict->v.v_angle;
             v_ahead.x = 0;  // set pitch to level horizontally
 
-            done = FALSE;
-            turn_count = 0;
+            qboolean done = FALSE;
+            int turn_count = 0;
 
             while (!done)
             {

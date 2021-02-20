@@ -33,8 +33,8 @@ extern int get_cvars;
 extern qboolean aim_fix;
 extern float turn_skill;
 
-void (*botMsgFunction)(void *, int) = NULL;
-void (*botMsgEndFunction)(void *, int) = NULL;
+void (*botMsgFunction)(void *, int) = nullptr;
+void (*botMsgEndFunction)(void *, int) = nullptr;
 int botMsgIndex;
 
 qboolean g_in_intermission = FALSE;
@@ -89,8 +89,8 @@ static unsigned short pfnPrecacheEvent_Post(int type, const char* psz)
 {
    if (!gpGlobals->deathmatch)
       RETURN_META_VALUE (MRES_IGNORED, 0);
-   
-   unsigned short eventindex = (META_RESULT_STATUS == MRES_OVERRIDE || META_RESULT_STATUS == MRES_SUPERCEDE) ? META_RESULT_OVERRIDE_RET(unsigned short) : META_RESULT_ORIG_RET(unsigned short);
+
+   const unsigned short eventindex = (META_RESULT_STATUS == MRES_OVERRIDE || META_RESULT_STATUS == MRES_SUPERCEDE) ? META_RESULT_OVERRIDE_RET(unsigned short) : META_RESULT_ORIG_RET(unsigned short);
 
    event_info_t *pei;
    for(pei = g_event_info; pei->eventname && pei->eventname[0]; pei++)
@@ -134,7 +134,7 @@ static void pfnPlaybackEvent( int flags, const edict_t *pInvoker, unsigned short
    // event creates sound?
    if(pei->volume > 0.0f)
    {
-      int ivolume = (int)(1000*pei->volume);
+	   const int ivolume = (int)(1000*pei->volume);
       
       SaveSound((edict_t*)pInvoker, pInvoker->v.origin, ivolume, CHAN_WEAPON, 5.0f);
    }
@@ -146,8 +146,8 @@ static void pfnPlaybackEvent( int flags, const edict_t *pInvoker, unsigned short
       // ignore the duplicated one...
       if(strcmp("events/gauss.sc", pei->eventname) == 0 && delay > 0.0f && (flags & FEV_RELIABLE))
          RETURN_META (MRES_IGNORED);
-      
-      int index = UTIL_GetBotIndex(pInvoker);
+
+      const int index = UTIL_GetBotIndex(pInvoker);
       
       if(index != -1)
       {
@@ -162,7 +162,7 @@ static void pfnEmitSound(edict_t *entity, int channel, const char *sample, float
 {
    if (gpGlobals->deathmatch)
    {
-      int ivolume = (int)(1000*volume);
+	   const int ivolume = (int)(1000*volume);
       const char *classname = (const char *)STRING(entity->v.classname);
       float duration = 5.0f;
       
@@ -172,7 +172,7 @@ static void pfnEmitSound(edict_t *entity, int channel, const char *sample, float
          duration = 8.0f;
       else if (GetAmmoItemFlag(classname) != 0)
          duration = 8.0f;
-      else if (GetWeaponItemFlag(classname) != 0 && (entity->v.owner == NULL))
+      else if (GetWeaponItemFlag(classname) != 0 && (entity->v.owner == nullptr))
          duration = 8.0f;
       else if (strcmp("item_longjump", classname) == 0)
          duration = 8.0f;
@@ -214,9 +214,7 @@ static void pfnMessageBegin(int msg_dest, int msg_type, const float *pOrigin, ed
 {   
    if (gpGlobals->deathmatch)
    {
-      int index = -1;
-      
-      static int WeaponList = 0;
+	   static int WeaponList = 0;
       static int CurWeapon = 0;
       static int AmmoX = 0;
       static int AmmoPickup = 0;
@@ -230,33 +228,33 @@ static void pfnMessageBegin(int msg_dest, int msg_type, const float *pOrigin, ed
       
       if (ed)
       {
-         index = UTIL_GetBotIndex(ed);
+         int index = UTIL_GetBotIndex(ed);
 
          // is this message for a bot?
          if (index != -1)
          {
-            botMsgEndFunction = NULL;  // no msg end function until known otherwise
+            botMsgEndFunction = nullptr;  // no msg end function until known otherwise
             botMsgIndex = index;       // index of bot receiving message
 
-            if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeaponList, "WeaponList", NULL))
+            if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeaponList, "WeaponList", nullptr))
                botMsgFunction = BotClient_Valve_WeaponList;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, CurWeapon, "CurWeapon", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, CurWeapon, "CurWeapon", nullptr))
                botMsgFunction = BotClient_Valve_CurrentWeapon;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, AmmoX, "AmmoX", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, AmmoX, "AmmoX", nullptr))
                botMsgFunction = BotClient_Valve_AmmoX;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, AmmoPickup, "AmmoPickup", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, AmmoPickup, "AmmoPickup", nullptr))
                botMsgFunction = BotClient_Valve_AmmoPickup;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeapPickup, "WeapPickup", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeapPickup, "WeapPickup", nullptr))
                botMsgFunction = BotClient_Valve_WeaponPickup;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, ItemPickup, "ItemPickup", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, ItemPickup, "ItemPickup", nullptr))
                botMsgFunction = BotClient_Valve_ItemPickup;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, Health, "Health", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, Health, "Health", nullptr))
                botMsgFunction = BotClient_Valve_Health;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, Battery, "Battery", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, Battery, "Battery", nullptr))
                botMsgFunction = BotClient_Valve_Battery;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, Damage, "Damage", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, Damage, "Damage", nullptr))
                botMsgFunction = BotClient_Valve_Damage;
-            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, ScreenFade, "ScreenFade", NULL))
+            else if (msg_type == FAST_GET_USER_MSG_ID (PLID, ScreenFade, "ScreenFade", nullptr))
                botMsgFunction = BotClient_Valve_ScreenFade;
          }
          // is this message for a player?
@@ -265,35 +263,35 @@ static void pfnMessageBegin(int msg_dest, int msg_type, const float *pOrigin, ed
             index = ENTINDEX(ed) - 1;
             if(index > -1 && index < gpGlobals->maxClients)
             {
-               botMsgFunction = NULL;     // no msg function until known otherwise
-               botMsgEndFunction = NULL;  // no msg end function until known otherwise
+               botMsgFunction = nullptr;     // no msg function until known otherwise
+               botMsgEndFunction = nullptr;  // no msg end function until known otherwise
                botMsgIndex = index;       // index of bot receiving message
             }
             
-            if (msg_type == FAST_GET_USER_MSG_ID (PLID, CurWeapon, "CurWeapon", NULL))
+            if (msg_type == FAST_GET_USER_MSG_ID (PLID, CurWeapon, "CurWeapon", nullptr))
                botMsgFunction = PlayerClient_Valve_CurrentWeapon;
          }
       }
       else if (msg_dest == MSG_ALL)
       {
-         botMsgFunction = NULL;     // no msg function until known otherwise
-         botMsgEndFunction = NULL;  // no msg end function until known otherwise
+         botMsgFunction = nullptr;     // no msg function until known otherwise
+         botMsgEndFunction = nullptr;  // no msg end function until known otherwise
          botMsgIndex = -1;          // index of bot receiving message (none)
 
          if (msg_type == SVC_INTERMISSION)
             g_in_intermission = TRUE;
-         else if (msg_type == FAST_GET_USER_MSG_ID (PLID, DeathMsg, "DeathMsg", NULL))
+         else if (msg_type == FAST_GET_USER_MSG_ID (PLID, DeathMsg, "DeathMsg", nullptr))
             botMsgFunction = BotClient_Valve_DeathMsg;
       }
       else
       {
          // Steam makes the WeaponList message be sent differently
 
-         botMsgFunction = NULL;     // no msg function until known otherwise
-         botMsgEndFunction = NULL;  // no msg end function until known otherwise
+         botMsgFunction = nullptr;     // no msg function until known otherwise
+         botMsgEndFunction = nullptr;  // no msg end function until known otherwise
          botMsgIndex = -1;          // index of bot receiving message (none)
 
-         if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeaponList, "WeaponList", NULL))
+         if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeaponList, "WeaponList", nullptr))
             botMsgFunction = BotClient_Valve_WeaponList;
       }
    }
@@ -302,16 +300,16 @@ static void pfnMessageBegin(int msg_dest, int msg_type, const float *pOrigin, ed
 }
 
 
-static void pfnMessageEnd(void)
+static void pfnMessageEnd()
 {
    if (gpGlobals->deathmatch)
    {
       if (botMsgEndFunction)
-         (*botMsgEndFunction)(NULL, botMsgIndex);  // NULL indicated msg end
+         (*botMsgEndFunction)(nullptr, botMsgIndex);  // NULL indicated msg end
 
       // clear out the bot message function pointers...
-      botMsgFunction = NULL;
-      botMsgEndFunction = NULL;
+      botMsgFunction = nullptr;
+      botMsgEndFunction = nullptr;
    }
 
    RETURN_META (MRES_IGNORED);
@@ -431,7 +429,7 @@ static void pfnClientPrintf( edict_t* pEdict, PRINT_TYPE ptype, const char *szMs
 }
 
 
-static const char *pfnCmd_Args( void )
+static const char *pfnCmd_Args()
 {
    if (isFakeClientCommand)
       RETURN_META_VALUE (MRES_SUPERCEDE, &g_argv[0]);
@@ -458,7 +456,7 @@ static const char *pfnCmd_Argv( int argc )
 }
 
 
-static int pfnCmd_Argc( void )
+static int pfnCmd_Argc()
 {
    if (isFakeClientCommand)
       RETURN_META_VALUE (MRES_SUPERCEDE, fake_arg_count);
@@ -471,10 +469,8 @@ static void pfnSetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed)
 {
    if (!gpGlobals->deathmatch)
       RETURN_META (MRES_IGNORED);
-   
-   int index;
 
-   index = UTIL_GetBotIndex((edict_t *)pEdict);
+   int index = UTIL_GetBotIndex((edict_t*)pEdict);
 
    // is this message for a bot?
    if (index != -1)

@@ -84,7 +84,7 @@ int min_bots = -1;
 int max_bots = -1;
 int num_bots = 0;
 int prev_num_bots = 0;;
-edict_t *listenserver_edict = NULL;
+edict_t *listenserver_edict = nullptr;
 float welcome_time = 0.0;
 qboolean welcome_sent = FALSE;
 int bot_stop = 0;
@@ -95,7 +95,7 @@ int debug_minmax = 0;
 qboolean is_team_play = FALSE;
 qboolean checked_teamplay = FALSE;
 
-FILE *bot_cfg_fp = NULL;
+FILE *bot_cfg_fp = nullptr;
 int bot_cfg_linenumber = 0;
 qboolean need_to_open_cfg = TRUE;
 float bot_cfg_pause_time = 0.0;
@@ -103,13 +103,13 @@ qboolean spawn_time_reset = FALSE;
 float waypoint_time = 0.0;
 player_t players[32];
 
-static void (*old_PM_PlaySound)(int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch) = NULL;
-static struct playermove_s *old_ppmove = NULL;
+static void (*old_PM_PlaySound)(int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch) = nullptr;
+static struct playermove_s *old_ppmove = nullptr;
 
-cvar_t jk_botti_version = { "jk_botti_version", "", FCVAR_EXTDLL|FCVAR_SERVER, 0, NULL};
+cvar_t jk_botti_version = { "jk_botti_version", "", FCVAR_EXTDLL|FCVAR_SERVER, 0, nullptr};
 
 
-static int CheckSubMod(void)
+static int CheckSubMod()
 {
    int submod = 0;
    
@@ -122,13 +122,13 @@ static int CheckSubMod(void)
       submod = SUBMOD_SEVS;
    else if(!strnicmp(desc, "XDM", 3))
       submod = SUBMOD_XDM;
-   else if(CVAR_GET_POINTER("bm_ver") != NULL)
+   else if(CVAR_GET_POINTER("bm_ver") != nullptr)
       submod = SUBMOD_BUBBLEMOD; 
    else if(!strnicmp(desc, "HL Teamplay", 11))
    {
       // this is a bit of hack, sevs uses "HL Teamplay" string for teamplay so we need alternative way of detecting
       // Ofcourse all other submods with same problem will be detected as sevs now too, oh well.. got to live with it :S
-      if(CVAR_GET_POINTER("mp_giveweapons") != NULL && CVAR_GET_POINTER("mp_giveammo") != NULL)
+      if(CVAR_GET_POINTER("mp_giveweapons") != nullptr && CVAR_GET_POINTER("mp_giveammo") != nullptr)
          submod = SUBMOD_SEVS;
       else
          submod = SUBMOD_HLDM;
@@ -161,7 +161,7 @@ static int CheckSubMod(void)
 }
 
 
-static void GameDLLInit( void )
+static void GameDLLInit()
 {
    //before anything else detect submod
    submod_id = CheckSubMod();
@@ -209,7 +209,7 @@ static int Spawn( edict_t *pent )
          
          // do level initialization stuff here...
          WaypointInit();
-         WaypointLoad(NULL);
+         WaypointLoad(nullptr);
          
          // init sound system
          *pSoundEnt = CSoundEnt();
@@ -276,8 +276,8 @@ static int Spawn_Post( edict_t *pent )
    {
       if(m_height == 0)
          m_height = pent->v.size.z + 8;
-      
-      Vector v_position1 = m_origin;
+
+      const Vector v_position1 = m_origin;
       Vector v_position2 = m_origin;
       v_position2.z -= m_height;
       
@@ -305,13 +305,13 @@ static int Spawn_Post( edict_t *pent )
 
       if ( FBitSet (pent->v.spawnflags, SF_DOOR_START_OPEN) )
       {
-         Vector swap = v_position1;
+	      const Vector swap = v_position1;
          v_position1 = v_position2;
          v_position2 = swap;
       }
-      
-      Vector start = v_position1;
-      Vector end = v_position2;
+
+      const Vector start = v_position1;
+      const Vector end = v_position2;
       
       WaypointAddLift(pent, start, end);
    }
@@ -386,8 +386,8 @@ void jkbotti_ClientPutInServer( edict_t *pEntity )
 {
    if (!gpGlobals->deathmatch)
       RETURN_META (MRES_IGNORED);
-   
-   int idx = ENTINDEX(pEntity) - 1;
+
+   const int idx = ENTINDEX(pEntity) - 1;
 
    if (idx < gpGlobals->maxClients && idx >= 0)
       players[idx].pEdict = pEntity;  // store this clients edict in the player array
@@ -444,13 +444,12 @@ static void ClientDisconnect( edict_t *pEntity )
 {
    if (gpGlobals->deathmatch)
    {
-      int i;
-      int idx = ENTINDEX(pEntity) - 1;
+	   const int idx = ENTINDEX(pEntity) - 1;
 
       if (idx < gpGlobals->maxClients && idx >= 0)
-         players[idx].pEdict = NULL;
+         players[idx].pEdict = nullptr;
 
-      for (i=0; i < 32; i++)
+      for (int i = 0; i < 32; i++)
       {
          if (bots[i].pEdict == pEntity)
          {
@@ -469,7 +468,7 @@ static void ClientDisconnect( edict_t *pEntity )
 }
 
 
-static void ServerDeactivate(void)
+static void ServerDeactivate()
 {
    if(!gpGlobals->deathmatch)
       RETURN_META (MRES_IGNORED);
@@ -511,18 +510,15 @@ static void new_PM_PlaySound(int channel, const char *sample, float volume, floa
 {
    if (gpGlobals->deathmatch)
    {
-      edict_t * pPlayer;
-      int idx;
-   
-      idx = ENGINE_CURRENT_PLAYER();
+	   int idx = ENGINE_CURRENT_PLAYER();
    
       if(idx >= 0 && idx < gpGlobals->maxClients)
       {
-         pPlayer = INDEXENT(idx+1);
+         edict_t* pPlayer = INDEXENT(idx + 1);
    
          if(!FNullEnt(pPlayer))
          {
-            int ivolume = (int)(1000*((volume+1)/2));
+	         const int ivolume = (int)(1000*((volume+1)/2));
             SaveSound(pPlayer, pPlayer->v.origin, ivolume, channel, 5.0f);
          }
       }
@@ -551,17 +547,14 @@ static void PM_Move(struct playermove_s *ppmove, qboolean server)
    RETURN_META (MRES_HANDLED);
 }
 
-static void StartFrame( void )
+static void StartFrame()
 {
-   edict_t *pPlayer;
-   int bot_index;
-   int count;
-   double begin_time;
-   
-   if (!gpGlobals->deathmatch)
+	int count;
+
+	if (!gpGlobals->deathmatch)
       RETURN_META (MRES_IGNORED);
    
-   begin_time = UTIL_GetSecs();
+   double begin_time = UTIL_GetSecs();
    
    // sound system
    if (pSoundEnt->m_nextthink <= gpGlobals->time)
@@ -572,7 +565,7 @@ static void StartFrame( void )
    {            
       count = 0;
          
-      for (bot_index = 0; bot_index < gpGlobals->maxClients; bot_index++)
+      for (int bot_index = 0; bot_index < gpGlobals->maxClients; bot_index++)
       {
          if (bots[bot_index].is_used)   // is this slot used 
          {
@@ -605,7 +598,7 @@ static void StartFrame( void )
       
       while(waypoint_player_index <= gpGlobals->maxClients)
       {
-         pPlayer = INDEXENT(waypoint_player_index++);
+         edict_t* pPlayer = INDEXENT(waypoint_player_index++);
 
          if (pPlayer && !pPlayer->free && !FBitSet(pPlayer->v.flags, FL_PROXY))
          {
@@ -640,16 +633,16 @@ static void StartFrame( void )
       
       UTIL_BuildFileName_N(filename, sizeof(filename), "addons/jk_botti", mapname);
 
-      if ((bot_cfg_fp = fopen(filename, "r")) != NULL)
+      if ((bot_cfg_fp = fopen(filename, "r")) != nullptr)
       {
          UTIL_ConsolePrintf("Executing %s\n", filename);
          bot_cfg_linenumber = 0;
       }
       else
       {
-         UTIL_BuildFileName_N(filename, sizeof(filename), "addons/jk_botti/jk_botti.cfg", NULL);
+         UTIL_BuildFileName_N(filename, sizeof(filename), "addons/jk_botti/jk_botti.cfg", nullptr);
 
-         if ((bot_cfg_fp = fopen(filename, "r")) != NULL)
+         if ((bot_cfg_fp = fopen(filename, "r")) != nullptr)
          {
             UTIL_ConsolePrintf("Executing %s\n", filename);
             bot_cfg_linenumber = 0;
@@ -676,7 +669,7 @@ static void StartFrame( void )
    // check if time to see if a bot needs to be created...
    if (bot_check_time < gpGlobals->time && min_bots != -1 && max_bots != -1 && min_bots <= max_bots)
    {
-      int client_count = UTIL_GetClientCount();
+	   const int client_count = UTIL_GetClientCount();
       
       if(debug_minmax)
       {
@@ -702,7 +695,7 @@ static void StartFrame( void )
          if(record)
             BotCreate( record->skin, record->name, record->skill, record->top_color, record->bottom_color, record->index );
          else
-            BotCreate( NULL, NULL, -1, -1, -1, -1 );
+            BotCreate(nullptr, nullptr, -1, -1, -1, -1 );
          
          bot_check_time = gpGlobals->time + 0.5;
       }
@@ -805,12 +798,12 @@ meta_globals_t *gpMetaGlobals;
 
 META_FUNCTIONS gMetaFunctionTable =
 {
-   NULL, // pfnGetEntityAPI()
-   NULL, // pfnGetEntityAPI_Post()
+   nullptr, // pfnGetEntityAPI()
+   nullptr, // pfnGetEntityAPI_Post()
    GetEntityAPI2, // pfnGetEntityAPI2()
    GetEntityAPI2_POST, // pfnGetEntityAPI2_Post()
-   NULL, // pfnGetNewDLLFunctions()
-   NULL, // pfnGetNewDLLFunctions_Post()
+   nullptr, // pfnGetNewDLLFunctions()
+   nullptr, // pfnGetNewDLLFunctions_Post()
    GetEngineFunctions, // pfnGetEngineFunctions()
    GetEngineFunctions_POST, // pfnGetEngineFunctions_Post()
 };
@@ -902,7 +895,7 @@ C_DLLEXPORT int Meta_Attach (PLUG_LOADTIME now, META_FUNCTIONS *pFunctionTable, 
    REG_SVR_COMMAND ("jk_botti", jk_botti_ServerCommand);
    
    // init random
-   fast_random_seed(time(0) ^ (unsigned long)&bots[0] ^ sizeof(bots));
+   fast_random_seed(time(nullptr) ^ (unsigned long)&bots[0] ^ sizeof(bots));
   
    CVAR_REGISTER(&jk_botti_version);
    CVAR_SET_STRING("jk_botti_version", Plugin_info.version);

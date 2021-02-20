@@ -87,10 +87,10 @@ typedef void (*printfunc_t)(int printtype, void *arg, char *msg);
 
 
 // 
-const cfg_bot_record_t * GetUnusedCfgBotRecord(void)
+const cfg_bot_record_t * GetUnusedCfgBotRecord()
 {
    if(cfg_bot_record_size <= 0)
-      return (const cfg_bot_record_t *)NULL;
+      return (const cfg_bot_record_t *)nullptr;
    
    //
    int record_indexes[cfg_bot_record_size];
@@ -122,17 +122,17 @@ const cfg_bot_record_t * GetUnusedCfgBotRecord(void)
    }
    
    if(num_records <= 0)
-      return (const cfg_bot_record_t *)NULL;
+      return (const cfg_bot_record_t *)nullptr;
    
    // random pick one of unused records
-   int pick = RANDOM_LONG2(0, num_records-1);
+   const int pick = RANDOM_LONG2(0, num_records-1);
    
    //
    return(&cfg_bot_record[record_indexes[pick]]);
 }
 
 //
-void FreeCfgBotRecord(void)
+void FreeCfgBotRecord()
 {
    if(cfg_bot_record_size > 0 && cfg_bot_record_size)
    {
@@ -147,20 +147,20 @@ void FreeCfgBotRecord(void)
       free(cfg_bot_record);
    }
    
-   cfg_bot_record = NULL;
+   cfg_bot_record = nullptr;
    cfg_bot_record_size = 0;
 }
 
 //
 int AddToCfgBotRecord(const char *skin, const char *name, int skill, int top_color, int bottom_color)
 {
-   int index = cfg_bot_record_size++;
+	const int index = cfg_bot_record_size++;
 
    cfg_bot_record = (cfg_bot_record_t*)realloc(cfg_bot_record, sizeof(cfg_bot_record_t) * cfg_bot_record_size);
 
    cfg_bot_record[index].index = index;
-   cfg_bot_record[index].skin = (skin) ? strdup(skin) : NULL;
-   cfg_bot_record[index].name = (name) ? strdup(name) : NULL;
+   cfg_bot_record[index].skin = (skin) ? strdup(skin) : nullptr;
+   cfg_bot_record[index].name = (name) ? strdup(name) : nullptr;
    cfg_bot_record[index].skill = skill;
    cfg_bot_record[index].top_color = top_color;
    cfg_bot_record[index].bottom_color = bottom_color;
@@ -173,9 +173,9 @@ static void UTIL_PrintBotInfo(const printfunc_t printfunc, void * arg)
 {
    //print out bot info
    char msg[80];
-   int bot_index, count = 0;
+   int count = 0;
    
-   for (bot_index = 0; bot_index < gpGlobals->maxClients; bot_index++)
+   for (int bot_index = 0; bot_index < gpGlobals->maxClients; bot_index++)
    {
       if (bots[bot_index].is_used) {
          count++;
@@ -187,7 +187,7 @@ static void UTIL_PrintBotInfo(const printfunc_t printfunc, void * arg)
          printfunc(PRINTFUNC_INFO, arg, msg);
          safevoid_snprintf(msg, sizeof(msg), " skill: %d\n", bots[bot_index].bot_skill + 1);
          printfunc(PRINTFUNC_INFO, arg, msg);
-         safevoid_snprintf(msg, sizeof(msg), " got enemy: %s\n", (bots[bot_index].pBotEnemy != 0) ? "true" : "false"); 
+         safevoid_snprintf(msg, sizeof(msg), " got enemy: %s\n", (bots[bot_index].pBotEnemy != nullptr) ? "true" : "false"); 
          printfunc(PRINTFUNC_INFO, arg, msg);
          safevoid_snprintf(msg, sizeof(msg), "---\n"); 
          printfunc(PRINTFUNC_INFO, arg, msg);
@@ -221,8 +221,8 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    else if (FStrEq(pcmd, "addbot"))
    {
       int cfg_bot_index = -1;
-      const char * skin = (arg1 && *arg1) ? arg1 : NULL;
-      const char * name = (arg2 && *arg2) ? arg2 : NULL;
+      const char * skin = (arg1 && *arg1) ? arg1 : nullptr;
+      const char * name = (arg2 && *arg2) ? arg2 : nullptr;
       int skill = (arg3 && *arg3) ? atoi(arg3) : default_bot_skill;
       int top_color = (arg4 && *arg4) ? atoi(arg4) : -1;
       int bottom_color = (arg5 && *arg5) ? atoi(arg5) : -1;
@@ -246,7 +246,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "show_waypoints"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
          if (temp)
@@ -266,7 +266,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "debug_minmax"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
          if (temp)
@@ -284,7 +284,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "observer"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
          if (temp)
@@ -302,7 +302,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "team_balancetype"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
          if (temp < 0)
@@ -321,7 +321,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    
    else if (FStrEq(pcmd, "team_blockedlist"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          if(team_blockedlist)
             free(team_blockedlist);
@@ -340,7 +340,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
 
    else if (FStrEq(pcmd, "botskill"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -357,7 +357,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_conntimes"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -386,7 +386,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "randomize_bots_on_mapchange"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          randomize_bots_on_mapchange = !!atoi(arg1);
       }
@@ -398,7 +398,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_add_level_tag"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          bot_add_level_tag = !!atoi(arg1);
       }
@@ -410,7 +410,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "botthinkfps"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -427,7 +427,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_chat_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -444,7 +444,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_taunt_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -461,7 +461,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_whine_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -478,7 +478,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_endgame_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -495,7 +495,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_chat_tag_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -512,7 +512,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_chat_drop_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -529,7 +529,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_chat_swap_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -546,7 +546,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_chat_lower_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -563,7 +563,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "bot_logo_percent"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -588,7 +588,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "random_color"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
 
@@ -607,7 +607,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "botdontshoot"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int temp = atoi(arg1);
          if (temp)
@@ -625,7 +625,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "min_bots"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          min_bots = atoi( arg1 );
 
@@ -640,7 +640,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "max_bots"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          max_bots = atoi( arg1 );
 
@@ -655,7 +655,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "pause") && cmdtype == CFGCMD_TYPE)
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          bot_cfg_pause_time = gpGlobals->time + atoi( arg1 );
          
@@ -667,7 +667,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "autowaypoint"))
    {
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          if (FStrEq(arg1, "on"))
          {
@@ -696,7 +696,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    }
    else if (FStrEq(pcmd, "botweapon"))
    {  // this command allows editing of weapon information
-      if ((arg1 != NULL) && (*arg1 != 0))
+      if ((arg1 != nullptr) && (*arg1 != 0))
       {
          int select_index = -1;
          bot_weapon_select_t *pSelect = &weapon_select[0];
@@ -789,7 +789,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
                printfunc(PRINTFUNC_INFO, arg, msg);
             }
          }
-         else if((arg1 != NULL) && (*arg1 != 0) && FStrEq(arg1, "reset"))
+         else if((arg1 != nullptr) && (*arg1 != 0) && FStrEq(arg1, "reset"))
          {
             //weapon select init
             InitWeaponSelect(submod_id);
@@ -827,7 +827,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
    else if (FStrEq(pcmd, "bot_skill_setup"))
    {  // this command allows editing of botskill settings, 
       // bot_skill_setup <skill>, bot_skill_setup <skill> <setting>, bot_skill_setup <skill> <setting> <value>
-      if ((arg1 != NULL) && (*arg1 != 0) && atoi(arg1) >= 1 && atoi(arg1) <= 5)
+      if ((arg1 != nullptr) && (*arg1 != 0) && atoi(arg1) >= 1 && atoi(arg1) <= 5)
       {
          int skill_idx = atoi(arg1)-1;
          qboolean got_match = FALSE;
@@ -945,14 +945,14 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
             }
          }
       }
-      else if((arg1 != NULL) && (*arg1 != 0) && FStrEq(arg1, "reset"))
+      else if((arg1 != nullptr) && (*arg1 != 0) && FStrEq(arg1, "reset"))
       {
          ResetSkillsToDefault();
          printfunc(PRINTFUNC_INFO, arg, "Bot skill settings reset default.\n");
       }
       else
       {
-         if((arg1 == NULL) || (*arg1 == 0))
+         if((arg1 == nullptr) || (*arg1 == 0))
       	    printfunc(PRINTFUNC_ERROR, arg, "Could not complete request! (arg1 not given)\n");
       	 else
       	 {
@@ -1213,24 +1213,22 @@ static void print_to_console_config(int printtype, void *, char * msg)
 }
 
 
-void ProcessBotCfgFile(void)
+void ProcessBotCfgFile()
 {
-   int ch;
-   char cmd_line[256];
-   int cmd_index;
-   char server_cmd[80], server_cmd_print[80-1];
-   char *cmd, *arg1, *arg2, *arg3, *arg4, *arg5;
+	char cmd_line[256];
+	char server_cmd[80], server_cmd_print[80-1];
+   char *arg2, *arg3, *arg4, *arg5;
 
    if (bot_cfg_pause_time > gpGlobals->time)
       return;
 
-   if (bot_cfg_fp == NULL)
+   if (bot_cfg_fp == nullptr)
       return;
 
-   cmd_index = 0;
+   int cmd_index = 0;
    cmd_line[cmd_index] = 0;
 
-   ch = fgetc(bot_cfg_fp);
+   int ch = fgetc(bot_cfg_fp);
 
    // skip any leading blanks
    while (ch == ' ')
@@ -1263,7 +1261,7 @@ void ProcessBotCfgFile(void)
    {
       fclose(bot_cfg_fp);
 
-      bot_cfg_fp = NULL;
+      bot_cfg_fp = nullptr;
 
       bot_cfg_pause_time = 0.0;
    }
@@ -1276,8 +1274,8 @@ void ProcessBotCfgFile(void)
    bot_cfg_linenumber++;
 
    cmd_index = 0;
-   cmd = cmd_line;
-   arg1 = arg2 = arg3 = arg4 = arg5 = NULL;
+   char* cmd = cmd_line;
+   char* arg1 = arg2 = arg3 = arg4 = arg5 = nullptr;
 
    // skip to blank or end of string...
    while ((cmd_line[cmd_index] != ' ') && (cmd_line[cmd_index] != 0))
@@ -1366,7 +1364,7 @@ void ProcessBotCfgFile(void)
    if(arg5 && arg5[strlen(arg5)-1]=='\"')
       arg5[strlen(arg5)-1]='\0';
    
-   if(ProcessCommand(CFGCMD_TYPE, print_to_console_config, NULL, cmd, arg1, arg2, arg3, arg4, arg5))
+   if(ProcessCommand(CFGCMD_TYPE, print_to_console_config, nullptr, cmd, arg1, arg2, arg3, arg4, arg5))
       return;
    
    UTIL_ConsolePrintf("line[%d] unknown command: '%s' (trying to execute as server command)\n", bot_cfg_linenumber, server_cmd_print);
@@ -1382,7 +1380,7 @@ static void print_to_server_output(int, void *, char * msg)
 }
 
 
-void jk_botti_ServerCommand (void)
+void jk_botti_ServerCommand ()
 {
    if(FStrEq(CMD_ARGV(1), "kickall"))
    {
@@ -1409,7 +1407,7 @@ void jk_botti_ServerCommand (void)
          UTIL_ConsolePrintf("Disabled min_bots/max_bots.");
       }
    }
-   else if(!ProcessCommand(SRVCMD_TYPE, print_to_server_output, NULL, CMD_ARGV (1), CMD_ARGV (2), CMD_ARGV (3), CMD_ARGV (4), CMD_ARGV (5), CMD_ARGV (6))) 
+   else if(!ProcessCommand(SRVCMD_TYPE, print_to_server_output, nullptr, CMD_ARGV (1), CMD_ARGV (2), CMD_ARGV (3), CMD_ARGV (4), CMD_ARGV (5), CMD_ARGV (6))) 
    {
       UTIL_ConsolePrintf("%s: Unknown command \'%s\'\n", CMD_ARGV(0), CMD_ARGS());
    }

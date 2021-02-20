@@ -30,7 +30,7 @@ CSoundEnt *pSoundEnt = &sSoundEnt;
 void SaveSound(edict_t * pEdict, const Vector & origin, int volume, int channel, float flDuration) 
 {
    // save player sounds to player list
-   int idx = ENTINDEX(pEdict) - 1;
+   const int idx = ENTINDEX(pEdict) - 1;
    if(idx >= 0 && idx < gpGlobals->maxClients)
    {
       CSoundEnt::InsertSound(pEdict, channel, origin, volume, flDuration, UTIL_GetBotIndex(pEdict));
@@ -52,8 +52,8 @@ void SaveSound(edict_t * pEdict, const Vector & origin, int volume, int channel,
             bot_index = i;
             break;
          }
-         
-         float distance = (bots[i].pEdict->v.origin - origin).Length();
+
+         const float distance = (bots[i].pEdict->v.origin - origin).Length();
          
          if(distance < min_distance)
          {
@@ -80,14 +80,14 @@ void SaveSound(edict_t * pEdict, const Vector & origin, int volume, int channel,
 //=========================================================
 // CSound - Clear - zeros all fields for a sound
 //=========================================================
-void CSound :: Clear ( void )
+void CSound :: Clear ()
 {
    m_vecOrigin = Vector(0, 0, 0);
    m_iVolume = 0;
    m_flExpireTime = 0;
    m_iNext = SOUNDLIST_EMPTY;
    m_iNextAudible = 0;
-   m_pEdict = NULL;
+   m_pEdict = nullptr;
    m_iBotOwner = -1;
    m_iChannel = 0;
 }
@@ -96,7 +96,7 @@ void CSound :: Clear ( void )
 // Reset - clears the volume, origin, and type for a sound,
 // but doesn't expire or unlink it. 
 //=========================================================
-void CSound :: Reset ( void )
+void CSound :: Reset ()
 {
    m_vecOrigin = Vector(0, 0, 0);
    m_iVolume = 0;
@@ -106,7 +106,7 @@ void CSound :: Reset ( void )
 //=========================================================
 // Spawn 
 //=========================================================
-void CSoundEnt :: Spawn( void )
+void CSoundEnt :: Spawn()
 {
    Initialize();
 
@@ -118,22 +118,20 @@ void CSoundEnt :: Spawn( void )
 // for sounds that have ExpireTimes less than or equal
 // to the current world time, and these sounds are deallocated.
 //=========================================================
-void CSoundEnt :: Think ( void )
+void CSoundEnt :: Think ()
 {
-   int iSound;
-   int iPreviousSound;
-   float add_time = 1.0f/15.0f;
+	const float add_time = 1.0f/15.0f;
    
    m_nextthink = gpGlobals->time + add_time;// how often to check the sound list.
 
-   iPreviousSound = SOUNDLIST_EMPTY;
-   iSound = m_iActiveSound; 
+   int iPreviousSound = SOUNDLIST_EMPTY;
+   int iSound = m_iActiveSound; 
 
    while ( iSound != SOUNDLIST_EMPTY )
    {
       if ( m_SoundPool[ iSound ].m_flExpireTime <= gpGlobals->time )
       {
-         int iNext = m_SoundPool[ iSound ].m_iNext;
+	      const int iNext = m_SoundPool[ iSound ].m_iNext;
 
          // move this sound back into the free list
          FreeSound( iSound, iPreviousSound );
@@ -151,7 +149,7 @@ void CSoundEnt :: Think ( void )
                m_SoundPool[ iSound ].m_vecOrigin = m_SoundPool[ iSound ].m_pEdict->v.origin;
          }
          else
-            m_SoundPool[ iSound ].m_pEdict = NULL;
+            m_SoundPool[ iSound ].m_pEdict = nullptr;
          
          iSound = m_SoundPool[ iSound ].m_iNext;
       }
@@ -174,9 +172,9 @@ void CSoundEnt :: Think ( void )
       
          if(pCurrentSound->m_iVolume <= 0)
             continue;
-         
-         int idx = ENTINDEX(m_SoundPool[ iSound ].m_pEdict) - 1;
-         qboolean is_player = (idx >= 0 && idx < gpGlobals->maxClients);
+
+         const int idx = ENTINDEX(m_SoundPool[ iSound ].m_pEdict) - 1;
+         const qboolean is_player = (idx >= 0 && idx < gpGlobals->maxClients);
             
          UTIL_ParticleEffect ( pCurrentSound->m_vecOrigin, Vector(0, 0, 0), (is_player) ? 150 : 250, 25 ); 
       }
@@ -218,11 +216,9 @@ void CSoundEnt :: FreeSound ( int iSound, int iPrevious )
 // IAllocSound - moves a sound from the Free list to the 
 // Active list returns the index of the alloc'd sound
 //=========================================================
-int CSoundEnt :: IAllocSound( void )
+int CSoundEnt :: IAllocSound()
 {
-   int iNewSound;
-   
-   if ( m_iFreeSound == SOUNDLIST_EMPTY )
+	if ( m_iFreeSound == SOUNDLIST_EMPTY )
    {
       // no free sound!
       if(m_bDebug)
@@ -233,7 +229,7 @@ int CSoundEnt :: IAllocSound( void )
    // there is at least one sound available, so move it to the
    // Active sound list, and return its SoundPool index.
    
-   iNewSound = m_iFreeSound;// copy the index of the next free sound
+   int iNewSound = m_iFreeSound;// copy the index of the next free sound
 
    m_iFreeSound = m_SoundPool[ m_iFreeSound ].m_iNext;// move the index down into the free list. 
 
@@ -250,9 +246,7 @@ int CSoundEnt :: IAllocSound( void )
 //=========================================================
 void CSoundEnt :: InsertSound ( edict_t* pEdict, int channel, const Vector &vecOrigin, int iVolume, float flDuration, int iBotOwner )
 {
-   int iThisSound;
-
-   if ( !pSoundEnt )
+	if ( !pSoundEnt )
    {
       // no sound ent!
       return;
@@ -266,7 +260,7 @@ void CSoundEnt :: InsertSound ( edict_t* pEdict, int channel, const Vector &vecO
    }
    else
    {
-      iThisSound = pSoundEnt->IAllocSound();
+      int iThisSound = pSoundEnt->IAllocSound();
 
       if ( iThisSound == SOUNDLIST_EMPTY )
       {
@@ -308,7 +302,7 @@ CSound *CSoundEnt::GetEdictChannelSound( edict_t * pEdict, int iChannel )
    if(iSound == SOUNDLIST_EMPTY)
    {
       if(iChannel == 0)
-         return NULL;
+         return nullptr;
       
       iSound = pSoundEnt->IAllocSound();
       
@@ -316,7 +310,7 @@ CSound *CSoundEnt::GetEdictChannelSound( edict_t * pEdict, int iChannel )
       {
          if(pSoundEnt->m_bDebug)
             UTIL_ConsolePrintf( "Could not AllocSound() for GetEdictChannelSound() (DLL)\n" );
-         return NULL;
+         return nullptr;
       }
       
       CSound *pSound = CSoundEnt::SoundPointerForIndex( iSound );
@@ -335,7 +329,7 @@ CSound *CSoundEnt::GetEdictChannelSound( edict_t * pEdict, int iChannel )
 // Initialize - clears all sounds and moves them into the 
 // free sound list.
 //=========================================================
-void CSoundEnt :: Initialize ( void )
+void CSoundEnt :: Initialize ()
 {
    int i;
    
@@ -374,8 +368,7 @@ void CSoundEnt :: Initialize ( void )
 //=========================================================
 int CSoundEnt :: ISoundsInList ( int iListType )
 {
-   int i;
-   int iThisSound;
+	int iThisSound;
 
    if ( iListType == SOUNDLISTTYPE_FREE )
    {
@@ -397,7 +390,7 @@ int CSoundEnt :: ISoundsInList ( int iListType )
       return 0;
    }
 
-   i = 0;
+   int i = 0;
 
    while ( iThisSound != SOUNDLIST_EMPTY )
    {
@@ -412,7 +405,7 @@ int CSoundEnt :: ISoundsInList ( int iListType )
 //=========================================================
 // ActiveList - returns the head of the active sound list
 //=========================================================
-int CSoundEnt :: ActiveList ( void )
+int CSoundEnt :: ActiveList ()
 {
    if ( !pSoundEnt )
    {
@@ -425,7 +418,7 @@ int CSoundEnt :: ActiveList ( void )
 //=========================================================
 // FreeList - returns the head of the free sound list
 //=========================================================
-int CSoundEnt :: FreeList ( void )
+int CSoundEnt :: FreeList ()
 {
    if ( !pSoundEnt )
    {
@@ -443,21 +436,21 @@ CSound* CSoundEnt :: SoundPointerForIndex( int iIndex )
 {
    if ( !pSoundEnt )
    {
-      return NULL;
+      return nullptr;
    }
 
    if ( iIndex > ( MAX_WORLD_SOUNDS - 1 ) )
    {
       if(pSoundEnt->m_bDebug)
          UTIL_ConsolePrintf( "SoundPointerForIndex() - Index too large!\n" );
-      return NULL;
+      return nullptr;
    }
 
    if ( iIndex < 0 )
    {
       if(pSoundEnt->m_bDebug)
          UTIL_ConsolePrintf( "SoundPointerForIndex() - Index < 0!\n" );
-      return NULL;
+      return nullptr;
    }
 
    return &pSoundEnt->m_SoundPool[ iIndex ];
@@ -471,7 +464,7 @@ CSound* CSoundEnt :: SoundPointerForIndex( int iIndex )
 //=========================================================
 int CSoundEnt :: ClientSoundIndex ( edict_t *pClient )
 {
-   int iReturn = ENTINDEX( pClient ) - 1;
+	const int iReturn = ENTINDEX( pClient ) - 1;
 
    if ( iReturn < 0 || iReturn >= gpGlobals->maxClients )
    {

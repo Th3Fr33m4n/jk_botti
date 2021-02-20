@@ -23,7 +23,7 @@
 extern bot_t bots[32];
 extern qboolean is_team_play;
 
-static breakable_list_t *g_breakable_list = NULL;
+static breakable_list_t *g_breakable_list = nullptr;
 static breakable_list_t breakable_list_memarray[BREAKABLE_LIST_MAX];
 
 static unsigned int rnd_idnum[2] = {1, 1};
@@ -51,7 +51,7 @@ void null_terminate_buffer(char *buf, const size_t maxlen)
 }
 
 
-double UTIL_GetSecs(void) 
+double UTIL_GetSecs() 
 {
 #ifdef _WIN32
    LARGE_INTEGER count, freq;
@@ -106,12 +106,12 @@ Vector UTIL_WrapAngles(const Vector & angles)
 Vector UTIL_AnglesToForward(const Vector &angles)
 {
    // from pm_shared/pm_math.h
-   double sp, cp, pitch, sy, cy, yaw;
+   double sp, cp, sy, cy;
 
-   pitch = angles.x * (M_PI*2 / 360);
+   double pitch = angles.x * (M_PI * 2 / 360);
    fsincos(pitch, sp, cp);
 
-   yaw = angles.y * (M_PI*2 / 360);
+   double yaw = angles.y * (M_PI * 2 / 360);
    fsincos(yaw, sy, cy);
 
    return(Vector(cp*cy, cp*sy, -sp));
@@ -121,15 +121,15 @@ Vector UTIL_AnglesToForward(const Vector &angles)
 Vector UTIL_AnglesToRight(const Vector &angles)
 {
    // from pm_shared/pm_math.h
-   double sr, cr, roll, sp, cp, pitch, sy, cy, yaw;
+   double sr, cr, sp, cp, sy, cy;
 
-   pitch = angles.x * (M_PI*2 / 360);
+   double pitch = angles.x * (M_PI * 2 / 360);
    fsincos(pitch, sp, cp);
 
-   yaw = angles.y * (M_PI*2 / 360);
+   double yaw = angles.y * (M_PI * 2 / 360);
    fsincos(yaw, sy, cy);
 
-   roll = angles.z * (M_PI*2 / 360);
+   double roll = angles.z * (M_PI * 2 / 360);
    fsincos(roll, sr, cr);
 
    return(Vector(-1*sr*sp*cy+-1*cr*-sy, -1*sr*sp*sy+-1*cr*cy, -1*sr*cp));
@@ -139,15 +139,15 @@ Vector UTIL_AnglesToRight(const Vector &angles)
 void UTIL_MakeVectorsPrivate( const Vector &angles, Vector &v_forward, Vector &v_right, Vector &v_up )
 {
    // from pm_shared/pm_math.h
-   double sr, cr, roll, sp, cp, pitch, sy, cy, yaw;
+   double sr, cr, sp, cp, sy, cy;
 
-   pitch = angles.x * (M_PI*2 / 360);
+   double pitch = angles.x * (M_PI * 2 / 360);
    fsincos(pitch, sp, cp);
 
-   yaw = angles.y * (M_PI*2 / 360);
+   double yaw = angles.y * (M_PI * 2 / 360);
    fsincos(yaw, sy, cy);
 
-   roll = angles.z * (M_PI*2 / 360);
+   double roll = angles.z * (M_PI * 2 / 360);
    fsincos(roll, sr, cr);
 
    v_forward = Vector(cp*cy, cp*sy, -sp);
@@ -159,7 +159,7 @@ void UTIL_MakeVectorsPrivate( const Vector &angles, Vector &v_forward, Vector &v
 Vector UTIL_VecToAngles(const Vector &forward)
 {
    // from pm_shared/pm_math.h
-   float tmp, yaw, pitch;
+   float yaw, pitch;
    
    if (unlikely(forward.y == 0) && unlikely(forward.x == 0))
    {
@@ -170,7 +170,7 @@ Vector UTIL_VecToAngles(const Vector &forward)
    {
       // atan2 returns values in range [-pi < x < +pi]
       yaw = (atan2(forward.y, forward.x) * 180 / M_PI);
-      tmp = sqrt(forward.x * forward.x + forward.y * forward.y);
+      float tmp = sqrt(forward.x * forward.x + forward.y * forward.y);
       pitch = (atan2(forward.z, tmp) * 180 / M_PI);
    }
    
@@ -180,9 +180,7 @@ Vector UTIL_VecToAngles(const Vector &forward)
 
 int UTIL_GetBotIndex(const edict_t *pEdict)
 {
-   int index;
-
-   for (index=0; index < 32; index++)
+	for (int index = 0; index < 32; index++)
       if (bots[index].pEdict == pEdict)
          return index;
 
@@ -192,10 +190,10 @@ int UTIL_GetBotIndex(const edict_t *pEdict)
 
 bot_t *UTIL_GetBotPointer(const edict_t *pEdict)
 {
-   int index = UTIL_GetBotIndex(pEdict);
+	const int index = UTIL_GetBotIndex(pEdict);
    
    if(index == -1)
-      return NULL; // return NULL if edict is not a bot
+      return nullptr; // return NULL if edict is not a bot
    
    return(&bots[index]);
 }
@@ -225,14 +223,14 @@ Vector UTIL_AdjustOriginWithExtent(bot_t &pBot, const Vector & v_target_origin, 
       return(v_target_origin);
 
    // extent origin towards bot
-   Vector v_extent_dir = (GetGunPosition(pBot.pEdict) - v_target_origin).Normalize();
+   const Vector v_extent_dir = (GetGunPosition(pBot.pEdict) - v_target_origin).Normalize();
    
    return(v_target_origin + v_extent_dir * smallest_extent);
 }
 
 
 /* generates a random 32bit integer */
-static unsigned int fast_generate_random(void)
+static unsigned int fast_generate_random()
 {
    rnd_idnum[0] ^= rnd_idnum[1] << 5;
    
@@ -260,12 +258,11 @@ void fast_random_seed(unsigned int seed)
 int RANDOM_LONG2(int lLow, int lHigh) 
 {
    const double c_divider = ((unsigned long long)1) << 32; // div by (1<<32)
-   double rnd;
-   
+
    if(unlikely(lLow >= lHigh))
       return(lLow);
    
-   rnd = fast_generate_random();
+   double rnd = fast_generate_random();
    rnd *= (double)lHigh - (double)lLow + 1.0;
    rnd /= c_divider; // div by (1<<32)
    
@@ -276,12 +273,11 @@ int RANDOM_LONG2(int lLow, int lHigh)
 float RANDOM_FLOAT2(float flLow, float flHigh) 
 {
    const double c_divider = (((unsigned long long)1) << 32) - 1; // div by (1<<32)-1
-   double rnd;
-   
+
    if(unlikely(flLow >= flHigh))
       return(flLow);
    
-   rnd = fast_generate_random();
+   double rnd = fast_generate_random();
    rnd *= (double)flHigh - (double)flLow;
    rnd /= c_divider; // div by (1<<32)-1
    
@@ -290,7 +286,7 @@ float RANDOM_FLOAT2(float flLow, float flHigh)
 
 
 // classic way of getting connected client count without using data collected from 'ClientPutInServer'/'ClientDisconnect'.
-int UTIL_GetClientCount(void)
+int UTIL_GetClientCount()
 {
    int count = 0;
    
@@ -309,7 +305,7 @@ int UTIL_GetClientCount(void)
 
 
 // 
-int UTIL_GetBotCount(void)
+int UTIL_GetBotCount()
 {
    int count = 0;
    
@@ -322,7 +318,7 @@ int UTIL_GetBotCount(void)
 
 
 //
-int UTIL_PickRandomBot(void)
+int UTIL_PickRandomBot()
 {
    int bot_index_list[32];
    int num_bots = 0;
@@ -335,8 +331,8 @@ int UTIL_PickRandomBot(void)
    {
       if(num_bots == 1)
          return(bot_index_list[0]);
-      
-      int pick = RANDOM_LONG2(0, num_bots-1);
+
+      const int pick = RANDOM_LONG2(0, num_bots-1);
       
       JKASSERT(pick < 0 || pick > num_bots-1);
       
@@ -354,10 +350,10 @@ void UTIL_DrawBeam(edict_t *pEnemy, const Vector &start, const Vector &end, int 
    if(pEnemy && (ENTINDEX(pEnemy)-1 < 0 || ENTINDEX(pEnemy)-1 >= gpGlobals->maxClients))
       return;
    
-   if(pEnemy == NULL)
+   if(pEnemy == nullptr)
       MESSAGE_BEGIN(MSG_ALL, SVC_TEMPENTITY);
    else
-      MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, NULL, pEnemy);
+      MESSAGE_BEGIN(MSG_ONE, SVC_TEMPENTITY, nullptr, pEnemy);
    
    WRITE_BYTE( TE_BEAMPOINTS);
    WRITE_COORD(start.x);
@@ -390,7 +386,7 @@ static breakable_list_t * UTIL_AddFuncBreakable(edict_t *pEdict)
    int i;
    
    // get end of list
-   breakable_list_t *prev = NULL;
+   breakable_list_t *prev = nullptr;
    breakable_list_t *next = g_breakable_list;
    while(next)
    {
@@ -403,14 +399,14 @@ static breakable_list_t * UTIL_AddFuncBreakable(edict_t *pEdict)
       if(!breakable_list_memarray[i].inuse)
          break;
    if(i >= BREAKABLE_LIST_MAX)
-      return(NULL);
+      return(nullptr);
    
    next = &breakable_list_memarray[i];
    memset(next, 0, sizeof(breakable_list_t));
    next->inuse = TRUE;
    
    // fill in data
-   next->next = NULL;
+   next->next = nullptr;
    next->material_breakable = FALSE;
    next->pEdict = pEdict;
    
@@ -458,10 +454,10 @@ void UTIL_UpdateFuncBreakable(edict_t *pEdict, const char * setting, const char 
 }
 
 // called on ServerDeactivate
-void UTIL_FreeFuncBreakables(void)
+void UTIL_FreeFuncBreakables()
 {
    memset(breakable_list_memarray, 0, sizeof(breakable_list_memarray));
-   g_breakable_list = NULL;
+   g_breakable_list = nullptr;
 }
 
 //
@@ -480,7 +476,7 @@ breakable_list_t * UTIL_FindBreakable(breakable_list_t * pbreakable)
       pbreakable = UTIL_FindBreakable_Internal(pbreakable);
       
       if(unlikely(!pbreakable))
-         return(NULL);
+         return(nullptr);
       
       // skip unbreakable glass
       if(!pbreakable->material_breakable)
@@ -500,9 +496,7 @@ breakable_list_t * UTIL_FindBreakable(breakable_list_t * pbreakable)
 //
 void SaveAliveStatus(edict_t * pPlayer)
 {
-   int idx;
-   
-   idx = ENTINDEX(pPlayer) - 1;
+	int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return;
    
@@ -513,9 +507,7 @@ void SaveAliveStatus(edict_t * pPlayer)
 //
 float UTIL_GetTimeSinceRespawn(edict_t * pPlayer)
 {
-   int idx;
-   
-   idx = ENTINDEX(pPlayer) - 1;
+	int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return(-1.0);
    
@@ -535,10 +527,9 @@ float UTIL_GetTimeSinceRespawn(edict_t * pPlayer)
 static qboolean IsPlayerFacingWall(edict_t * pPlayer)
 {
    TraceResult tr;
-   Vector v_forward, EyePosition;
-	
-   EyePosition = pPlayer->v.origin + pPlayer->v.view_ofs;
-   v_forward = UTIL_AnglesToForward(pPlayer->v.v_angle);
+
+   Vector EyePosition = pPlayer->v.origin + pPlayer->v.view_ofs;
+   UTIL_AnglesToForward(pPlayer->v.v_angle);
    
    UTIL_TraceLine(EyePosition, EyePosition + gpGlobals->v_forward * 48, ignore_monsters, ignore_glass, pPlayer, &tr);
    
@@ -554,9 +545,7 @@ static qboolean IsPlayerFacingWall(edict_t * pPlayer)
 //
 void CheckPlayerChatProtection(edict_t * pPlayer)
 {
-   int idx;
-   
-   idx = ENTINDEX(pPlayer) - 1;
+	int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return;
    
@@ -594,9 +583,7 @@ void CheckPlayerChatProtection(edict_t * pPlayer)
 //
 qboolean IsPlayerChatProtected(edict_t * pPlayer)
 {
-   int idx;
-   
-   idx = ENTINDEX(pPlayer) - 1;
+	int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return(FALSE);
    
@@ -611,10 +598,10 @@ qboolean IsPlayerChatProtected(edict_t * pPlayer)
 
 void ClientPrint( edict_t *pEntity, int msg_dest, const char *msg_name)
 {       
-   if (GET_USER_MSG_ID (PLID, "TextMsg", NULL) <= 0)
+   if (GET_USER_MSG_ID (PLID, "TextMsg", nullptr) <= 0)
       REG_USER_MSG ("TextMsg", -1);
 
-   MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "TextMsg", NULL), NULL, pEntity );
+   MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "TextMsg", nullptr), nullptr, pEntity );
 
    WRITE_BYTE( msg_dest );
    WRITE_STRING( msg_name );
@@ -638,24 +625,22 @@ static void UTIL_SayText( const char *pText, edict_t *pEdict )
 
 void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
 {
-   int   j;
-   char  text[128];
+	char  text[128];
    char *pc;
-   edict_t *client;
-   char  sender_teamstr[MAX_TEAMNAME_LENGTH];
+	char  sender_teamstr[MAX_TEAMNAME_LENGTH];
    char  player_teamstr[MAX_TEAMNAME_LENGTH];
 
    // make sure the text has content
-   for ( pc = message; pc != NULL && *pc != 0; pc++ )
+   for ( pc = message; pc != nullptr && *pc != 0; pc++ )
    {
       if ( isprint( *pc ) && !isspace( *pc ) )
       {
-         pc = NULL;   // we've found an alphanumeric character,  so text is valid
+         pc = nullptr;   // we've found an alphanumeric character,  so text is valid
          break;
       }
    }
 
-   if ( pc != NULL )
+   if ( pc != nullptr )
       return;  // no character found, so say nothing
 
    // turn on color set 2  (color on,  no sound)
@@ -664,7 +649,7 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
    else
       safevoid_snprintf( text, sizeof(text), "%c%s: ", 2, STRING( pEntity->v.netname ) );
 
-   j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
+   int j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
    if ( (int)strlen(message) > j )
       message[j] = 0;
 
@@ -676,13 +661,13 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
    // This may return the world in single player if the client types something between levels or during spawn
    // so check it, or it will infinite loop
 
-   if (GET_USER_MSG_ID (PLID, "SayText", NULL) <= 0)
+   if (GET_USER_MSG_ID (PLID, "SayText", nullptr) <= 0)
       REG_USER_MSG ("SayText", -1);
 
    UTIL_GetTeam(pEntity, sender_teamstr, sizeof(sender_teamstr));
 
-   client = NULL;
-   while((client = UTIL_FindEntityByClassname( client, "player" )) != NULL && !FNullEnt(client))
+   edict_t* client = nullptr;
+   while((client = UTIL_FindEntityByClassname( client, "player" )) != nullptr && !FNullEnt(client))
    {
       if ( client == pEntity )  // skip sender of message
          continue;
@@ -692,14 +677,14 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
       if ( teamonly && is_team_play && stricmp(sender_teamstr, player_teamstr) != 0 )
          continue;
 
-      MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "SayText", NULL), NULL, client );
+      MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "SayText", nullptr), nullptr, client );
          WRITE_BYTE( ENTINDEX(pEntity) );
          WRITE_STRING( text );
       MESSAGE_END();
    }
 
    // print to the sending client
-   MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "SayText", NULL), NULL, pEntity );
+   MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "SayText", nullptr), nullptr, pEntity );
       WRITE_BYTE( ENTINDEX(pEntity) );
       WRITE_STRING( text );
    MESSAGE_END();
@@ -757,16 +742,15 @@ char * UTIL_GetTeam(edict_t *pEntity, char *teamstr, size_t slen)
 qboolean FVisible( const Vector &vecOrigin, edict_t *pEdict, edict_t ** pHit )
 {
    TraceResult tr;
-   Vector      vecLookerOrigin;
-   
+
    if(pHit)
-      *pHit = NULL;
+      *pHit = nullptr;
    
    // look through caller's eyes
-   vecLookerOrigin = GetGunPosition(pEdict);
+   Vector vecLookerOrigin = GetGunPosition(pEdict);
 
-   int bInWater = (POINT_CONTENTS (vecOrigin) == CONTENTS_WATER);
-   int bLookerInWater = (POINT_CONTENTS (vecLookerOrigin) == CONTENTS_WATER);
+   const int bInWater = (POINT_CONTENTS (vecOrigin) == CONTENTS_WATER);
+   const int bLookerInWater = (POINT_CONTENTS (vecLookerOrigin) == CONTENTS_WATER);
    
    // don't look through water
    if (bInWater != bLookerInWater)
@@ -782,9 +766,9 @@ qboolean FVisible( const Vector &vecOrigin, edict_t *pEdict, edict_t ** pHit )
 
 static qboolean FVisibleEnemyOffset( const Vector &vecOrigin, const Vector &vecOffset, edict_t *pEdict, edict_t *pEnemy )
 {
-   edict_t * pHit = NULL;
+   edict_t * pHit = nullptr;
    
-   if(FVisible(vecOrigin + vecOffset, pEdict, &pHit) || (pEnemy != NULL && pHit == pEnemy))
+   if(FVisible(vecOrigin + vecOffset, pEdict, &pHit) || (pEnemy != nullptr && pHit == pEnemy))
       return(TRUE);
    
    if(FNullEnt(pHit))
@@ -807,12 +791,12 @@ qboolean FVisibleEnemy( const Vector &vecOrigin, edict_t *pEdict, edict_t *pEnem
 
    if (pEnemy->v.solid != SOLID_BSP) {
       // first check for if head is visible
-      Vector head_offset = Vector(0, 0, pEnemy->v.maxs.z - 6);
+      const Vector head_offset = Vector(0, 0, pEnemy->v.maxs.z - 6);
       if(FVisibleEnemyOffset( vecOrigin, head_offset, pEdict, pEnemy ))
          return(TRUE);
    
       // then check if feet are visible
-      Vector feet_offset = Vector(0, 0, pEnemy->v.mins.z - 6);
+      const Vector feet_offset = Vector(0, 0, pEnemy->v.mins.z - 6);
       if(FVisibleEnemyOffset( vecOrigin, feet_offset, pEdict, pEnemy ))
          return(TRUE);
    }
@@ -870,7 +854,7 @@ qboolean FInShootCone(const Vector & Origin, edict_t *pEdict, float distance, fl
       return TRUE;
    
    // angle between forward-view-vector and vector to player (as cos(angle))
-   float flDot = DotProduct( (Origin - (pEdict->v.origin + pEdict->v.view_ofs)).Normalize(), UTIL_AnglesToForward(pEdict->v.v_angle) );
+   const float flDot = DotProduct( (Origin - (pEdict->v.origin + pEdict->v.view_ofs)).Normalize(), UTIL_AnglesToForward(pEdict->v.v_angle) );
    if(flDot > cos(deg2rad(min_angle))) // smaller angle, bigger cosine
       return TRUE;
    
@@ -911,7 +895,7 @@ void UTIL_BuildFileName_N(char *filename, int size, char *arg1, char *arg2)
 {
    const char * mod_dir = (submod_id == SUBMOD_OP4) ? "gearbox" : "valve";
    
-   if ((arg1 != NULL) && (arg2 != NULL))
+   if ((arg1 != nullptr) && (arg2 != nullptr))
    {
       if (*arg1 && *arg2)
       {
@@ -920,7 +904,7 @@ void UTIL_BuildFileName_N(char *filename, int size, char *arg1, char *arg2)
       }
    }
 
-   if (arg1 != NULL)
+   if (arg1 != nullptr)
    {
       if (*arg1)
       {
@@ -970,10 +954,9 @@ void UTIL_ConsolePrintf( char *fmt, ... )
 {
    va_list argptr;
    char string[512];
-   size_t len;
-   
+
    strcpy(string, "[jk_botti] ");
-   len = strlen(string);
+   size_t len = strlen(string);
    
    va_start( argptr, fmt );
    safevoid_vsnprintf( string+len, sizeof(string)-len, fmt, argptr );
@@ -1016,19 +999,17 @@ void GetGameDir (char *game_dir)
    // macro, which returns either an absolute directory path, or a relative one, depending on
    // whether the game server is run standalone or not. This one always return a RELATIVE path.
 
-   unsigned char length, fieldstart, fieldstop;
-
    GET_GAME_DIR (game_dir); // call the engine macro and let it mallocate for the char pointer
 
-   length = strlen (game_dir); // get the length of the returned string
+   unsigned char length = strlen(game_dir); // get the length of the returned string
    length--; // ignore the trailing string terminator
 
    // format the returned string to get the last directory name
-   fieldstop = length;
+   unsigned char fieldstop = length;
    while (((game_dir[fieldstop] == '\\') || (game_dir[fieldstop] == '/')) && (fieldstop > 0))
       fieldstop--; // shift back any trailing separator
 
-   fieldstart = fieldstop;
+   unsigned char fieldstart = fieldstop;
    while ((game_dir[fieldstart] != '\\') && (game_dir[fieldstart] != '/') && (fieldstart > 0))
       fieldstart--; // shift back to the start of the last subdirectory name
 

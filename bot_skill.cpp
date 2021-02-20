@@ -208,8 +208,7 @@ bot_skill_settings_t default_skill_settings[5] = {
 
 bot_skill_settings_t skill_settings[5];
 
-void ResetSkillsToDefault(void)
+void ResetSkillsToDefault()
 {
    memcpy(skill_settings, default_skill_settings, sizeof(skill_settings));
 }
-

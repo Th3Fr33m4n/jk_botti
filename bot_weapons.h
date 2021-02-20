@@ -207,19 +207,19 @@ qboolean BotCanUseWeapon(bot_t &pBot, const bot_weapon_select_t &select);
 
 ammo_low_t BotPrimaryAmmoLow(bot_t &pBot, const bot_weapon_select_t &select);
 ammo_low_t BotSecondaryAmmoLow(bot_t &pBot, const bot_weapon_select_t &select);
-int BotGetLowAmmoFlags(bot_t &pBot, int *weapon_flags, const qboolean OnlyCarrying);
-qboolean BotAllWeaponsRunningOutOfAmmo(bot_t &pBot, const qboolean GoodWeaponsOnly);
+int BotGetLowAmmoFlags(bot_t &pBot, int *weapon_flags, qboolean OnlyCarrying);
+qboolean BotAllWeaponsRunningOutOfAmmo(bot_t &pBot, qboolean GoodWeaponsOnly);
 
 void BotSelectAttack(bot_t &pBot, const bot_weapon_select_t &select, qboolean &use_primary, qboolean &use_secondary);
 
 qboolean IsValidWeaponChoose(bot_t &pBot, const bot_weapon_select_t &select);
-qboolean IsValidPrimaryAttack(bot_t &pBot, const bot_weapon_select_t &select, const float distance, const float height, const qboolean always_in_range);
-qboolean IsValidSecondaryAttack(bot_t &pBot, const bot_weapon_select_t &select, const float distance, const float height, const qboolean always_in_range);
+qboolean IsValidPrimaryAttack(bot_t &pBot, const bot_weapon_select_t &select, float distance, float height, qboolean always_in_range);
+qboolean IsValidSecondaryAttack(bot_t &pBot, const bot_weapon_select_t &select, float distance, float height, qboolean always_in_range);
 
-int BotGetBetterWeaponChoice(bot_t &pBot, const bot_weapon_select_t &current, const bot_weapon_select_t *pSelect, const float distance, const float height, qboolean *use_primary, qboolean *use_secondary);
+int BotGetBetterWeaponChoice(bot_t &pBot, const bot_weapon_select_t &current, const bot_weapon_select_t *pSelect, float distance, float height, qboolean *use_primary, qboolean *use_secondary);
 
 qboolean IsValidToFireAtTheMoment(bot_t &pBot, const bot_weapon_select_t &select);
-qboolean BotWeaponCanAttack(bot_t &pBot, const qboolean GoodWeaponsOnly);
-qboolean BotGetGoodWeaponCount(bot_t &pBot, const int stop_count);
+qboolean BotWeaponCanAttack(bot_t &pBot, qboolean GoodWeaponsOnly);
+qboolean BotGetGoodWeaponCount(bot_t &pBot, int stop_count);
 #endif // BOT_WEAPONS_H
 

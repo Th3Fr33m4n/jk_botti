@@ -29,25 +29,23 @@ char bot_names[MAX_BOT_NAMES][BOT_NAME_LEN+1];
 int num_logos = 0;
 char bot_logos[MAX_BOT_LOGOS][16];
 
-void BotLogoInit(void)
+void BotLogoInit()
 {
-   FILE *bot_logo_fp;
-   char bot_logo_filename[256];
+	char bot_logo_filename[256];
    char logo_buffer[80];
-   int length;
 
-   UTIL_BuildFileName_N(bot_logo_filename, sizeof(bot_logo_filename), "addons/jk_botti/jk_botti_logo.cfg", NULL);
+	UTIL_BuildFileName_N(bot_logo_filename, sizeof(bot_logo_filename), "addons/jk_botti/jk_botti_logo.cfg", nullptr);
 
-   bot_logo_fp = fopen(bot_logo_filename, "r");
+   FILE* bot_logo_fp = fopen(bot_logo_filename, "r");
 
-   if (bot_logo_fp != NULL)
+   if (bot_logo_fp != nullptr)
    {
       UTIL_ConsolePrintf("Loading %s...\n", bot_logo_filename);
       
       while ((num_logos < MAX_BOT_LOGOS) &&
-             (fgets(logo_buffer, 80, bot_logo_fp) != NULL))
+             (fgets(logo_buffer, 80, bot_logo_fp) != nullptr))
       {
-         length = strlen(logo_buffer);
+         int length = strlen(logo_buffer);
 
          if (logo_buffer[length-1] == '\n')
          {
@@ -68,26 +66,23 @@ void BotLogoInit(void)
 }
 
 
-void BotNameInit( void )
+void BotNameInit()
 {
-   FILE *bot_name_fp;
-   char bot_name_filename[256];
-   int str_index;
-   char name_buffer[80];
-   int length, index;
+	char bot_name_filename[256];
+	char name_buffer[80];
 
-   UTIL_BuildFileName_N(bot_name_filename, sizeof(bot_name_filename), "addons/jk_botti/jk_botti_names.txt", NULL);
+	UTIL_BuildFileName_N(bot_name_filename, sizeof(bot_name_filename), "addons/jk_botti/jk_botti_names.txt", nullptr);
 
-   bot_name_fp = fopen(bot_name_filename, "r");
+   FILE* bot_name_fp = fopen(bot_name_filename, "r");
 
-   if (bot_name_fp != NULL)
+   if (bot_name_fp != nullptr)
    {
       UTIL_ConsolePrintf("Loading %s...\n", bot_name_filename);
       
       while ((number_names < MAX_BOT_NAMES) &&
-             (fgets(name_buffer, 80, bot_name_fp) != NULL))
+             (fgets(name_buffer, 80, bot_name_fp) != nullptr))
       {
-         length = strlen(name_buffer);
+         int length = strlen(name_buffer);
 
          if (name_buffer[length-1] == '\n')
          {
@@ -95,12 +90,12 @@ void BotNameInit( void )
             length--;
          }
 
-         str_index = 0;
+         int str_index = 0;
          while (str_index < length)
          {
             if ((name_buffer[str_index] < ' ') || (name_buffer[str_index] > '~') ||
                 (name_buffer[str_index] == '"'))
-            for (index=str_index; index < length; index++)
+            for (int index = str_index; index < length; index++)
                name_buffer[index] = name_buffer[index+1];
 
             str_index++;

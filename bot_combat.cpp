@@ -52,8 +52,8 @@ static qboolean BotAimsAtSomething (bot_t &pBot)
 {
    if(!pBot.pBotEnemy)
       return FALSE;
-   
-   qboolean visible = FPredictedVisible(pBot);
+
+   const qboolean visible = FPredictedVisible(pBot);
 
    return(visible);
 }
@@ -68,12 +68,11 @@ static void BotPointGun(bot_t &pBot)
    // where it wants to look. There is some kind of filtering for the view, to make 
    // it human-like.
 
-   float frame_time = pBot.f_frame_time / skill_settings[pBot.bot_skill].turn_slowness;
+   const float frame_time = pBot.f_frame_time / skill_settings[pBot.bot_skill].turn_slowness;
    float speed; // speed : 0.1 - 1
-   Vector v_deviation;
-   float turn_skill = skill_settings[pBot.bot_skill].turn_skill;
+   const float turn_skill = skill_settings[pBot.bot_skill].turn_skill;
    
-   v_deviation = UTIL_WrapAngles (Vector (pEdict->v.idealpitch, pEdict->v.ideal_yaw, 0) - pEdict->v.v_angle);
+   Vector v_deviation = UTIL_WrapAngles(Vector(pEdict->v.idealpitch, pEdict->v.ideal_yaw, 0) - pEdict->v.v_angle);
 
    // if bot is aiming at something, aim fast, else take our time...
    if (pBot.b_combat_longjump)
@@ -138,7 +137,7 @@ void BotAimPre( bot_t &pBot )
    // special aiming angle for mp5 grenade
    if(pBot.b_set_special_shoot_angle)
    {
-      float old_angle = pBot.pEdict->v.v_angle.z;
+	   const float old_angle = pBot.pEdict->v.v_angle.z;
       
       pBot.pEdict->v.v_angle.z = pBot.f_special_shoot_angle;
       pBot.pEdict->v.angles.x = UTIL_WrapAngle (-pBot.pEdict->v.v_angle.x / 3);
@@ -191,8 +190,8 @@ static Vector GetModifiedEnemyDistance(bot_t &pBot, const Vector & distance)
 //
 static void BotResetReactionTime(bot_t &pBot, qboolean have_slow_reaction = FALSE) 
 {
-   float delay_min = skill_settings[pBot.bot_skill].react_delay_min;
-   float delay_max = skill_settings[pBot.bot_skill].react_delay_max;
+	const float delay_min = skill_settings[pBot.bot_skill].react_delay_min;
+	const float delay_max = skill_settings[pBot.bot_skill].react_delay_max;
 
    float react_delay = RANDOM_FLOAT2(delay_min, delay_max);
 
@@ -210,8 +209,8 @@ void free_posdata_list(int idx)
 {
    memset(players[idx].posdata_mem, 0, sizeof(players[idx].posdata_mem));
    
-   players[idx].position_oldest = 0;
-   players[idx].position_latest = 0;
+   players[idx].position_oldest = nullptr;
+   players[idx].position_latest = nullptr;
 }
 
 
@@ -240,7 +239,7 @@ static posdata_t *get_posdata_slot(int idx)
    if(i >= POSDATA_SIZE)
    {
       if(oldest_idx == -1)
-         return(NULL);
+         return(nullptr);
       
       i = oldest_idx;
    }
@@ -259,19 +258,19 @@ static void add_next_posdata(int idx, edict_t *pEdict)
    posdata_t * new_latest = get_posdata_slot(idx);
    
    JKASSERT(new_latest == NULL);
-   if(new_latest == NULL)
+   if(new_latest == nullptr)
       return;
    
    posdata_t * curr_latest = players[idx].position_latest;
    players[idx].position_latest = new_latest;
    
-   if(curr_latest != NULL) 
+   if(curr_latest != nullptr) 
    {
       curr_latest->newer = players[idx].position_latest;
    }
    
    players[idx].position_latest->older = curr_latest;
-   players[idx].position_latest->newer = NULL;
+   players[idx].position_latest->newer = nullptr;
    
    players[idx].position_latest->origin = pEdict->v.origin;
    players[idx].position_latest->velocity = pEdict->v.basevelocity + pEdict->v.velocity;   
@@ -306,7 +305,7 @@ static void timetrim_posdata(int idx)
          list->inuse = FALSE;
          
          list = next;
-         list->older = 0;
+         list->older = nullptr;
          players[idx].position_oldest = list;
       }
       else 
@@ -318,10 +317,10 @@ static void timetrim_posdata(int idx)
    
    if(!players[idx].position_oldest) 
    {
-	   JKASSERT(players[idx].position_latest != 0);
+	   JKASSERT(players[idx].position_latest != nullptr);
 	  
-      players[idx].position_oldest = 0;
-      players[idx].position_latest = 0;
+      players[idx].position_oldest = nullptr;
+      players[idx].position_latest = nullptr;
    }
 }
 
@@ -347,9 +346,9 @@ static Vector AddPredictionVelocityVaritation(bot_t &pBot, const Vector & veloci
 {
    if(velocity.x == 0 && velocity.y == 0)
       return velocity;
-   
-   float maxvar = (1.0 + skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
-   float minvar = (1.0 - skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
+
+   const float maxvar = (1.0 + skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
+   const float minvar = (1.0 - skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
 
 #if 0
    Vector2D flat = Vector2D(velocity.x, velocity.y);
@@ -380,14 +379,12 @@ static Vector TracePredictedMovement(bot_t &pBot, edict_t *pPlayer, const Vector
 {
    if(without_velocity)
       return(v_src);
-   
-   Vector v_dest, v_velocity;
-   
-   v_velocity = AddPredictionVelocityVaritation(pBot, cv_velocity);
-   v_dest = v_src + v_velocity * time + AddPredictionPositionVaritation(pBot);
+
+   Vector v_velocity = AddPredictionVelocityVaritation(pBot, cv_velocity);
+   Vector v_dest = v_src + v_velocity * time + AddPredictionPositionVaritation(pBot);
 
    TraceResult tr;
-   UTIL_TraceHull( v_src, v_dest, ignore_monsters, (ducking) ? head_hull : human_hull, pPlayer ? pPlayer->v.pContainingEntity : NULL, &tr);
+   UTIL_TraceHull( v_src, v_dest, ignore_monsters, (ducking) ? head_hull : human_hull, pPlayer ? pPlayer->v.pContainingEntity : nullptr, &tr);
    
    if(!tr.fStartSolid && tr.flFraction < 1.0f)
       v_dest.z = tr.vecEndPos.z;
@@ -401,25 +398,21 @@ static Vector TracePredictedMovement(bot_t &pBot, edict_t *pPlayer, const Vector
 #define AHEAD_MULTIPLIER 1.5
 static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolean without_velocity = FALSE) 
 {
-   posdata_t * newer;
-   posdata_t * older;
-   float time;
-   int idx;
-   posdata_t newertmp;
+	posdata_t newertmp;
    
    if(FNullEnt(pPlayer))
       return(Vector(0,0,0));
    
-   idx = ENTINDEX(pPlayer) - 1;
+   int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients || !players[idx].position_latest || !players[idx].position_oldest)
       return(UTIL_GetOrigin(pPlayer));
    
    // get prediction time based on bot skill
-   time = gpGlobals->time - skill_settings[pBot.bot_skill].ping_emu_latency;
+   float time = gpGlobals->time - skill_settings[pBot.bot_skill].ping_emu_latency;
    
    // find position data slots that are around 'time'
-   newer = players[idx].position_latest;
-   older = 0;
+   posdata_t* newer = players[idx].position_latest;
+   posdata_t* older = nullptr;
    while(newer) 
    {
       if(newer->time > time) 
@@ -465,10 +458,10 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
    {
       return(TracePredictedMovement(pBot, pPlayer, older->origin, older->velocity, fabs(gpGlobals->time - older->time) * AHEAD_MULTIPLIER, older->ducking, without_velocity)); 
    }
-   
-   float newer_diff = fabs(newer->time - time);
-   float older_diff = fabs(older->time - time);
-   float total_diff = newer_diff + older_diff;
+
+   const float newer_diff = fabs(newer->time - time);
+   const float older_diff = fabs(older->time - time);
+   const float total_diff = newer_diff + older_diff;
    
    if(total_diff <= 0.0) 
    {
@@ -478,7 +471,7 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
    }
    
    // make weighted average
-   Vector pred_origin = (older_diff/total_diff) * newer->origin + (newer_diff/total_diff) * older->origin;
+   const Vector pred_origin = (older_diff/total_diff) * newer->origin + (newer_diff/total_diff) * older->origin;
    Vector pred_velocity;
    if(!without_velocity)
       pred_velocity = (older_diff/total_diff) * newer->velocity + (newer_diff/total_diff) * older->velocity;
@@ -493,8 +486,8 @@ qboolean FPredictedVisible(bot_t &pBot)
 {
    if(!pBot.pBotEnemy)
       return(FALSE);
-   
-   Vector v_enemy = GetPredictedPlayerPosition(pBot, pBot.pBotEnemy, TRUE); //only get position
+
+   const Vector v_enemy = GetPredictedPlayerPosition(pBot, pBot.pBotEnemy, TRUE); //only get position
 
    return(FVisibleEnemy(v_enemy, pBot.pEdict, pBot.pBotEnemy));
 }
@@ -563,8 +556,8 @@ static qboolean FCanShootInHead(edict_t * pEdict, edict_t * pTarget, const Vecto
 {
    if(!FIsClassname("player", pTarget))
       return FALSE;
-   
-   float neg = pTarget->v.view_ofs.z >= 2.0f ? 2.0f : 0.0f;
+
+   const float neg = pTarget->v.view_ofs.z >= 2.0f ? 2.0f : 0.0f;
    
    // first check for if head is visible
    if(!FVisible( pTarget->v.origin + (pTarget->v.view_ofs - Vector(0,0,neg)), pEdict, pTarget ))
@@ -574,8 +567,8 @@ static qboolean FCanShootInHead(edict_t * pEdict, edict_t * pTarget, const Vecto
    if(!FVisible( pTarget->v.origin, pEdict, pTarget ))
       if(!FVisible( pTarget->v.origin - (pTarget->v.view_ofs - Vector(0,0,neg)), pEdict, pTarget ))
          return TRUE; //only head visible
-   
-   float distance = (v_dest - pEdict->v.origin).Length();
+
+   const float distance = (v_dest - pEdict->v.origin).Length();
    
    Vector2D triangle;
    
@@ -610,7 +603,7 @@ static edict_t *BotFindEnemyNearestToPoint(bot_t &pBot, const Vector &v_point, f
    edict_t *pBotEdict = pBot.pEdict;
    
    float nearestdistance = radius;
-   edict_t * pNearestEnemy = NULL;
+   edict_t * pNearestEnemy = nullptr;
    Vector v_nearestorigin = Vector(0,0,0);
 
    // search the world for players...
@@ -627,7 +620,7 @@ static edict_t *BotFindEnemyNearestToPoint(bot_t &pBot, const Vector &v_point, f
 
          // check first.. since this is very fast check
          Vector v_origin = pPlayer->v.origin;
-         float distance = (v_origin - v_point).Length();
+         const float distance = (v_origin - v_point).Length();
          if (distance > nearestdistance)
             continue;
 
@@ -636,7 +629,7 @@ static edict_t *BotFindEnemyNearestToPoint(bot_t &pBot, const Vector &v_point, f
             continue;
 
          // skip this player if respawned lately
-         float time_since_respawn = UTIL_GetTimeSinceRespawn(pPlayer);
+         const float time_since_respawn = UTIL_GetTimeSinceRespawn(pPlayer);
          if(time_since_respawn != -1.0 && time_since_respawn < skill_settings[pBot.bot_skill].respawn_react_delay)
             continue;
 
@@ -666,14 +659,14 @@ static edict_t *BotFindEnemyNearestToPoint(bot_t &pBot, const Vector &v_point, f
       return(pNearestEnemy);
    }
    
-   return(NULL);
+   return(nullptr);
 }
 
 
 // called on every think frame
 void BotUpdateHearingSensitivity(bot_t &pBot)
 {
-   if (pBot.pBotEnemy != NULL)
+   if (pBot.pBotEnemy != nullptr)
    {
       // have enemy, use best hearing sensitivity for all
       pBot.f_current_hearing_sensitivity = skill_settings[BEST_BOT_LEVEL].hearing_sensitivity;
@@ -700,16 +693,14 @@ static float BotGetHearingSensitivity(bot_t &pBot)
 static edict_t *BotFindVisibleSoundEnemy( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   
-   int iSound;
+
    CSound *pCurrentSound;
-   float mindistance;
-   edict_t *pMinDistanceEdict = NULL;
+   edict_t *pMinDistanceEdict = nullptr;
    
-   mindistance = 99999.0;
+   float mindistance = 99999.0;
       
    // walk through active sound linked list
-   for(iSound = CSoundEnt::ActiveList(); iSound != SOUNDLIST_EMPTY; iSound = pCurrentSound->m_iNext)
+   for(int iSound = CSoundEnt::ActiveList(); iSound != SOUNDLIST_EMPTY; iSound = pCurrentSound->m_iNext)
    {
       pCurrentSound = CSoundEnt::SoundPointerForIndex( iSound );
       
@@ -721,12 +712,12 @@ static edict_t *BotFindVisibleSoundEnemy( bot_t &pBot )
          continue;
       
       // is sound too far away? (bot cannot hear)
-      float s_distance = (pCurrentSound->m_vecOrigin - pEdict->v.origin).Length();
+      const float s_distance = (pCurrentSound->m_vecOrigin - pEdict->v.origin).Length();
       if(s_distance > pCurrentSound->m_iVolume * BotGetHearingSensitivity(pBot))
          continue;
 
       // more distant than what we got already?
-      float distance = (pCurrentSound->m_vecOrigin - pEdict->v.origin).Length();      
+      const float distance = (pCurrentSound->m_vecOrigin - pEdict->v.origin).Length();      
       if (distance >= mindistance)
          continue;
       
@@ -756,9 +747,9 @@ void BotRemoveEnemy( bot_t &pBot, qboolean b_keep_tracking )
    //JKASSERT(pBot.pBotEnemy == NULL);
    
    // track enemy?
-   if(pBot.pBotEnemy != NULL && b_keep_tracking)
+   if(pBot.pBotEnemy != nullptr && b_keep_tracking)
    {
-      float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
+	   const float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
       
       pBot.wpt_goal_type = WPT_GOAL_TRACK_SOUND;
       pBot.waypoint_goal = -1;
@@ -768,7 +759,7 @@ void BotRemoveEnemy( bot_t &pBot, qboolean b_keep_tracking )
       
       if(BotUpdateTrackSoundGoal(pBot) && pBot.waypoint_goal == -1)
       {
-         int waypoint = WaypointFindNearest(pBot.pTrackSoundEdict, 1024);
+	      const int waypoint = WaypointFindNearest(pBot.pTrackSoundEdict, 1024);
          
          //if(pBot.waypoint_goal != waypoint)
          //   UTIL_ConsolePrintf("[%s] Couldn't find sound to track, using edict-wpt: %d -> %d", pBot.name, pBot.waypoint_goal, waypoint);
@@ -778,7 +769,7 @@ void BotRemoveEnemy( bot_t &pBot, qboolean b_keep_tracking )
    }
    
    // don't have an enemy anymore so null out the pointer...
-   pBot.pBotEnemy = NULL;
+   pBot.pBotEnemy = nullptr;
    
    // reset reactions
    BotResetReactionTime(pBot);
@@ -817,7 +808,7 @@ void BotFindEnemy( bot_t &pBot )
       return;
    }
 
-   if (pBot.pBotEnemy != NULL)  // does the bot already have an enemy?
+   if (pBot.pBotEnemy != nullptr)  // does the bot already have an enemy?
    {
       // if the enemy is dead?
       // if the enemy is chat protected?
@@ -874,19 +865,19 @@ void BotFindEnemy( bot_t &pBot )
       }
    }
 
-   pNewEnemy = NULL;
+   pNewEnemy = nullptr;
    v_newenemy = Vector(0,0,0);
    nearestdistance = 99999;
 
-   if (pNewEnemy == NULL)
+   if (pNewEnemy == nullptr)
    {
       breakable_list_t * pBreakable;
       edict_t *pMonster;
       Vector vecEnd;
 
       // search func_breakables that we collected at map start (We need to collect in order to get the material value)
-      pBreakable = NULL;
-      while((pBreakable = UTIL_FindBreakable(pBreakable)) != NULL) 
+      pBreakable = nullptr;
+      while((pBreakable = UTIL_FindBreakable(pBreakable)) != nullptr) 
       {
          // removed? null?
          if(FNullEnt (pBreakable->pEdict))
@@ -940,7 +931,7 @@ void BotFindEnemy( bot_t &pBot )
       }
 
       // search the world for monsters...
-      pMonster = NULL;
+      pMonster = nullptr;
       while (!FNullEnt (pMonster = UTIL_FindEntityInSphere (pMonster, pEdict->v.origin, 1000)))
       {
          if (!(pMonster->v.flags & FL_MONSTER) || (int)pMonster->v.takedamage == DAMAGE_NO)
@@ -1130,19 +1121,18 @@ void BotFindEnemy( bot_t &pBot )
 static qboolean HaveRoomForThrow(bot_t & pBot)
 {
    edict_t *pEdict = pBot.pEdict;
-   qboolean feet_ok, center_ok, head_ok;
+   qboolean head_ok;
       
    // trace from feet to feet and head to head
    TraceResult tr;
-   Vector v_start, v_end;
-      
+
    //feet
-   v_start = pEdict->v.origin - pEdict->v.view_ofs;
-   v_end = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
+   Vector v_start = pEdict->v.origin - pEdict->v.view_ofs;
+   Vector v_end = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
       
    UTIL_TraceMove(v_start, v_end, ignore_monsters, pEdict, &tr);
      
-   feet_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
+   qboolean feet_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
       
    //center
    v_start = pEdict->v.origin;
@@ -1150,7 +1140,7 @@ static qboolean HaveRoomForThrow(bot_t & pBot)
       
    UTIL_TraceMove(v_start, v_end, ignore_monsters, pEdict, &tr);
       
-   center_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
+   qboolean center_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
       
    if(center_ok && !feet_ok)
    {
@@ -1193,9 +1183,9 @@ static qboolean CheckWeaponFireConditions(bot_t & pBot, const bot_weapon_select_
       if(HaveRoomForThrow(pBot))
       {
          // setup bot aim angle by distance and height to enemy
-         Vector v_enemy = pBot.pBotEnemy->v.origin - (pEdict->v.origin + GetGunPosition(pEdict));
-         
-         float angle = ValveWeaponMP5_GetBestLaunchAngleByDistanceAndHeight(v_enemy.Length(), v_enemy.z);
+         const Vector v_enemy = pBot.pBotEnemy->v.origin - (pEdict->v.origin + GetGunPosition(pEdict));
+
+         const float angle = ValveWeaponMP5_GetBestLaunchAngleByDistanceAndHeight(v_enemy.Length(), v_enemy.z);
          if(angle >= -89.0 && angle <= 89.0)
          {
             pBot.b_set_special_shoot_angle = TRUE;
@@ -1267,12 +1257,11 @@ static qboolean BotFireSelectedWeapon(bot_t & pBot, const bot_weapon_select_t &s
             pBot.f_shoot_time = gpGlobals->time;  // don't let button up
          else
          {
-            int skill = pBot.bot_skill;
-            float base_delay, min_delay, max_delay;
+	         const int skill = pBot.bot_skill;
 
-            base_delay = delay.primary_base_delay;
-            min_delay = delay.primary_min_delay[skill];
-            max_delay = delay.primary_max_delay[skill];
+	         float base_delay = delay.primary_base_delay;
+            float min_delay = delay.primary_min_delay[skill];
+            float max_delay = delay.primary_max_delay[skill];
             
             if(min_delay == 0 && max_delay == 0)
                pBot.f_shoot_time = gpGlobals->time + base_delay;
@@ -1302,12 +1291,11 @@ static qboolean BotFireSelectedWeapon(bot_t & pBot, const bot_weapon_select_t &s
             pBot.f_shoot_time = gpGlobals->time;  // don't let button up
          else
          {
-            int skill = pBot.bot_skill;
-            float base_delay, min_delay, max_delay;
+	         const int skill = pBot.bot_skill;
 
-            base_delay = delay.secondary_base_delay;
-            min_delay = delay.secondary_min_delay[skill];
-            max_delay = delay.secondary_max_delay[skill];
+	         float base_delay = delay.secondary_base_delay;
+            float min_delay = delay.secondary_min_delay[skill];
+            float max_delay = delay.secondary_max_delay[skill];
 
             if(min_delay == 0 && max_delay == 0)
                pBot.f_shoot_time = gpGlobals->time + base_delay;
@@ -1531,7 +1519,7 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
    // 1. check which weapons are available and with which percents
    //
    int total_percent = 0;
-   tmp_select_list = NULL;
+   tmp_select_list = nullptr;
    
    // loop through all the weapons until terminator is found...
    select_index = -1;
@@ -1564,7 +1552,7 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
       
       // New code, collect weapon percents to linked list
       select_list_t *next = (select_list_t *)alloca(sizeof(select_list_t));
-      next->next = NULL;
+      next->next = nullptr;
       
       // fill data
       next->use_primary = use_primary;
@@ -1587,7 +1575,7 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
                prev->next = next;
                break;
             }
-         } while((prev = prev->next) != NULL);
+         } while((prev = prev->next) != nullptr);
       }
       else
          tmp_select_list = next;
@@ -1729,26 +1717,23 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
 
 void BotShootAtEnemy( bot_t &pBot )
 {
-   float f_xy_distance;
-   Vector v_enemy;
-   Vector v_enemy_aimpos;
-   Vector v_predicted_pos;
-   
-   edict_t *pEdict = pBot.pEdict;
+	Vector v_enemy_aimpos;
+
+	edict_t *pEdict = pBot.pEdict;
 
    if (pBot.f_reaction_target_time > gpGlobals->time)
       return;
 
-   v_predicted_pos = UTIL_AdjustOriginWithExtent(pBot, GetPredictedPlayerPosition(pBot, pBot.pBotEnemy), pBot.pBotEnemy);
+   Vector v_predicted_pos = UTIL_AdjustOriginWithExtent(pBot, GetPredictedPlayerPosition(pBot, pBot.pBotEnemy),
+                                                        pBot.pBotEnemy);
 
    // do we need to aim at the feet?
    if (pBot.current_weapon_index != -1 && (weapon_select[pBot.current_weapon_index].type & WEAPON_FIRE_AT_FEET) == WEAPON_FIRE_AT_FEET)
    {
-      Vector v_src, v_dest;
-      TraceResult tr;
+	   TraceResult tr;
 
-      v_src = pEdict->v.origin + pEdict->v.view_ofs;  // bot's eyes
-      v_dest = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
+      Vector v_src = pEdict->v.origin + pEdict->v.view_ofs;  // bot's eyes
+      Vector v_dest = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
 
       UTIL_TraceLine( v_src, v_dest, dont_ignore_monsters,
                       pEdict->v.pContainingEntity, &tr);
@@ -1784,7 +1769,7 @@ void BotShootAtEnemy( bot_t &pBot )
       return;
    }
    
-   v_enemy = v_enemy_aimpos - GetGunPosition(pEdict);
+   Vector v_enemy = v_enemy_aimpos - GetGunPosition(pEdict);
    
    Vector enemy_angle = UTIL_VecToAngles( v_enemy );
 
@@ -1809,7 +1794,7 @@ void BotShootAtEnemy( bot_t &pBot )
    Vector v_enemy_xy = v_enemy;
    v_enemy_xy.z = 0;  // ignore z component (up & down)
 
-   f_xy_distance = v_enemy_xy.Length();  // how far away is the enemy scum?
+   float f_xy_distance = v_enemy_xy.Length();  // how far away is the enemy scum?
 
    if (f_xy_distance > 20)      // run if distance to enemy is far
       pBot.f_move_speed = pBot.f_max_speed;
@@ -1825,8 +1810,8 @@ void BotShootAtEnemy( bot_t &pBot )
       // only fire if aiming target circle with specific max radius
       if(FVisibleEnemy(v_enemy_aimpos, pEdict, pBot.pBotEnemy)) 
       {
-         float shootcone_diameter = skill_settings[pBot.bot_skill].shootcone_diameter;
-         float shootcone_minangle = skill_settings[pBot.bot_skill].shootcone_minangle;
+	      const float shootcone_diameter = skill_settings[pBot.bot_skill].shootcone_diameter;
+	      const float shootcone_minangle = skill_settings[pBot.bot_skill].shootcone_minangle;
                   
          // check if it is possible to hit target
          if(FInShootCone(v_enemy_aimpos, pEdict, v_enemy.Length(), shootcone_diameter, shootcone_minangle)) 
@@ -1853,7 +1838,6 @@ void BotShootAtEnemy( bot_t &pBot )
 qboolean BotShootTripmine( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   qboolean ret;
 
    if (!pBot.b_shoot_tripmine)
      return FALSE;
@@ -1861,12 +1845,12 @@ qboolean BotShootTripmine( bot_t &pBot )
      return FALSE;
 
    // Shoot tripmine only if bot does not have target
-   if (pBot.pBotEnemy != NULL)
+   if (pBot.pBotEnemy != nullptr)
      return FALSE;
 
    // aim at the tripmine and fire the glock...
-   Vector v_enemy = pBot.v_tripmine - GetGunPosition( pEdict );
-   Vector enemy_angle = UTIL_VecToAngles(v_enemy);
+   const Vector v_enemy = pBot.v_tripmine - GetGunPosition( pEdict );
+   const Vector enemy_angle = UTIL_VecToAngles(v_enemy);
 
    pEdict->v.idealpitch = UTIL_WrapAngle(enemy_angle.x);
    pEdict->v.ideal_yaw = UTIL_WrapAngle(enemy_angle.y);
@@ -1875,8 +1859,8 @@ qboolean BotShootTripmine( bot_t &pBot )
    // if not try find another weapon which can do this (type: WEAPON_FIRE or FIRE_ZOOM).
    //TODO: or maybe throw grenade????
    pBot.pBotEnemy = pBot.tripmine_edict;
-   ret = BotFireWeapon( v_enemy, pBot, VALVE_WEAPON_GLOCK );
-   pBot.pBotEnemy = NULL;
+   qboolean ret = BotFireWeapon(v_enemy, pBot, VALVE_WEAPON_GLOCK);
+   pBot.pBotEnemy = nullptr;
    return ret;
 }
 
