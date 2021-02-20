@@ -22,8 +22,8 @@ else
 endif
 
 TARGET = jk_botti_mm
-BASEFLAGS = -Wall -Wno-write-strings -Wno-aggressive-loop-optimizations
-ARCHFLAG += -march=i686 -mtune=generic -msse -msse2 -mmmx -s -pipe -mfpmath=sse
+BASEFLAGS = -Wall -Wno-write-strings
+ARCHFLAG += -march=i686 -mtune=generic -msse -msse2 -mmmx -pipe -mfpmath=sse
 
 ifeq ($(DBG_FLGS),1)
 	OPTFLAGS = -O0 -g

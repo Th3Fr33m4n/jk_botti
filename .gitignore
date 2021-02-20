@@ -45,3 +45,7 @@ Release/jk-botti.tlog/jk-botti.lastbuildstate
 Release/jk-botti.tlog/unsuccessfulbuild
 Release/safe_snprintf.obj
 Release/vc142.pdb
+.vs/jk-botti/v16/ipch/AutoPCH/452fab92dc351b9f/BOT_WEAPONS.ipch
+*.ipch
+.vs/jk-botti/v16/Browse.VC.db-wal
+.vs/jk-botti/v16/Browse.VC.db-shm

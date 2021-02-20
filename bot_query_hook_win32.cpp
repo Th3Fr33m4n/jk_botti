@@ -6,11 +6,11 @@
 
 #ifdef _WIN32
 
-#include <string.h>
+#include <cstring>
 
 #include <memory.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 
 #include <winsock2.h>
 #include <windows.h>

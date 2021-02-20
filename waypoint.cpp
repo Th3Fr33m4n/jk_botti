@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #ifndef __linux__
@@ -662,7 +662,7 @@ void WaypointAddLift(edict_t * pent, const Vector &start, const Vector &end)
    g_lifts_added++;
    g_waypoint_updated = TRUE;
 
-   if(0)
+   if(false)
    {
       UTIL_ConsolePrintf("%s\n", STRING(pent->v.classname));
       UTIL_ConsolePrintf(" - start : %4.1f, %4.1f, %4.1f", start.x, start.y, start.z);

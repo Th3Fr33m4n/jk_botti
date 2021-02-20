@@ -7,7 +7,7 @@
 #ifndef WAYPOINT_H
 #define WAYPOINT_H
 
-#include <limits.h>
+#include <climits>
 
 #define MAX_WAYPOINTS 1024
 #define MAX_WAYPOINT_MATRIX (MAX_WAYPOINTS*MAX_WAYPOINTS)

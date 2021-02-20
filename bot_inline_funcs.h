@@ -7,7 +7,7 @@
 #ifndef BOT_INLINE_FUNCS
 #define BOT_INLINE_FUNCS
 
-#include <inttypes.h>
+#include <cinttypes>
 #include <sys/time.h>
 
 // Manual branch optimization for GCC 3.0.0 and newer

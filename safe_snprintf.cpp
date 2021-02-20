@@ -5,14 +5,14 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #include <memory.h>
 #include <malloc.h>
-#include <limits.h>
+#include <climits>
 
 #include "safe_snprintf.h"
 

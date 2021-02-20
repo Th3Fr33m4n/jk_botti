@@ -7,7 +7,7 @@
 #ifndef BOT_H
 #define BOT_H
 
-#include <ctype.h>
+#include <cctype>
 #include "safe_snprintf.h"
 
 // Manual branch optimization for GCC 3.0.0 and newer

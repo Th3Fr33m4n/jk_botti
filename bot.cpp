@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <malloc.h>
@@ -439,8 +439,7 @@ char * GetSpecificTeam(char * teamstr, size_t slen, qboolean get_smallest, qbool
             {
                count++;
             }
-         }
-                        
+         }         
          
          if(get_smallest)
          {
@@ -570,7 +569,6 @@ static void RecountTeams(void)
       }
    }
 }
-
 
 //
 void BotCheckTeamplay(void)
@@ -2916,7 +2914,7 @@ void BotThink( bot_t &pBot )
       f_strafe_speed = calc.x;
       pBot.f_move_speed = calc.y;
       
-      if(0)
+      if(false)
       {
          Vector v_angle = pEdict->v.v_angle;
          v_angle.x = 0;
