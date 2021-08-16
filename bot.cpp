@@ -24,7 +24,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include <cmath>
 
 extern WAYPOINT waypoints[MAX_WAYPOINTS];
 extern int num_waypoints;  // number of waypoints currently in use
@@ -71,7 +71,7 @@ qboolean b_botdontshoot = FALSE;
 
 
 //
-static qboolean BotLowHealth( bot_t &pBot )
+static qboolean BotLowHealth(const bot_t& pBot)
 {
    return(pBot.pEdict->v.health + 0.8f * pBot.pEdict->v.armorvalue < VALVE_MAX_NORMAL_HEALTH * 0.5f);
 }
@@ -273,15 +273,15 @@ static void BotPickLogo(bot_t &pBot)
 }
 
 
-static void BotSprayLogo(bot_t &pBot)
+static void BotSprayLogo(const bot_t& pBot)
 {
    edict_t * pEntity = pBot.pEdict;
-   char *logo_name = pBot.logo_name;
+   const char *logo_name = pBot.logo_name;
 
    TraceResult pTrace;
 
-   Vector v_src = pEntity->v.origin + pEntity->v.view_ofs;
-   Vector v_dest = v_src + UTIL_AnglesToForward(pEntity->v.v_angle) * 80;
+   const Vector v_src = pEntity->v.origin + pEntity->v.view_ofs;
+   const Vector v_dest = v_src + UTIL_AnglesToForward(pEntity->v.v_angle) * 80;
    UTIL_TraceMove( v_src, v_dest, ignore_monsters, pEntity->v.pContainingEntity, &pTrace );
 
    int index = DECAL_INDEX(logo_name);
@@ -409,12 +409,12 @@ char * GetSpecificTeam(char * teamstr, size_t slen, qboolean get_smallest, qbool
       if(*g_team_names[i] && !TeamInTeamBlockList(g_team_names[i]))
       {
          int count = 0;
-         char teamname[MAX_TEAMNAME_LENGTH];
-            
+
          // collect player counts for team
          for(int j = 1; j <= gpGlobals->maxClients; j++)
          {
-            edict_t * pClient = INDEXENT(j);
+	         char teamname[MAX_TEAMNAME_LENGTH];
+	         edict_t * pClient = INDEXENT(j);
             
             // skip unactive clients
             if(!pClient || pClient->free || FNullEnt(pClient) || GETPLAYERUSERID(pClient) <= 0 || STRING(pClient->v.netname)[0] == 0)
@@ -609,10 +609,8 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
    edict_t *BotEnt;
    char c_skin[BOT_SKIN_LEN];
    char c_name[BOT_NAME_LEN];
-   char balanceskin[MAX_TEAMNAME_LENGTH];
    int index;
    int i, j, length;
-   qboolean found = FALSE;
    qboolean got_skill_arg = FALSE;
    char c_topcolor[4], c_bottomcolor[4];
    int  max_skin_index;
@@ -622,7 +620,8 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
    // balance teams, ignore input skin
    if(is_team_play && team_balancetype >= 1 && g_team_limit)
    {
-      RecountTeams();
+	   char balanceskin[MAX_TEAMNAME_LENGTH];
+	   RecountTeams();
       
       // get smallest team
       if(GetSpecificTeam(balanceskin, sizeof(balanceskin), TRUE, FALSE, FALSE))
@@ -676,7 +675,8 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
    // check existance of player model file only on listenserver, dedicated server doesn't _need_ model.
    if(!IS_DEDICATED_SERVER())
    {
-      index = 0;
+	   qboolean found = FALSE;
+	   index = 0;
 
       while ((!found) && (index < max_skin_index))
       {
@@ -944,7 +944,7 @@ void BotReplaceConnectionTime(const char * name, float * timeslot)
 
 
 //
-static int BotInFieldOfView(bot_t &pBot, const Vector & dest)
+static int BotInFieldOfView(const bot_t& pBot, const Vector& dest)
 {
    // find angles from source to destination...
    Vector entity_angles = UTIL_VecToAngles( dest );
@@ -975,7 +975,7 @@ static int BotInFieldOfView(bot_t &pBot, const Vector & dest)
 }
 
 
-static qboolean BotEntityIsVisible( bot_t &pBot, const Vector & dest )
+static qboolean BotEntityIsVisible(const bot_t& pBot, const Vector& dest)
 {
    TraceResult tr;
 
@@ -1001,7 +1001,6 @@ static void BotFindItem( bot_t &pBot )
    float radius = 500;
    qboolean can_pickup;
    float min_distance;
-   char item_name[40];
    TraceResult tr;
    Vector vecStart;
    Vector vecEnd;
@@ -1043,7 +1042,8 @@ static void BotFindItem( bot_t &pBot )
 
    while ((pent = UTIL_FindEntityInSphere( pent, pEdict->v.origin, radius )) != nullptr)
    {
-      can_pickup = FALSE;  // assume can't use it until known otherwise
+	   char item_name[40];
+	   can_pickup = FALSE;  // assume can't use it until known otherwise
 
       safe_strcopy(item_name, sizeof(item_name), STRING(pent->v.classname));
 
@@ -2251,7 +2251,7 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
    if (pBot.b_longjump && !pBot.b_in_water && pBot.b_on_ground &&
        !FBitSet(pEdict->v.button, IN_DUCK) && !FBitSet(pEdict->v.button, IN_JUMP) &&
        pEdict->v.velocity.Length() > 50 && pBot.b_combat_longjump &&
-       fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 10)
+       std::fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 10)
    {
       // don't try to move for 1.0 seconds, otherwise the longjump is fucked up	
       pBot.f_longjump_time = gpGlobals->time + 1.0;
@@ -2313,13 +2313,13 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
    qboolean lj = (pBot.prev_random_type != 3 && pBot.b_longjump && pBot.f_combat_longjump <= gpGlobals->time && !pBot.
 	   b_combat_longjump &&
 	   skill_settings[pBot.bot_skill].can_longjump &&
-	   pBot.pBotEnemy != nullptr && fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 30.0f &&
+	   pBot.pBotEnemy != nullptr && std::fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 30.0f &&
 	   RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].random_longjump_frequency);
    
    if(lj)
    {
       max_lj_distance = LONGJUMP_DISTANCE * (800 / CVAR_GET_FLOAT("sv_gravity"));
-      float target_distance = (UTIL_GetOriginWithExtent(pBot, pBot.pBotEnemy) - pEdict->v.origin).Length();
+      const float target_distance = (UTIL_GetOriginWithExtent(pBot, pBot.pBotEnemy) - pEdict->v.origin).Length();
       
       lj = (target_distance > 128.0f && target_distance < max_lj_distance);
    }
@@ -2399,16 +2399,16 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
    // combat mode random longjumping
    if(lj)
    {
-      Vector target_angle;
-      TraceResult tr;
+	   TraceResult tr;
 
-      Vector vecSrc = pEdict->v.origin;
-      int mod = RANDOM_LONG2(1, 100) <= 50 ? -1 : 1;
+      const Vector vecSrc = pEdict->v.origin;
+      const int mod = RANDOM_LONG2(1, 100) <= 50 ? -1 : 1;
       
       // get a random angle (-30 or 30)
       for (int i = 1; i >= -1; i-=2)
       {
-         target_angle.x = -pEdict->v.v_angle.x;
+	      Vector target_angle;
+	      target_angle.x = -pEdict->v.v_angle.x;
          target_angle.y = UTIL_WrapAngle(pEdict->v.v_angle.y + 30 * (mod * i));
          target_angle.z = pEdict->v.v_angle.z;
          
@@ -2460,8 +2460,7 @@ static void BotRunPlayerMove(bot_t &pBot, const float *viewangles, float forward
 void BotThink( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   
-   Vector v_diff;             // vector from previous to current location
+
    float moved_distance;      // length of v_diff vector (distance bot moved)
    TraceResult tr;
    float f_strafe_speed;
@@ -2624,7 +2623,8 @@ void BotThink( bot_t &pBot )
 
    if (pBot.f_speed_check_time <= gpGlobals->time)
    {
-      // see how far bot has moved since the previous position...
+	   Vector v_diff;
+	   // see how far bot has moved since the previous position...
       v_diff = pBot.v_prev_origin - pEdict->v.origin;
       moved_distance = v_diff.Length();
 

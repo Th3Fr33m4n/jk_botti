@@ -108,10 +108,10 @@ Vector UTIL_AnglesToForward(const Vector &angles)
    // from pm_shared/pm_math.h
    double sp, cp, sy, cy;
 
-   double pitch = angles.x * (M_PI * 2 / 360);
+   const double pitch = angles.x * (M_PI * 2 / 360);
    fsincos(pitch, sp, cp);
 
-   double yaw = angles.y * (M_PI * 2 / 360);
+   const double yaw = angles.y * (M_PI * 2 / 360);
    fsincos(yaw, sy, cy);
 
    return(Vector(cp*cy, cp*sy, -sp));
@@ -123,13 +123,13 @@ Vector UTIL_AnglesToRight(const Vector &angles)
    // from pm_shared/pm_math.h
    double sr, cr, sp, cp, sy, cy;
 
-   double pitch = angles.x * (M_PI * 2 / 360);
+   const double pitch = angles.x * (M_PI * 2 / 360);
    fsincos(pitch, sp, cp);
 
-   double yaw = angles.y * (M_PI * 2 / 360);
+   const double yaw = angles.y * (M_PI * 2 / 360);
    fsincos(yaw, sy, cy);
 
-   double roll = angles.z * (M_PI * 2 / 360);
+   const double roll = angles.z * (M_PI * 2 / 360);
    fsincos(roll, sr, cr);
 
    return(Vector(-1*sr*sp*cy+-1*cr*-sy, -1*sr*sp*sy+-1*cr*cy, -1*sr*cp));
@@ -141,13 +141,13 @@ void UTIL_MakeVectorsPrivate( const Vector &angles, Vector &v_forward, Vector &v
    // from pm_shared/pm_math.h
    double sr, cr, sp, cp, sy, cy;
 
-   double pitch = angles.x * (M_PI * 2 / 360);
+   const double pitch = angles.x * (M_PI * 2 / 360);
    fsincos(pitch, sp, cp);
 
-   double yaw = angles.y * (M_PI * 2 / 360);
+   const double yaw = angles.y * (M_PI * 2 / 360);
    fsincos(yaw, sy, cy);
 
-   double roll = angles.z * (M_PI * 2 / 360);
+   const double roll = angles.z * (M_PI * 2 / 360);
    fsincos(roll, sr, cr);
 
    v_forward = Vector(cp*cy, cp*sy, -sp);
@@ -170,7 +170,7 @@ Vector UTIL_VecToAngles(const Vector &forward)
    {
       // atan2 returns values in range [-pi < x < +pi]
       yaw = (atan2(forward.y, forward.x) * 180 / M_PI);
-      float tmp = sqrt(forward.x * forward.x + forward.y * forward.y);
+      const float tmp = sqrt(forward.x * forward.x + forward.y * forward.y);
       pitch = (atan2(forward.z, tmp) * 180 / M_PI);
    }
    
@@ -496,7 +496,7 @@ breakable_list_t * UTIL_FindBreakable(breakable_list_t * pbreakable)
 //
 void SaveAliveStatus(edict_t * pPlayer)
 {
-	int idx = ENTINDEX(pPlayer) - 1;
+	const int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return;
    
@@ -507,7 +507,7 @@ void SaveAliveStatus(edict_t * pPlayer)
 //
 float UTIL_GetTimeSinceRespawn(edict_t * pPlayer)
 {
-	int idx = ENTINDEX(pPlayer) - 1;
+	const int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return(-1.0);
    
@@ -528,7 +528,7 @@ static qboolean IsPlayerFacingWall(edict_t * pPlayer)
 {
    TraceResult tr;
 
-   Vector EyePosition = pPlayer->v.origin + pPlayer->v.view_ofs;
+   const Vector EyePosition = pPlayer->v.origin + pPlayer->v.view_ofs;
    UTIL_AnglesToForward(pPlayer->v.v_angle);
    
    UTIL_TraceLine(EyePosition, EyePosition + gpGlobals->v_forward * 48, ignore_monsters, ignore_glass, pPlayer, &tr);
@@ -545,7 +545,7 @@ static qboolean IsPlayerFacingWall(edict_t * pPlayer)
 //
 void CheckPlayerChatProtection(edict_t * pPlayer)
 {
-	int idx = ENTINDEX(pPlayer) - 1;
+	const int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return;
    
@@ -583,7 +583,7 @@ void CheckPlayerChatProtection(edict_t * pPlayer)
 //
 qboolean IsPlayerChatProtected(edict_t * pPlayer)
 {
-	int idx = ENTINDEX(pPlayer) - 1;
+	const int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return(FALSE);
    
@@ -628,9 +628,8 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
 	char  text[128];
    char *pc;
 	char  sender_teamstr[MAX_TEAMNAME_LENGTH];
-   char  player_teamstr[MAX_TEAMNAME_LENGTH];
 
-   // make sure the text has content
+	// make sure the text has content
    for ( pc = message; pc != nullptr && *pc != 0; pc++ )
    {
       if ( isprint( *pc ) && !isspace( *pc ) )
@@ -649,7 +648,7 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
    else
       safevoid_snprintf( text, sizeof(text), "%c%s: ", 2, STRING( pEntity->v.netname ) );
 
-   int j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
+	const int j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
    if ( (int)strlen(message) > j )
       message[j] = 0;
 
@@ -669,7 +668,8 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
    edict_t* client = nullptr;
    while((client = UTIL_FindEntityByClassname( client, "player" )) != nullptr && !FNullEnt(client))
    {
-      if ( client == pEntity )  // skip sender of message
+	   char player_teamstr[MAX_TEAMNAME_LENGTH];
+	   if ( client == pEntity )  // skip sender of message
          continue;
 
       UTIL_GetTeam(client, player_teamstr, sizeof(player_teamstr));

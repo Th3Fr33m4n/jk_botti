@@ -30,6 +30,8 @@
 
 #include "bot_query_hook.h"
 
+#include <cmath>
+
 extern enginefuncs_t g_engfuncs;
 extern globalvars_t  *gpGlobals;
 extern char g_argv[1024*3];
@@ -301,7 +303,9 @@ static int Spawn_Post( edict_t *pent )
       
       Vector v_position1 = m_origin;
       // Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
-      Vector v_position2 = m_origin + (pent->v.movedir * (fabs( pent->v.movedir.x * (pent->v.size.x-2) ) + fabs( pent->v.movedir.y * (pent->v.size.y-2) ) + fabs( pent->v.movedir.z * (pent->v.size.z-2) ) - m_lip));
+      Vector v_position2 = m_origin + (pent->v.movedir * (std::fabs(pent->v.movedir.x * (pent->v.size.x - 2)) +
+	      std::fabs(pent->v.movedir.y * (pent->v.size.y - 2)) + std::fabs(pent->v.movedir.z * (pent->v.size.z - 2)) -
+	      m_lip));
 
       if ( FBitSet (pent->v.spawnflags, SF_DOOR_START_OPEN) )
       {
@@ -404,7 +408,7 @@ void jkbotti_ClientPutInServer( edict_t *pEntity )
 static void CmdStart( const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed )
 {
    // check if is our bot
-   int bot_index = UTIL_GetBotIndex(player);
+   const int bot_index = UTIL_GetBotIndex(player);
    
    if(bot_index != -1)
    {
@@ -510,7 +514,7 @@ static void new_PM_PlaySound(int channel, const char *sample, float volume, floa
 {
    if (gpGlobals->deathmatch)
    {
-	   int idx = ENGINE_CURRENT_PLAYER();
+	   const int idx = ENGINE_CURRENT_PLAYER();
    
       if(idx >= 0 && idx < gpGlobals->maxClients)
       {
@@ -553,8 +557,8 @@ static void StartFrame()
 
 	if (!gpGlobals->deathmatch)
       RETURN_META (MRES_IGNORED);
-   
-   double begin_time = UTIL_GetSecs();
+
+	const double begin_time = UTIL_GetSecs();
    
    // sound system
    if (pSoundEnt->m_nextthink <= gpGlobals->time)
@@ -715,11 +719,10 @@ static void StartFrame()
             {
                for(int i = 0; i < 32; i++)
                {
-                  char teamstr[MAX_TEAMNAME_LENGTH];
-                  
-                  if(bots[i].is_used)
-                  {
-                     if(!stricmp(UTIL_GetTeam(bots[i].pEdict, teamstr, sizeof(teamstr)), balanceskin))
+	               if(bots[i].is_used)
+	               {
+		               char teamstr[MAX_TEAMNAME_LENGTH];
+		               if(!stricmp(UTIL_GetTeam(bots[i].pEdict, teamstr, sizeof(teamstr)), balanceskin))
                      {
                         pick = i;
                         

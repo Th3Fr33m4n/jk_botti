@@ -294,7 +294,7 @@ static void WaypointDeletePath(short int del_index)
 // initial call. subsequent calls will return other paths if they exist.)
 int WaypointFindPath(int &path_index, int waypoint_index)
 {
-   PATH &p = paths[waypoint_index];
+	const PATH &p = paths[waypoint_index];
    
    while(++path_index < p.last_idx_used)
       if(p.index[path_index] != -1)
@@ -348,9 +348,7 @@ void CollectMapSpawnItems(edict_t *pSpawn)
    const char *classname = (const char *)STRING(pSpawn->v.classname);
    int flags = 0;
    int itemflag = 0;
-   static Vector CheckOffset;
    static int wall_count, wall_updated;
-   static BOOL offset_set = FALSE;
    static const Vector offsets[8] = { Vector(60, 0, 0), Vector(0, 60, 0), Vector(-60, 0, 0), Vector(0, -60, 0), Vector(42, 42, 0), Vector(42, -42, 0), Vector(-42, 42, 0), Vector(-42, -42, 0) };
    
    if(num_spawnpoints >= MAX_WAYPOINTS / 2)
@@ -373,7 +371,9 @@ void CollectMapSpawnItems(edict_t *pSpawn)
       // check for func_recharge and func_healthcharger
       if(strncmp("func_recharge", classname, 13) == 0 || strncmp("func_healthcharger", classname, 18) == 0)
       {
-         flags |= (classname[5] == 'r') ? W_FL_ARMOR : W_FL_HEALTH;
+	      static BOOL offset_set = FALSE;
+	      static Vector CheckOffset;
+	      flags |= (classname[5] == 'r') ? W_FL_ARMOR : W_FL_HEALTH;
          
          if(offset_set)
          {
@@ -557,9 +557,9 @@ void WaypointAddLift(edict_t * pent, const Vector &start, const Vector &end)
       return;
    
    TraceResult tr;
-   Vector origin = VecBModelOrigin(pent);
-   
-   Vector move = end - start;
+	const Vector origin = VecBModelOrigin(pent);
+
+	const Vector move = end - start;
    
    // test if this is trap
    const Vector stand_start = Vector(origin.x, origin.y, pent->v.absmax.z + 72/2);
@@ -683,7 +683,7 @@ int WaypointFindNearest(const Vector &v_origin, const Vector &v_offset, edict_t 
       if (waypoints[index].flags & W_FL_AIMING)
          continue;  // skip any aiming waypoints
 
-      float distance = (waypoints[index].origin - v_origin).Length();
+      const float distance = (waypoints[index].origin - v_origin).Length();
 
       if ((distance < min_distance) && (distance < range))
       {
@@ -872,13 +872,13 @@ int WaypointFindRunawayPath(int runner, int enemy)
       if (waypoints[index].flags & (W_FL_DELETED|W_FL_AIMING))
          continue;  // skip any deleted&aiming waypoints
 
-      float runner_distance = WaypointDistanceFromTo(runner, index);
-      float enemy_distance = WaypointDistanceFromTo(runner, index);
+      const float runner_distance = WaypointDistanceFromTo(runner, index);
+      const float enemy_distance = WaypointDistanceFromTo(runner, index);
       
       if(runner_distance == WAYPOINT_MAX_DISTANCE)
          continue;
-      
-      float difference = enemy_distance - runner_distance;
+
+      const float difference = enemy_distance - runner_distance;
       if(difference > max_difference) 
       {
          max_difference = difference;
@@ -964,12 +964,10 @@ static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wp
    edict_t *pent = nullptr;
    const float radius = 40;
    TraceResult tr;
-   char item_name[64];
    char nearest_name[64];
-   int itemflag;
 
    nearest_name[0] = 0;      // null out nearest_name string
-   edict_t* nearest_pent = nullptr;
+   const edict_t* nearest_pent = nullptr;
 
    float min_distance = 99999.0;
 
@@ -985,7 +983,8 @@ static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wp
       // make sure entity is visible...
       if (tr.flFraction > 0.999999f)
       {
-         safe_strcopy(item_name, sizeof(item_name), STRING(pent->v.classname));
+	      char item_name[64];
+	      safe_strcopy(item_name, sizeof(item_name), STRING(pent->v.classname));
 
          if ((strncmp("item_health", item_name, 11) == 0) || strncmp("func_healthcharger", item_name, 18) == 0 ||
              (strncmp("item_battery", item_name, 12) == 0) || strncmp("func_recharge", item_name, 13) == 0||
@@ -993,7 +992,7 @@ static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wp
              (strcmp("item_longjump", item_name) == 0) ||
              ((GetWeaponItemFlag(item_name) != 0) && (pent->v.owner == nullptr)))
          {
-            float distance = (pent->v.origin - v_origin).Length();
+	         const float distance = (pent->v.origin - v_origin).Length();
 
             if (distance < min_distance)
             {
@@ -1009,7 +1008,8 @@ static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wp
 
    if (nearest_name[0])  // found an entity name
    {
-      char buf[128];
+	   int itemflag;
+	   char buf[128];
       
       if (strncmp("item_health", nearest_name, 11) == 0 || strncmp("func_healthcharger", nearest_name, 18) == 0)
       {
@@ -1056,7 +1056,6 @@ edict_t *WaypointFindItem( int wpt_index )
    edict_t *pent = nullptr;
    const float radius = 40;
    TraceResult tr;
-   char item_name[64];
 
    edict_t* nearest_pent = nullptr;
    
@@ -1073,7 +1072,8 @@ edict_t *WaypointFindItem( int wpt_index )
       // make sure entity is visible...
       if ((tr.flFraction > 0.999999f) || (tr.pHit == pent) || !(pent->v.effects & EF_NODRAW) || !(pent->v.frame > 0))
       {
-         safe_strcopy(item_name, sizeof(item_name), STRING(pent->v.classname));
+	      char item_name[64];
+	      safe_strcopy(item_name, sizeof(item_name), STRING(pent->v.classname));
          
          if((((waypoints[wpt_index].flags & W_FL_HEALTH) && (strncmp("item_health", item_name, 11) == 0)) || strncmp("func_healthcharger", item_name, 18) == 0) ||
             (((waypoints[wpt_index].flags & W_FL_ARMOR) && (strncmp("item_battery", item_name, 12) == 0)) || strncmp("func_recharge", item_name, 13) == 0) ||
@@ -1081,7 +1081,7 @@ edict_t *WaypointFindItem( int wpt_index )
             ((waypoints[wpt_index].flags & W_FL_LONGJUMP) && strcmp("item_longjump", item_name) == 0) ||
             ((waypoints[wpt_index].flags & W_FL_WEAPON) && GetWeaponItemFlag(item_name) != 0 && pent->v.owner == nullptr))
          {
-            float distance = (pent->v.origin - v_origin).Length();
+	         const float distance = (pent->v.origin - v_origin).Length();
             
             if (distance < min_distance)
             {   
@@ -1567,7 +1567,7 @@ static qboolean WaypointFixOldWaypoints()
       // check if we didn't hit anything, if not then it's in mid-air
       if (!tr.fAllSolid && !tr.fStartSolid && tr.flFraction > 0.999999f)
       {
-         int index = k;
+	      const int index = k;
          
          // delete any paths that lead to this index...
          WaypointDeletePath(index);
@@ -1641,8 +1641,7 @@ qboolean WaypointLoad(edict_t *pEntity)
 	char mapname[64];
    char filename[256];
    WAYPOINT_HDR header;
-   int i;
-   short int num;
+	short int num;
    short int path_index;
 
 	g_waypoint_updated = FALSE;
@@ -1654,7 +1653,7 @@ qboolean WaypointLoad(edict_t *pEntity)
 
    UTIL_ConsolePrintf("Loading waypoint file: %s\n", filename);
 
-   gzFile bfp = gzopen(filename, "rb");
+	const gzFile bfp = gzopen(filename, "rb");
 
    // if file exists, read the waypoint structure from it
    if (bfp != nullptr)
@@ -1679,7 +1678,8 @@ qboolean WaypointLoad(edict_t *pEntity)
          if (strcmp(header.mapname, STRING(gpGlobals->mapname)) == 0)
 #endif
          {
-            WaypointInit();  // remove any existing waypoints
+	         int i;
+	         WaypointInit();  // remove any existing waypoints
             
             int count_wp = 0, count_paths = 0;
 
@@ -1776,7 +1776,7 @@ qboolean WaypointLoad(edict_t *pEntity)
 static int WaypointNumberOfPaths(int index)
 {
    // count the number of paths from this node...
-   PATH &p = paths[index];
+   const PATH &p = paths[index];
    int num = 0;
 
    for(int i = 0; i < p.last_idx_used; i++)
@@ -1793,7 +1793,7 @@ static int WaypointIncomingPathsCount(int index, int exit_count)
    
    for(int k = 0; k < num_waypoints; k++)
    {
-      PATH &p = paths[k];
+	   const PATH &p = paths[k];
       
       for(int i = 0; i < p.last_idx_used; i++)
       {
@@ -1903,7 +1903,7 @@ void WaypointSave()
       gzwrite(bfp, &num, sizeof(num));  // write the count
 
       // now write out each path index...
-      PATH &p = paths[index];
+      const PATH &p = paths[index];
       
       for(int i = 0; i < p.last_idx_used; i++)
          if (p.index[i] != -1)  // save path node if it's used
@@ -1919,9 +1919,7 @@ void WaypointSave()
 static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, const int reachable_flags)
 {
    TraceResult tr;
-   float curr_height, waterlevel;
-   Vector v_check, v_direction;
-   
+
    float distance = (v_dest - v_src).Length();
 
    // is the destination close enough?
@@ -1936,7 +1934,11 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
       // if waypoint is visible from current position (even behind head)...
       if (!tr.fAllSolid && !tr.fStartSolid && tr.flFraction > 0.999999f)
       {
-      	 // special ladder case, if both on same ladder -> ok
+	      Vector v_direction;
+	      Vector v_check;
+	      float waterlevel;
+	      float curr_height;
+	      // special ladder case, if both on same ladder -> ok
       	 if((reachable_flags & W_FL_LADDER) && (v_src.Make2D() - v_dest.Make2D()).Length() <= 32.0f)
       	 {
       	    return TRUE;
@@ -2014,7 +2016,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
          v_direction = (v_dest - v_src).Normalize();  // 1 unit long
          v_check = v_src + v_direction * 16.0f;
          Vector v_down = v_check;
-         Vector v_check_dest = v_dest - v_direction * 16.0f;
+         const Vector v_check_dest = v_dest - v_direction * 16.0f;
 
          v_down.z = v_down.z - 1000.0;  // straight down 1000 units
 
@@ -2122,7 +2124,7 @@ int WaypointFindReachable(edict_t *pEntity, float range)
       if (waypoints[i].flags & (W_FL_DELETED | W_FL_AIMING))
          continue;  // skip any deleted & aiming waypoints
 
-      float distance = (waypoints[i].origin - pEntity->v.origin).Length();
+      const float distance = (waypoints[i].origin - pEntity->v.origin).Length();
 
       if (distance < min_distance)
       {
@@ -2204,9 +2206,7 @@ void WaypointPrintInfo(edict_t *pEntity)
 static void WaypointAutowaypointing(int idx, edict_t *pEntity)
 {
    float distance;
-   int i;
-   qboolean DidAddAlready = FALSE;
-   
+
    // only if on ground or on ladder or under water
    if((pEntity->v.flags & FL_ONGROUND) != FL_ONGROUND && pEntity->v.movetype != MOVETYPE_FLY && pEntity->v.waterlevel == 0)
       return;
@@ -2230,7 +2230,9 @@ static void WaypointAutowaypointing(int idx, edict_t *pEntity)
 
    if (distance >= target_distance)
    {
-      int onepath_wpt = -1;
+	   qboolean DidAddAlready = FALSE;
+	   int i;
+	   int onepath_wpt = -1;
       float min_distance = 99999.0f;
 
       // check that no other reachable waypoints are nearby...
@@ -2348,10 +2350,7 @@ static void WaypointAutowaypointing(int idx, edict_t *pEntity)
 
 void WaypointThink(edict_t *pEntity)
 {
-	Vector start, end;
-   int i, index=0;
-
-   int idx = ENTINDEX(pEntity) - 1;
+	const int idx = ENTINDEX(pEntity) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return;
 
@@ -2362,16 +2361,19 @@ void WaypointThink(edict_t *pEntity)
       WaypointAutowaypointing(idx, pEntity);
    }
 
-   float min_distance = 99999.0f;
-
-   if (g_waypoint_on)  // display the waypoints if turned on...
+	if (g_waypoint_on)  // display the waypoints if turned on...
    {
-      for (i=0; i < num_waypoints; i++)
+	   float min_distance = 99999.0f;
+	   int index=0;
+	   int i;
+	   Vector end;
+	   Vector start;
+	   for (i=0; i < num_waypoints; i++)
       {
          if (waypoints[i].flags & (W_FL_DELETED|W_FL_AIMING))
             continue;
 
-         float distance = (waypoints[i].origin - pEntity->v.origin).Length();
+         const float distance = (waypoints[i].origin - pEntity->v.origin).Length();
 
          if (distance < 500.0f)
          {
@@ -2438,7 +2440,7 @@ void WaypointThink(edict_t *pEntity)
          {
             f_path_time = gpGlobals->time + 1.0;
 
-            PATH &p = paths[index];
+            const PATH &p = paths[index];
             
             for(i = 0; i < p.last_idx_used; i++)
             {
@@ -2462,14 +2464,14 @@ static void WaypointSaveFloydsMatrix(unsigned short *shortest_path, unsigned sho
    char filename[256];
    char mapname[64];
 
-   int array_size = route_num_waypoints * route_num_waypoints;
+   const int array_size = route_num_waypoints * route_num_waypoints;
    
    //
    safevoid_snprintf(mapname, sizeof(mapname), "%s.matrix", STRING(gpGlobals->mapname));
    
    UTIL_BuildFileName_N(filename, sizeof(filename), "addons/jk_botti/waypoints", mapname);
-   
-   gzFile bfp = gzopen(filename, "wb6");
+
+   const gzFile bfp = gzopen(filename, "wb6");
 
    if (bfp != nullptr)
    {
@@ -2686,13 +2688,11 @@ int WaypointSlowFloyds()
 
 static void WaypointRouteInit(qboolean ForceRebuild)
 {
-   unsigned int index;
-   char filename2[256];
+	char filename2[256];
    char mapname[64];
    struct stat stat1, stat2;
-   char header[16];
 
-   wp_matrix_initialized = FALSE;
+	wp_matrix_initialized = FALSE;
    wp_matrix_save_on_mapend = FALSE;
 
    if (num_waypoints == 0)
@@ -2700,7 +2700,7 @@ static void WaypointRouteInit(qboolean ForceRebuild)
 
    // save number of current waypoints in case waypoints get added later
    route_num_waypoints = num_waypoints;
-   unsigned int array_size = route_num_waypoints * route_num_waypoints;
+   const unsigned int array_size = route_num_waypoints * route_num_waypoints;
    
    JKASSERT(array_size > MAX_WAYPOINT_MATRIX);
 
@@ -2719,8 +2719,8 @@ static void WaypointRouteInit(qboolean ForceRebuild)
       
       UTIL_BuildFileName_N(filename, sizeof(filename), "addons/jk_botti/waypoints", mapname);
 
-      int file1 = open(filename, O_RDONLY);
-      int file2 = open(filename2, O_RDONLY);
+      const int file1 = open(filename, O_RDONLY);
+      const int file2 = open(filename2, O_RDONLY);
 
       fstat(file1, &stat1);
       fstat(file2, &stat2);
@@ -2738,11 +2738,12 @@ static void WaypointRouteInit(qboolean ForceRebuild)
          from_to = waypoint_matrix_mem_array_from_to_array;
          memset(from_to, 0, sizeof(unsigned short) * array_size);
 
-         gzFile bfp = gzopen(filename2, "rb");
+         const gzFile bfp = gzopen(filename2, "rb");
 
          if (bfp != nullptr)
          {
-            // first try read header 'jkbotti_matrixA\0', 16 bytes
+	         char header[16];
+	         // first try read header 'jkbotti_matrixA\0', 16 bytes
             unsigned int num_items = gzread(bfp, header, 16);
             if(num_items != 16 || strcmp(header, "jkbotti_matrixA\0") != 0)
             {
@@ -2813,7 +2814,8 @@ static void WaypointRouteInit(qboolean ForceRebuild)
 
    if (shortest_path == nullptr)
    {
-      UTIL_ConsolePrintf("[matrix calc] - calculating jk_botti waypoint path matrix\n");
+	   unsigned int index;
+	   UTIL_ConsolePrintf("[matrix calc] - calculating jk_botti waypoint path matrix\n");
 
       shortest_path = waypoint_matrix_mem_array_shortest_path;
       memset(shortest_path, 0, sizeof(unsigned short) * array_size);
@@ -2831,7 +2833,7 @@ static void WaypointRouteInit(qboolean ForceRebuild)
 
       for (unsigned int row = 0; row < route_num_waypoints; row++)
       {
-         PATH &p = paths[row];
+	      const PATH &p = paths[row];
          
          for(int i = 0; i < p.last_idx_used; i++)
          {
@@ -2854,7 +2856,7 @@ static void WaypointRouteInit(qboolean ForceRebuild)
             }
             else
             {
-               int offset = row * route_num_waypoints + index;
+	            const int offset = row * route_num_waypoints + index;
                pShortestPath[offset] = (unsigned short)distance;
             }
          }

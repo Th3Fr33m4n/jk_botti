@@ -1274,7 +1274,7 @@ void ProcessBotCfgFile()
    bot_cfg_linenumber++;
 
    cmd_index = 0;
-   char* cmd = cmd_line;
+	const char* cmd = cmd_line;
    char* arg1 = arg2 = arg3 = arg4 = arg5 = nullptr;
 
    // skip to blank or end of string...

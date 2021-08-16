@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <malloc.h>
@@ -32,7 +32,6 @@ char bot_logos[MAX_BOT_LOGOS][16];
 void BotLogoInit()
 {
 	char bot_logo_filename[256];
-   char logo_buffer[80];
 
 	UTIL_BuildFileName_N(bot_logo_filename, sizeof(bot_logo_filename), "addons/jk_botti/jk_botti_logo.cfg", nullptr);
 
@@ -40,7 +39,8 @@ void BotLogoInit()
 
    if (bot_logo_fp != nullptr)
    {
-      UTIL_ConsolePrintf("Loading %s...\n", bot_logo_filename);
+	   char logo_buffer[80];
+	   UTIL_ConsolePrintf("Loading %s...\n", bot_logo_filename);
       
       while ((num_logos < MAX_BOT_LOGOS) &&
              (fgets(logo_buffer, 80, bot_logo_fp) != nullptr))
@@ -69,7 +69,6 @@ void BotLogoInit()
 void BotNameInit()
 {
 	char bot_name_filename[256];
-	char name_buffer[80];
 
 	UTIL_BuildFileName_N(bot_name_filename, sizeof(bot_name_filename), "addons/jk_botti/jk_botti_names.txt", nullptr);
 
@@ -77,7 +76,8 @@ void BotNameInit()
 
    if (bot_name_fp != nullptr)
    {
-      UTIL_ConsolePrintf("Loading %s...\n", bot_name_filename);
+	   char name_buffer[80];
+	   UTIL_ConsolePrintf("Loading %s...\n", bot_name_filename);
       
       while ((number_names < MAX_BOT_NAMES) &&
              (fgets(name_buffer, 80, bot_name_fp) != nullptr))

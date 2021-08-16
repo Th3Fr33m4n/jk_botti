@@ -16,7 +16,7 @@
 #include <pthread.h>
 
 #include <memory.h>
-#include <string.h>
+#include <cstring>
 #include <errno.h>
 #include <stdio.h>
 

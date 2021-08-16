@@ -18,6 +18,8 @@
 #include "bot_weapons.h"
 #include "bot_skill.h"
 
+#include <cmath>
+
 extern bot_weapon_t weapon_defs[MAX_WEAPONS];
 extern int submod_id;
 extern int submod_weaponflag;
@@ -465,7 +467,7 @@ qboolean IsValidPrimaryAttack(bot_t &pBot, const bot_weapon_select_t &select, co
 {
 	const int weapon_index = select.iId;
 
-	qboolean primary_in_range = (always_in_range) || (distance >= select.primary_min_distance && distance <= select.
+	const qboolean primary_in_range = (always_in_range) || (distance >= select.primary_min_distance && distance <= select.
 		primary_max_distance);
 
    // no ammo required for this weapon OR
@@ -482,7 +484,7 @@ qboolean IsValidSecondaryAttack(bot_t &pBot, const bot_weapon_select_t &select, 
    qboolean secondary_valid = FALSE;
 
 	// target is close enough
-   qboolean secondary_in_range = (always_in_range) || (distance >= select.secondary_min_distance && distance <= select.
+	const qboolean secondary_in_range = (always_in_range) || (distance >= select.secondary_min_distance && distance <= select.
 	   secondary_max_distance);
 
    // see if there is enough secondary ammo AND
@@ -564,7 +566,7 @@ ammo_low_t BotSecondaryAmmoLow(bot_t &pBot, const bot_weapon_select_t &select)
 //
 qboolean BotGetGoodWeaponCount(bot_t &pBot, const int stop_count)
 {
-   bot_weapon_select_t * pSelect = &weapon_select[0];
+	const bot_weapon_select_t * pSelect = &weapon_select[0];
    int good_count = 0;
    
    // loop through all the weapons until terminator is found...
@@ -596,7 +598,7 @@ qboolean BotGetGoodWeaponCount(bot_t &pBot, const int stop_count)
 // 
 int BotGetLowAmmoFlags(bot_t &pBot, int *weapon_flags, const qboolean OnlyCarrying)
 {
-   bot_weapon_select_t * pSelect = &weapon_select[0];
+	const bot_weapon_select_t * pSelect = &weapon_select[0];
    int ammoflags = 0;
    if(weapon_flags)
       *weapon_flags = 0;
@@ -773,7 +775,7 @@ mp5_grenades_angles_t mp5_grenade_angles[] = {
 float ValveWeaponMP5_GetBestLaunchAngleByDistanceAndHeight(float distance, float height)
 {
    int i;
-   float * distances = &mp5_grenade_angles[0].distance.angles[0];
+   const float * distances = &mp5_grenade_angles[0].distance.angles[0];
    
    // get index in which between out height is
    int height_idx = 0;
@@ -812,8 +814,8 @@ float ValveWeaponMP5_GetBestLaunchAngleByDistanceAndHeight(float distance, float
       return(-99); // too far
    
    // get weighted medium of both distance, dis_idx - 1, dis_idx
-   const float dis1_diff = fabs(distances[dis_idx - 1] - distance);
-   const float dis2_diff = fabs(distances[dis_idx] - distance);
+   const float dis1_diff = std::fabs(distances[dis_idx - 1] - distance);
+   const float dis2_diff = std::fabs(distances[dis_idx] - distance);
    float total_diff = dis1_diff + dis2_diff;
    
    // height_idx - 1
@@ -824,8 +826,8 @@ float ValveWeaponMP5_GetBestLaunchAngleByDistanceAndHeight(float distance, float
                    (dis2_diff/total_diff) * mp5_grenade_angles[height_idx].distance.angles[dis_idx]; 
    
    // get weighted medium of both height, height_idx - 1, height_idx
-   const float height1_diff = fabs(mp5_grenade_angles[height_idx - 1].height - height);
-   const float height2_diff = fabs(mp5_grenade_angles[height_idx].height - height);
+   const float height1_diff = std::fabs(mp5_grenade_angles[height_idx - 1].height - height);
+   const float height2_diff = std::fabs(mp5_grenade_angles[height_idx].height - height);
    total_diff = height1_diff + height2_diff;
 
    const float launch_angle = (height1_diff/total_diff) * angle_1 + (height2_diff/total_diff) * angle_2;

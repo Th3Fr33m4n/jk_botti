@@ -7,7 +7,7 @@
 #define BOTCOMBAT
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <malloc.h>
@@ -24,6 +24,8 @@
 #include "waypoint.h"
 #include "bot_sound.h"
 #include "player.h"
+
+#include <cmath>
 
 extern bot_weapon_t weapon_defs[MAX_WEAPONS];
 extern qboolean b_observer_mode;
@@ -71,8 +73,8 @@ static void BotPointGun(bot_t &pBot)
    const float frame_time = pBot.f_frame_time / skill_settings[pBot.bot_skill].turn_slowness;
    float speed; // speed : 0.1 - 1
    const float turn_skill = skill_settings[pBot.bot_skill].turn_skill;
-   
-   Vector v_deviation = UTIL_WrapAngles(Vector(pEdict->v.idealpitch, pEdict->v.ideal_yaw, 0) - pEdict->v.v_angle);
+
+   const Vector v_deviation = UTIL_WrapAngles(Vector(pEdict->v.idealpitch, pEdict->v.ideal_yaw, 0) - pEdict->v.v_angle);
 
    // if bot is aiming at something, aim fast, else take our time...
    if (pBot.b_combat_longjump)
@@ -181,7 +183,7 @@ void BotAimPost( bot_t &pBot )
 
 
 // flavour xy axis over z on finding closest enemy
-static Vector GetModifiedEnemyDistance(bot_t &pBot, const Vector & distance)
+static Vector GetModifiedEnemyDistance(const bot_t& pBot, const Vector& distance)
 {
    return( Vector(distance.x, distance.y, distance.z * skill_settings[pBot.bot_skill].updown_turn_ration) );
 }
@@ -342,7 +344,7 @@ void GatherPlayerData(edict_t * pEdict)
 
 
 //
-static Vector AddPredictionVelocityVaritation(bot_t &pBot, const Vector & velocity)
+static Vector AddPredictionVelocityVaritation(const bot_t& pBot, const Vector& velocity)
 {
    if(velocity.x == 0 && velocity.y == 0)
       return velocity;
@@ -362,7 +364,7 @@ static Vector AddPredictionVelocityVaritation(bot_t &pBot, const Vector & veloci
 }
 
 //
-static Vector AddPredictionPositionVaritation(bot_t &pBot)
+static Vector AddPredictionPositionVaritation(const bot_t& pBot)
 {
    Vector v_rnd_angles;
    
@@ -380,7 +382,7 @@ static Vector TracePredictedMovement(bot_t &pBot, edict_t *pPlayer, const Vector
    if(without_velocity)
       return(v_src);
 
-   Vector v_velocity = AddPredictionVelocityVaritation(pBot, cv_velocity);
+   const Vector v_velocity = AddPredictionVelocityVaritation(pBot, cv_velocity);
    Vector v_dest = v_src + v_velocity * time + AddPredictionPositionVaritation(pBot);
 
    TraceResult tr;
@@ -402,13 +404,13 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
    
    if(FNullEnt(pPlayer))
       return(Vector(0,0,0));
-   
-   int idx = ENTINDEX(pPlayer) - 1;
+
+	const int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients || !players[idx].position_latest || !players[idx].position_oldest)
       return(UTIL_GetOrigin(pPlayer));
    
    // get prediction time based on bot skill
-   float time = gpGlobals->time - skill_settings[pBot.bot_skill].ping_emu_latency;
+	const float time = gpGlobals->time - skill_settings[pBot.bot_skill].ping_emu_latency;
    
    // find position data slots that are around 'time'
    posdata_t* newer = players[idx].position_latest;
@@ -423,7 +425,7 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
       }
       if(newer->time == time) 
       {
-         return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
+         return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, std::fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
       }
       
       //this time is older than previous..
@@ -434,7 +436,7 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
    
    if(!older) 
    {
-      return(TracePredictedMovement(pBot, pPlayer, players[idx].position_oldest->origin, players[idx].position_oldest->velocity, fabs(gpGlobals->time - players[idx].position_oldest->time) * AHEAD_MULTIPLIER, players[idx].position_oldest->ducking, without_velocity)); 
+      return(TracePredictedMovement(pBot, pPlayer, players[idx].position_oldest->origin, players[idx].position_oldest->velocity, std::fabs(gpGlobals->time - players[idx].position_oldest->time) * AHEAD_MULTIPLIER, players[idx].position_oldest->ducking, without_velocity)); 
    }
    
    if(!newer) 
@@ -452,22 +454,22 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
    // don't mix dead data with alive data
    if(!newer->was_alive && older->was_alive) 
    {
-      return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
+      return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, std::fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
    }
    if(!older->was_alive && newer->was_alive) 
    {
-      return(TracePredictedMovement(pBot, pPlayer, older->origin, older->velocity, fabs(gpGlobals->time - older->time) * AHEAD_MULTIPLIER, older->ducking, without_velocity)); 
+      return(TracePredictedMovement(pBot, pPlayer, older->origin, older->velocity, std::fabs(gpGlobals->time - older->time) * AHEAD_MULTIPLIER, older->ducking, without_velocity)); 
    }
 
-   const float newer_diff = fabs(newer->time - time);
-   const float older_diff = fabs(older->time - time);
+   const float newer_diff = std::fabs(newer->time - time);
+   const float older_diff = std::fabs(older->time - time);
    const float total_diff = newer_diff + older_diff;
    
    if(total_diff <= 0.0) 
    {
       // zero div would crash server.. 
       // zero diff means that both data are from same time
-      return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
+      return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, std::fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
    }
    
    // make weighted average
@@ -477,7 +479,7 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
       pred_velocity = (older_diff/total_diff) * newer->velocity + (newer_diff/total_diff) * older->velocity;
    
    // use old origin and use old velocity to predict current position
-   return(TracePredictedMovement(pBot, pPlayer, pred_origin, pred_velocity, fabs(gpGlobals->time - time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
+   return(TracePredictedMovement(pBot, pPlayer, pred_origin, pred_velocity, std::fabs(gpGlobals->time - time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
 }
 
 
@@ -598,7 +600,7 @@ static qboolean AreTeamMates(edict_t * pOther, edict_t * pEdict)
 
 
 //
-static edict_t *BotFindEnemyNearestToPoint(bot_t &pBot, const Vector &v_point, float radius, Vector *v_found)
+static edict_t *BotFindEnemyNearestToPoint(const bot_t& pBot, const Vector& v_point, float radius, Vector* v_found)
 {
    edict_t *pBotEdict = pBot.pEdict;
    
@@ -681,7 +683,7 @@ void BotUpdateHearingSensitivity(bot_t &pBot)
 
 
 //
-static float BotGetHearingSensitivity(bot_t &pBot)
+static float BotGetHearingSensitivity(const bot_t& pBot)
 {
    if(pBot.f_current_hearing_sensitivity < skill_settings[pBot.bot_skill].hearing_sensitivity)
       return skill_settings[pBot.bot_skill].hearing_sensitivity;
@@ -791,10 +793,8 @@ void BotFindEnemy( bot_t &pBot )
    edict_t *pNewEnemy; 
    Vector v_newenemy;
    float nearestdistance;
-   qboolean chatprot = FALSE;
-   int i;
 
-   edict_t *pEdict = pBot.pEdict;
+edict_t *pEdict = pBot.pEdict;
    
    if (b_botdontshoot)
    {
@@ -810,7 +810,8 @@ void BotFindEnemy( bot_t &pBot )
 
    if (pBot.pBotEnemy != nullptr)  // does the bot already have an enemy?
    {
-      // if the enemy is dead?
+	   qboolean chatprot = FALSE;
+	   // if the enemy is dead?
       // if the enemy is chat protected?
       // is the enemy dead?, assume bot killed it
       if (!IsAlive(pBot.pBotEnemy) || TRUE == (chatprot = IsPlayerChatProtected(pBot.pBotEnemy))) 
@@ -871,7 +872,8 @@ void BotFindEnemy( bot_t &pBot )
 
    if (pNewEnemy == nullptr)
    {
-      breakable_list_t * pBreakable;
+	   int i;
+	   breakable_list_t * pBreakable;
       edict_t *pMonster;
       Vector vecEnd;
 
@@ -986,13 +988,13 @@ void BotFindEnemy( bot_t &pBot )
       // search the world for players...
       for (i = 1; i <= gpGlobals->maxClients; i++)
       {
-         Vector v_player;
-         edict_t *pPlayer = INDEXENT(i);
+	      edict_t *pPlayer = INDEXENT(i);
 
          // skip invalid players and skip self (i.e. this bot)
          if ((pPlayer) && (!pPlayer->free) && (pPlayer != pEdict) && !FBitSet(pPlayer->v.flags, FL_PROXY))
          {
-            if ((b_observer_mode) && !(FBitSet(pPlayer->v.flags, FL_FAKECLIENT) || FBitSet(pPlayer->v.flags, FL_THIRDPARTYBOT)))
+	         Vector v_player;
+	         if ((b_observer_mode) && !(FBitSet(pPlayer->v.flags, FL_FAKECLIENT) || FBitSet(pPlayer->v.flags, FL_THIRDPARTYBOT)))
                continue;
 
             // 0,0,0 is considered invalid
@@ -1118,7 +1120,7 @@ void BotFindEnemy( bot_t &pBot )
 
 
 //
-static qboolean HaveRoomForThrow(bot_t & pBot)
+static qboolean HaveRoomForThrow(const bot_t& pBot)
 {
    edict_t *pEdict = pBot.pEdict;
    qboolean head_ok;
@@ -1131,16 +1133,16 @@ static qboolean HaveRoomForThrow(bot_t & pBot)
    Vector v_end = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
       
    UTIL_TraceMove(v_start, v_end, ignore_monsters, pEdict, &tr);
-     
-   qboolean feet_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
+
+   const qboolean feet_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
       
    //center
    v_start = pEdict->v.origin;
    v_end = pBot.pBotEnemy->v.origin;
       
    UTIL_TraceMove(v_start, v_end, ignore_monsters, pEdict, &tr);
-      
-   qboolean center_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
+
+   const qboolean center_ok = (tr.flFraction > 0.999999f || tr.pHit == pBot.pBotEnemy);
       
    if(center_ok && !feet_ok)
    {
@@ -1162,13 +1164,13 @@ static qboolean HaveRoomForThrow(bot_t & pBot)
 //
 static qboolean CheckWeaponFireConditions(bot_t & pBot, const bot_weapon_select_t &select, qboolean &use_primary, qboolean &use_secondary) 
 {
-   edict_t *pEdict = pBot.pEdict;
+	const edict_t *pEdict = pBot.pEdict;
    
    //
    if ((select.type & WEAPON_MELEE) == WEAPON_MELEE)
    {
       // check if bot needs to duck down to hit enemy...
-      if (fabs(pBot.pBotEnemy->v.origin.z - pEdict->v.origin.z) > 16 &&
+      if (std::fabs(pBot.pBotEnemy->v.origin.z - pEdict->v.origin.z) > 16 &&
           (pBot.pBotEnemy->v.origin - pEdict->v.origin).Length() < 64)
          pBot.f_duck_time = gpGlobals->time + 1.0;
    }
@@ -1259,9 +1261,9 @@ static qboolean BotFireSelectedWeapon(bot_t & pBot, const bot_weapon_select_t &s
          {
 	         const int skill = pBot.bot_skill;
 
-	         float base_delay = delay.primary_base_delay;
-            float min_delay = delay.primary_min_delay[skill];
-            float max_delay = delay.primary_max_delay[skill];
+	         const float base_delay = delay.primary_base_delay;
+	         const float min_delay = delay.primary_min_delay[skill];
+	         const float max_delay = delay.primary_max_delay[skill];
             
             if(min_delay == 0 && max_delay == 0)
                pBot.f_shoot_time = gpGlobals->time + base_delay;
@@ -1293,9 +1295,9 @@ static qboolean BotFireSelectedWeapon(bot_t & pBot, const bot_weapon_select_t &s
          {
 	         const int skill = pBot.bot_skill;
 
-	         float base_delay = delay.secondary_base_delay;
-            float min_delay = delay.secondary_min_delay[skill];
-            float max_delay = delay.secondary_max_delay[skill];
+	         const float base_delay = delay.secondary_base_delay;
+	         const float min_delay = delay.secondary_min_delay[skill];
+	         const float max_delay = delay.secondary_max_delay[skill];
 
             if(min_delay == 0 && max_delay == 0)
                pBot.f_shoot_time = gpGlobals->time + base_delay;
@@ -1340,7 +1342,7 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
 {
    bot_weapon_select_t *pSelect;
    bot_fire_delay_t *pDelay;
-   int select_index, better_index;
+   int select_index;
    int iId;
    qboolean use_primary;
    qboolean use_secondary;
@@ -1476,7 +1478,8 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
            BotCanUseWeapon(pBot, pSelect[select_index]) &&
            IsValidToFireAtTheMoment(pBot, pSelect[select_index])))
       {
-         better_index = -1;
+	      int better_index;
+	      better_index = -1;
          
          if(weapon_choice == 0)
          {
@@ -1724,16 +1727,16 @@ void BotShootAtEnemy( bot_t &pBot )
    if (pBot.f_reaction_target_time > gpGlobals->time)
       return;
 
-   Vector v_predicted_pos = UTIL_AdjustOriginWithExtent(pBot, GetPredictedPlayerPosition(pBot, pBot.pBotEnemy),
-                                                        pBot.pBotEnemy);
+	const Vector v_predicted_pos = UTIL_AdjustOriginWithExtent(pBot, GetPredictedPlayerPosition(pBot, pBot.pBotEnemy),
+	                                                           pBot.pBotEnemy);
 
    // do we need to aim at the feet?
    if (pBot.current_weapon_index != -1 && (weapon_select[pBot.current_weapon_index].type & WEAPON_FIRE_AT_FEET) == WEAPON_FIRE_AT_FEET)
    {
 	   TraceResult tr;
 
-      Vector v_src = pEdict->v.origin + pEdict->v.view_ofs;  // bot's eyes
-      Vector v_dest = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
+	   const Vector v_src = pEdict->v.origin + pEdict->v.view_ofs;  // bot's eyes
+	   const Vector v_dest = pBot.pBotEnemy->v.origin - pBot.pBotEnemy->v.view_ofs;
 
       UTIL_TraceLine( v_src, v_dest, dont_ignore_monsters,
                       pEdict->v.pContainingEntity, &tr);
@@ -1768,8 +1771,8 @@ void BotShootAtEnemy( bot_t &pBot )
       
       return;
    }
-   
-   Vector v_enemy = v_enemy_aimpos - GetGunPosition(pEdict);
+
+	const Vector v_enemy = v_enemy_aimpos - GetGunPosition(pEdict);
    
    Vector enemy_angle = UTIL_VecToAngles( v_enemy );
 
@@ -1794,7 +1797,7 @@ void BotShootAtEnemy( bot_t &pBot )
    Vector v_enemy_xy = v_enemy;
    v_enemy_xy.z = 0;  // ignore z component (up & down)
 
-   float f_xy_distance = v_enemy_xy.Length();  // how far away is the enemy scum?
+	const float f_xy_distance = v_enemy_xy.Length();  // how far away is the enemy scum?
 
    if (f_xy_distance > 20)      // run if distance to enemy is far
       pBot.f_move_speed = pBot.f_max_speed;
@@ -1859,7 +1862,7 @@ qboolean BotShootTripmine( bot_t &pBot )
    // if not try find another weapon which can do this (type: WEAPON_FIRE or FIRE_ZOOM).
    //TODO: or maybe throw grenade????
    pBot.pBotEnemy = pBot.tripmine_edict;
-   qboolean ret = BotFireWeapon(v_enemy, pBot, VALVE_WEAPON_GLOCK);
+   const qboolean ret = BotFireWeapon(v_enemy, pBot, VALVE_WEAPON_GLOCK);
    pBot.pBotEnemy = nullptr;
    return ret;
 }

@@ -80,7 +80,7 @@ ssize_t PASCAL call_original_sendto(int socket, const void *message, size_t leng
 	iov.len = length;
 	DWORD num_sent = 0;
 
-	int err = WSASendTo(socket, &iov, 1, &num_sent, flags, dest_addr, dest_len, nullptr, nullptr);
+	const int err = WSASendTo(socket, &iov, 1, &num_sent, flags, dest_addr, dest_len, nullptr, nullptr);
 	if (err == SOCKET_ERROR) {
 		errno = WSAGetLastError();
 		return -1;

@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <extdll.h>
@@ -101,7 +101,6 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int iState;
    static int iId;
-   static int iClip;
 
    if (state == 0)
    {
@@ -115,7 +114,8 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
    }
    else if (state == 2)
    {
-      state = 0;
+	   static int iClip;
+	   state = 0;
 
       iClip = *(int *)p;  // ammo currently in the clip for this weapon
 
@@ -192,7 +192,6 @@ void BotClient_Valve_AmmoX(void *p, int bot_index)
 {
    static int state = 0;   // current state machine state
    static int index;
-   static int ammount;
 
    if (state == 0)
    {
@@ -201,13 +200,14 @@ void BotClient_Valve_AmmoX(void *p, int bot_index)
    }
    else if (state == 1)
    {
-      state = 0;
+	   static int ammount;
+	   state = 0;
 
       ammount = *(int *)p;  // the ammount of ammo currently available
 
       bots[bot_index].m_rgAmmo[index] = ammount;  // store it away
 
-      int ammo_index = bots[bot_index].current_weapon.iId;
+      const int ammo_index = bots[bot_index].current_weapon.iId;
 
       // update the ammo counts for this weapon...
       bots[bot_index].current_weapon.iAmmo1 =
@@ -226,7 +226,6 @@ void BotClient_Valve_AmmoPickup(void *p, int bot_index)
 {
    static int state = 0;   // current state machine state
    static int index;
-   static int ammount;
 
    if (state == 0)
    {
@@ -235,13 +234,14 @@ void BotClient_Valve_AmmoPickup(void *p, int bot_index)
    }
    else if (state == 1)
    {
-      state = 0;
+	   static int ammount;
+	   state = 0;
 
       ammount = *(int *)p;
 
       bots[bot_index].m_rgAmmo[index] = ammount;
 
-      int ammo_index = bots[bot_index].current_weapon.iId;
+      const int ammo_index = bots[bot_index].current_weapon.iId;
 
       // update the ammo counts for this weapon...
       bots[bot_index].current_weapon.iAmmo1 =
@@ -362,9 +362,6 @@ void BotClient_Valve_DeathMsg(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int killer_index;
    static int victim_index;
-   static edict_t *killer_edict;
-   static edict_t *victim_edict;
-   static int index;
 
    if (state == 0)
    {
@@ -378,7 +375,10 @@ void BotClient_Valve_DeathMsg(void *p, int bot_index)
    }
    else if (state == 2)
    {
-      state = 0;
+	   static int index;
+	   static edict_t *victim_edict;
+	   static edict_t *killer_edict;
+	   state = 0;
 
       killer_edict = INDEXENT(killer_index);
       victim_edict = INDEXENT(victim_index);
@@ -451,7 +451,7 @@ void BotClient_Valve_ScreenFade(void *p, int bot_index)
    {
       state = 0;
 
-      int length = (duration + hold_time) / 4096;
+      const int length = (duration + hold_time) / 4096;
       bots[bot_index].blinded_time = gpGlobals->time + length - 2.0;
    }
    else

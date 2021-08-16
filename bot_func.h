@@ -19,7 +19,7 @@ void BotReplaceConnectionTime(const char * name, float * timeslot);
 
 // bot_chat.cpp:
 void LoadBotChat();
-void BotChatTaunt(bot_t &pBot, edict_t *victim_edict);
+void BotChatTaunt(bot_t& pBot, const edict_t* victim_edict);
 void BotChatWhine(bot_t &pBot);
 void BotChatTalk(bot_t &pBot);
 void BotChatEndGame(bot_t &pBot);
@@ -40,21 +40,21 @@ qboolean BotShootTripmine( bot_t &pBot );
 void LoadBotModels();
 
 // bot_navigate.cpp:
-float BotChangePitch( bot_t &pBot, float speed );
-float BotChangeYaw( bot_t &pBot, float speed );
+float BotChangePitch(const bot_t& pBot, float speed);
+float BotChangeYaw(const bot_t& pBot, float speed);
 qboolean BotUpdateTrackSoundGoal( bot_t &pBot );
 qboolean BotHeadTowardWaypoint( bot_t &pBot );
 void BotOnLadder( bot_t &pBot, float moved_distance );
 void BotUnderWater( bot_t &pBot );
 void BotUseLift( bot_t &pBot, float moved_distance );
-qboolean BotStuckInCorner( bot_t &pBot );
-void BotTurnAtWall( bot_t &pBot, TraceResult *tr, qboolean negative );
-qboolean BotCantMoveForward( bot_t &pBot, TraceResult *tr );
+qboolean BotStuckInCorner(const bot_t& pBot);
+void BotTurnAtWall(const bot_t& pBot, const TraceResult* tr, qboolean negative);
+qboolean BotCantMoveForward(const bot_t& pBot, TraceResult* tr);
 qboolean BotCanJumpUp( bot_t &pBot, qboolean *bDuckJump );
-qboolean BotCanDuckUnder( bot_t &pBot );
-qboolean BotEdgeForward( bot_t &pBot, const Vector &v_move_dir );
-qboolean BotEdgeRight( bot_t &pBot, const Vector &v_move_dir );
-qboolean BotEdgeLeft( bot_t &pBot, const Vector &v_move_dir );
+qboolean BotCanDuckUnder(const bot_t& pBot);
+qboolean BotEdgeForward(const bot_t& pBot, const Vector& v_move_dir);
+qboolean BotEdgeRight(const bot_t& pBot, const Vector& v_move_dir);
+qboolean BotEdgeLeft(const bot_t& pBot, const Vector& v_move_dir);
 void BotRandomTurn( bot_t &pBot );
 qboolean BotCheckWallOnLeft( bot_t &pBot );
 qboolean BotCheckWallOnRight( bot_t &pBot );

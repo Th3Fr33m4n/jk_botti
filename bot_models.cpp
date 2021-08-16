@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <extdll.h>
@@ -150,7 +150,6 @@ void LoadBotModels()
    char path[MAX_PATH];
    char search_path[MAX_PATH];
    char dirname[MAX_PATH];
-   char filename[MAX_PATH];
    int index;
    struct stat stat_str;
 #ifndef __linux__
@@ -191,7 +190,8 @@ void LoadBotModels()
 
    while ((directory = FindDirectory(directory, dirname, sizeof(dirname), search_path)) != nullptr)
    {
-      if ((strcmp(dirname, ".") == 0) || (strcmp(dirname, "..") == 0))
+	   char filename[MAX_PATH];
+	   if ((strcmp(dirname, ".") == 0) || (strcmp(dirname, "..") == 0))
          continue;
 
       safevoid_snprintf(filename, sizeof(filename), "%s/%s/%s.mdl", path, dirname, dirname);

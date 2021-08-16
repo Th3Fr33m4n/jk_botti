@@ -20,7 +20,7 @@
 #endif
 
 //
-inline Vector GetGunPosition(edict_t *pEdict)
+inline Vector GetGunPosition(const edict_t* pEdict)
 {
    return (pEdict->v.origin + pEdict->v.view_ofs);
 }

@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <extdll.h>
@@ -291,7 +291,7 @@ static void BotDropCharacter(const char *in_string, char *out_string, int sizeof
 
 	safe_strcopy(out_string, sizeof_out_string, in_string);
 
-   int len = strlen(out_string);
+	const int len = strlen(out_string);
    if(len < 2)
       return;
    
@@ -321,7 +321,7 @@ static void BotSwapCharacter(const char *in_string, char *out_string, int sizeof
 
 	safe_strcopy(out_string, sizeof_out_string, in_string);
 
-   int len = strlen(out_string);
+	const int len = strlen(out_string);
    if(len < 3) // must be 3, 1+1 for swap + zero must now swap = 3
       return;
    
@@ -336,7 +336,7 @@ static void BotSwapCharacter(const char *in_string, char *out_string, int sizeof
 
    if (count < 20)
    {
-      char temp = out_string[pos];
+	   const char temp = out_string[pos];
       out_string[pos] = out_string[pos+1];
       out_string[pos+1] = temp;
    }
@@ -345,12 +345,11 @@ static void BotSwapCharacter(const char *in_string, char *out_string, int sizeof
 
 static void BotChatName(const char *original_name, char *out_name, int sizeof_out_name)
 {
-	char temp_lvlXless_name[80];
-   
-   //always remove [lvlX] tag
+	//always remove [lvlX] tag
    if(strncmp(original_name, "[lvl", 4) == 0 && original_name[4] >= '0' && original_name[4] <= '5' && original_name[5] == ']')
    {
-      safe_strcopy(temp_lvlXless_name, sizeof(temp_lvlXless_name), &original_name[6]);
+	   char temp_lvlXless_name[80];
+	   safe_strcopy(temp_lvlXless_name, sizeof(temp_lvlXless_name), &original_name[6]);
       original_name = temp_lvlXless_name;
    }
 
@@ -456,8 +455,7 @@ static void BotChatGetPlayers()
 
 static void BotChatFillInName(char *bot_say_msg, int sizeof_msg, const char *chat_text, const char *chat_name, const char *bot_name)
 {
-   char random_name[64];
-   const int clen = strlen(chat_text);
+	const int clen = strlen(chat_text);
    int i = 0;
    int o = 0;
 
@@ -473,7 +471,8 @@ static void BotChatFillInName(char *bot_say_msg, int sizeof_msg, const char *cha
                
                if(chat_text[i + 1] == 'r')
                {
-                  BotChatGetPlayers();
+	               char random_name[64];
+	               BotChatGetPlayers();
          
                   // pick a name at random from the list of players...
                   int index = RANDOM_LONG2(0, player_count-1);
@@ -522,20 +521,18 @@ static void BotChatFillInName(char *bot_say_msg, int sizeof_msg, const char *cha
 
 
 // taunt on killed player
-void BotChatTaunt(bot_t &pBot, edict_t *victim_edict)
+void BotChatTaunt(bot_t& pBot, const edict_t* victim_edict)
 {
-   char chat_text[81];
-   char chat_name[64];
-   char temp_name[64];
-
-   if(pBot.b_bot_say && pBot.f_bot_say >= gpGlobals->time)
+	if(pBot.b_bot_say && pBot.f_bot_say >= gpGlobals->time)
       return;
    
    // are there any taunt messages and should the bot taunt?
    if ((bot_taunt_count > 0) &&
        (RANDOM_LONG2(1,100) <= pBot.taunt_percent))
    {
-      int taunt_index;
+	   char chat_name[64];
+	   char chat_text[81];
+	   int taunt_index;
       int i;
 
       int recent_count = 0;
@@ -570,7 +567,8 @@ void BotChatTaunt(bot_t &pBot, edict_t *victim_edict)
 
       if (victim_edict->v.netname)
       {
-         safe_strcopy(temp_name, sizeof(temp_name), STRING(victim_edict->v.netname));
+	      char temp_name[64];
+	      safe_strcopy(temp_name, sizeof(temp_name), STRING(victim_edict->v.netname));
 
          BotChatName(temp_name, chat_name, sizeof(chat_name));
       }
@@ -591,25 +589,22 @@ void BotChatTaunt(bot_t &pBot, edict_t *victim_edict)
 // did another player kill this bot AND bot whine messages loaded AND
 void BotChatWhine(bot_t &pBot)
 {
-   char chat_text[81];
-   char chat_name[64];
-   char temp_name[64];
-
-   if(pBot.b_bot_say && pBot.f_bot_say >= gpGlobals->time)
+	if(pBot.b_bot_say && pBot.f_bot_say >= gpGlobals->time)
       return;
-   
-   edict_t *pEdict = pBot.pEdict;
+
+   const edict_t *pEdict = pBot.pEdict;
    
    // has the bot been alive for at least 15 seconds AND
    if ((pBot.killer_edict != nullptr) && (bot_whine_count > 0) &&
        ((pBot.f_bot_spawn_time + 15.0) <= gpGlobals->time))
    {
-      int whine_index;
-      int i;
-
-      if ((RANDOM_LONG2(1,100) <= pBot.whine_percent))
-      {
-         int recent_count = 0;
+	   if ((RANDOM_LONG2(1,100) <= pBot.whine_percent))
+       {
+	      int i;
+	      int whine_index;
+	      char chat_name[64];
+	      char chat_text[81];
+	      int recent_count = 0;
 
          while (recent_count < 5)
          {
@@ -641,7 +636,8 @@ void BotChatWhine(bot_t &pBot)
 
          if (pBot.killer_edict->v.netname)
          {
-            safe_strcopy(temp_name, sizeof(temp_name), STRING(pBot.killer_edict->v.netname));
+	         char temp_name[64];
+	         safe_strcopy(temp_name, sizeof(temp_name), STRING(pBot.killer_edict->v.netname));
 
             BotChatName(temp_name, chat_name, sizeof(chat_name));
          }
@@ -663,13 +659,10 @@ void BotChatWhine(bot_t &pBot)
 // just say something
 void BotChatTalk(bot_t &pBot)
 {
-   char chat_text[81];
-   char chat_name[64];
-
-   if(pBot.b_bot_say && pBot.f_bot_say >= gpGlobals->time)
+	if(pBot.b_bot_say && pBot.f_bot_say >= gpGlobals->time)
       return;
-   
-   edict_t *pEdict = pBot.pEdict;
+
+   const edict_t *pEdict = pBot.pEdict;
    
    if ((bot_chat_count > 0) && (pBot.f_bot_chat_time < gpGlobals->time))
    {
@@ -677,7 +670,9 @@ void BotChatTalk(bot_t &pBot)
 
       if (RANDOM_LONG2(1,100) <= pBot.chat_percent)
       {
-         int chat_index;
+	      char chat_name[64];
+	      char chat_text[81];
+	      int chat_index;
          int i;
 
          int recent_count = 0;
@@ -727,14 +722,13 @@ void BotChatTalk(bot_t &pBot)
 // endgame say
 void BotChatEndGame(bot_t &pBot)
 {
-   char chat_text[81];
-   char chat_name[64];
-
-   edict_t *pEdict = pBot.pEdict;
+	const edict_t *pEdict = pBot.pEdict;
    
    if ((bot_endgame_count > 0) && RANDOM_LONG2(1,100) <= pBot.endgame_percent)
    {
-      int endgame_index;
+	   char chat_name[64];
+	   char chat_text[81];
+	   int endgame_index;
       int i;
       
       int recent_count = 0;

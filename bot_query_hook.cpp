@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <malloc.h>
@@ -64,19 +64,16 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 	
 	size_t len = length - 5;
 	const unsigned char * msg = (const unsigned char*)message + 5;
-	
-	int i, pcount;
-	size_t offset;
-	char pname[64];
-	
-	//get player count
-	pcount = *msg++;
+
+//get player count
+	int pcount = *msg++;
 	if(--len == 0)
 		return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len));
 	
 	//parse player slots
-	for(i = 0; i < pcount; i++) 
-	{		
+	for(int i = 0; i < pcount; i++) 
+	{
+		char pname[64];
 		// skip player number
 		msg++;
 		if(--len == 0)
@@ -98,7 +95,7 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 		if(len < 4) 
 			return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len)); 
 		
-		offset = (size_t)msg - (size_t)message;
+		size_t offset = (size_t)msg - (size_t)message;
 		
 		BotReplaceConnectionTime(pname, (float*)&newmsg[offset]);
 		

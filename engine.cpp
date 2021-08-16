@@ -215,25 +215,24 @@ static void pfnMessageBegin(int msg_dest, int msg_type, const float *pOrigin, ed
    if (gpGlobals->deathmatch)
    {
 	   static int WeaponList = 0;
-      static int CurWeapon = 0;
-      static int AmmoX = 0;
-      static int AmmoPickup = 0;
-      static int WeapPickup = 0;
-      static int ItemPickup = 0;
-      static int Health = 0;
-      static int Battery = 0;
-      static int Damage = 0;
-      static int ScreenFade = 0;
-      static int DeathMsg = 0;
-      
-      if (ed)
+
+	   if (ed)
       {
-         int index = UTIL_GetBotIndex(ed);
+	      static int CurWeapon = 0;
+	      int index = UTIL_GetBotIndex(ed);
 
          // is this message for a bot?
          if (index != -1)
          {
-            botMsgEndFunction = nullptr;  // no msg end function until known otherwise
+	         static int ScreenFade = 0;
+	         static int Damage = 0;
+	         static int Battery = 0;
+	         static int Health = 0;
+	         static int WeapPickup = 0;
+	         static int ItemPickup = 0;
+	         static int AmmoPickup = 0;
+	         static int AmmoX = 0;
+	         botMsgEndFunction = nullptr;  // no msg end function until known otherwise
             botMsgIndex = index;       // index of bot receiving message
 
             if (msg_type == FAST_GET_USER_MSG_ID (PLID, WeaponList, "WeaponList", nullptr))
@@ -274,7 +273,8 @@ static void pfnMessageBegin(int msg_dest, int msg_type, const float *pOrigin, ed
       }
       else if (msg_dest == MSG_ALL)
       {
-         botMsgFunction = nullptr;     // no msg function until known otherwise
+	      static int DeathMsg = 0;
+	      botMsgFunction = nullptr;     // no msg function until known otherwise
          botMsgEndFunction = nullptr;  // no msg end function until known otherwise
          botMsgIndex = -1;          // index of bot receiving message (none)
 
@@ -470,7 +470,7 @@ static void pfnSetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed)
    if (!gpGlobals->deathmatch)
       RETURN_META (MRES_IGNORED);
 
-   int index = UTIL_GetBotIndex((edict_t*)pEdict);
+   const int index = UTIL_GetBotIndex((edict_t*)pEdict);
 
    // is this message for a bot?
    if (index != -1)

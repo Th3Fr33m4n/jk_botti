@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <malloc.h>
@@ -228,8 +228,8 @@ int CSoundEnt :: IAllocSound()
 
    // there is at least one sound available, so move it to the
    // Active sound list, and return its SoundPool index.
-   
-   int iNewSound = m_iFreeSound;// copy the index of the next free sound
+
+	const int iNewSound = m_iFreeSound;// copy the index of the next free sound
 
    m_iFreeSound = m_SoundPool[ m_iFreeSound ].m_iNext;// move the index down into the free list. 
 
@@ -260,7 +260,7 @@ void CSoundEnt :: InsertSound ( edict_t* pEdict, int channel, const Vector &vecO
    }
    else
    {
-      int iThisSound = pSoundEnt->IAllocSound();
+	   const int iThisSound = pSoundEnt->IAllocSound();
 
       if ( iThisSound == SOUNDLIST_EMPTY )
       {
