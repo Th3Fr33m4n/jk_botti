@@ -86,7 +86,7 @@ float UTIL_WrapAngle(float angle)
    // this function returns an angle normalized to the range [-180 < angle <= 180]
    
    angle += 180.0;
-   const unsigned int bits = 0x80000000;
+   constexpr unsigned int bits = 0x80000000;
    angle = -180.0 + ((360.0 / bits) * ((int64_t)(angle * (bits / 360.0)) & (bits-1)));
    
    if(angle == -180.0f)
@@ -257,7 +257,7 @@ void fast_random_seed(unsigned int seed)
 /* supports range INT_MIN, INT_MAX */
 int RANDOM_LONG2(int lLow, int lHigh) 
 {
-   const double c_divider = ((unsigned long long)1) << 32; // div by (1<<32)
+   constexpr double c_divider = ((unsigned long long)1) << 32; // div by (1<<32)
 
    if(unlikely(lLow >= lHigh))
       return(lLow);
@@ -272,7 +272,7 @@ int RANDOM_LONG2(int lLow, int lHigh)
 
 float RANDOM_FLOAT2(float flLow, float flHigh) 
 {
-   const double c_divider = (((unsigned long long)1) << 32) - 1; // div by (1<<32)-1
+   constexpr double c_divider = (((unsigned long long)1) << 32) - 1; // div by (1<<32)-1
 
    if(unlikely(flLow >= flHigh))
       return(flLow);
@@ -1047,7 +1047,7 @@ qboolean IsAlive(const edict_t *pEdict)
 
 qboolean FInViewCone(const Vector & Origin, edict_t *pEdict)
 {
-   const float fov_angle = 80;
+   constexpr float fov_angle = 80;
 
    return(DotProduct((Origin - pEdict->v.origin).Normalize(), UTIL_AnglesToForward(pEdict->v.v_angle)) > cos(deg2rad(fov_angle)));
 }

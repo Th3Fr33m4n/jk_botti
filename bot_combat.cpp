@@ -33,7 +33,7 @@ extern qboolean is_team_play;
 extern qboolean checked_teamplay;
 extern int num_logos;
 extern int submod_id;
-extern qboolean b_botdontshoot;
+//extern qboolean b_botdontshoot;
 
 char g_team_list[TEAMPLAY_TEAMLISTLENGTH];
 char g_team_names[MAX_TEAMS][MAX_TEAMNAME_LENGTH];
@@ -377,7 +377,8 @@ static Vector AddPredictionPositionVaritation(const bot_t& pBot)
 
 
 // Prevent bots from shooting at on ground when aiming on falling player that hits ground (Z axis fixup only)
-static Vector TracePredictedMovement(bot_t &pBot, edict_t *pPlayer, const Vector &v_src, const Vector &cv_velocity, float time, qboolean ducking, qboolean without_velocity)
+static Vector TracePredictedMovement(const bot_t& pBot, edict_t* pPlayer, const Vector& v_src,
+                                     const Vector& cv_velocity, float time, qboolean ducking, qboolean without_velocity)
 {
    if(without_velocity)
       return(v_src);
@@ -796,7 +797,7 @@ void BotFindEnemy( bot_t &pBot )
 
 edict_t *pEdict = pBot.pEdict;
    
-   if (b_botdontshoot)
+   /*if (b_botdontshoot) //Rogue Code? [APG]RoboCop[CL]
    {
       pBot.f_bot_see_enemy_time = -1;  // so we won't keep reloading
       pBot.v_bot_see_enemy_origin = Vector(-99999,-99999,-99999);
@@ -806,7 +807,7 @@ edict_t *pEdict = pBot.pEdict;
       BotRemoveEnemy(pBot, FALSE);
       
       return;
-   }
+   }*/
 
    if (pBot.pBotEnemy != nullptr)  // does the bot already have an enemy?
    {

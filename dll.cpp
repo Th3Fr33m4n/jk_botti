@@ -299,7 +299,7 @@ static int Spawn_Post( edict_t *pent )
    }
    else if(FIsClassname(pent, "func_door"))
    {
-      const int SF_DOOR_START_OPEN = 1;
+      constexpr int SF_DOOR_START_OPEN = 1;
       
       Vector v_position1 = m_origin;
       // Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big

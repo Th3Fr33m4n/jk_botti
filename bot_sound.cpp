@@ -120,7 +120,7 @@ void CSoundEnt :: Spawn()
 //=========================================================
 void CSoundEnt :: Think ()
 {
-	const float add_time = 1.0f/15.0f;
+    constexpr float add_time = 1.0f/15.0f;
    
    m_nextthink = gpGlobals->time + add_time;// how often to check the sound list.
 

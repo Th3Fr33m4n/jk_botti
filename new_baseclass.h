@@ -11,8 +11,8 @@
 class class_new_baseclass {
 public:
 	// Construction
-	class_new_baseclass() { };
-	
+	class_new_baseclass() = default;
+
 	// Operators
 	void * operator new(size_t size) {
 		if(size==0)

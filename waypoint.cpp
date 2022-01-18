@@ -66,7 +66,7 @@ qboolean g_path_waypoint = FALSE;
 //
 static Vector block_list[MAX_WAYPOINTS];
 static int block_list_endlist = 0;
-static const int block_list_size = MAX_WAYPOINTS;
+static constexpr int block_list_size = MAX_WAYPOINTS;
 
 // 
 qboolean g_waypoint_paths = FALSE;  // have any paths been allocated?
@@ -845,7 +845,7 @@ int WaypointFindRandomGoal(int *out_indexes, int max_indexes, edict_t *pEntity, 
    }
 
    // we have extra.. take randomly
-   const int out_count = 0;
+   constexpr int out_count = 0;
    
    for(int i = 0; i < max_indexes; i++)
       out_indexes[out_count] = indexes[RANDOM_LONG2(0, count - 1)];
@@ -962,7 +962,7 @@ static void WaypointDrawBeam(edict_t *pEntity, const Vector &start, const Vector
 static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wpt_index)
 {
    edict_t *pent = nullptr;
-   const float radius = 40;
+   constexpr float radius = 40;
    TraceResult tr;
    char nearest_name[64];
 
@@ -1054,7 +1054,7 @@ static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wp
 edict_t *WaypointFindItem( int wpt_index )
 {
    edict_t *pent = nullptr;
-   const float radius = 40;
+   constexpr float radius = 40;
    TraceResult tr;
 
    edict_t* nearest_pent = nullptr;

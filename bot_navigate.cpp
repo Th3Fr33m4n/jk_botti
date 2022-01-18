@@ -30,8 +30,7 @@ extern qboolean checked_teamplay;
 extern bot_weapon_t weapon_defs[MAX_WEAPONS];
 
 // SET THIS UP BASED ON MOD!!!
-const int max_drop_height = 800;
-
+constexpr int max_drop_height = 800;
 
 // returns the number of degrees left to turn toward ideal pitch...
 float BotChangePitch(const bot_t& pBot, float speed)
@@ -1460,7 +1459,7 @@ qboolean BotStuckInCorner(const bot_t& pBot)
 {
    TraceResult tr;
    const edict_t *pEdict = pBot.pEdict;
-   const float offsets[1] = {0};
+   constexpr float offsets[1] = {0};
    const int right_first = RANDOM_LONG2(0,1);
    Vector v_forward, v_right, v_up;
    

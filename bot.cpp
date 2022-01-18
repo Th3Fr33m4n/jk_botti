@@ -1470,7 +1470,7 @@ static qboolean BotLookForGrenades( bot_t &pBot )
    if(pBot.pBotEnemy)
       return(FALSE);
 
-   const float radius = 500;
+   constexpr float radius = 500;
    edict_t *pEdict = pBot.pEdict;
 
    edict_t* pent = nullptr;

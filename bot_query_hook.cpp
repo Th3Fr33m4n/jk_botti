@@ -66,7 +66,7 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 	const unsigned char * msg = (const unsigned char*)message + 5;
 
 //get player count
-	int pcount = *msg++;
+const int pcount = *msg++;
 	if(--len == 0)
 		return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len));
 	
@@ -93,9 +93,9 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 		
 		// check that there is enough bytes left
 		if(len < 4) 
-			return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len)); 
-		
-		size_t offset = (size_t)msg - (size_t)message;
+			return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len));
+
+		const size_t offset = (size_t)msg - (size_t)message;
 		
 		BotReplaceConnectionTime(pname, (float*)&newmsg[offset]);
 		
