@@ -78,22 +78,22 @@ static void BotPointGun(bot_t &pBot)
 
    // if bot is aiming at something, aim fast, else take our time...
    if (pBot.b_combat_longjump)
-      speed = 0.7 + (turn_skill - 1) / 10; // fast aim
+      speed = 0.7f + (turn_skill - 1) / 10; // fast aim
    else if(BotAimsAtSomething (pBot))
    {
-      float custom = 1.0;
+      float custom = 1.0f;
       
       // customized aim speed with weapons
       bot_weapon_select_t * pSelect = GetWeaponSelect(pBot.current_weapon.iId);
       if(pSelect)
-         custom = (pSelect->aim_speed <= 1.0 && pSelect->aim_speed >= 0.0) ? pSelect->aim_speed : 1.0;
+         custom = (pSelect->aim_speed <= 1.0f && pSelect->aim_speed >= 0.0f) ? pSelect->aim_speed : 1.0f;
       
-      speed = (0.5 * custom + 0.2) + (turn_skill - 1) / (10 * (1.0 - custom) + 10);
+      speed = (0.5f * custom + 0.2f) + (turn_skill - 1) / (10 * (1.0f - custom) + 10);
    }
    else if(pBot.curr_waypoint_index != -1 || !FNullEnt(pBot.pBotPickupItem))
-      speed = 0.5 + (turn_skill - 1) / 15; // medium aim
+      speed = 0.5f + (turn_skill - 1) / 15; // medium aim
    else
-      speed = 0.2 + (turn_skill - 1) / 20; // slow aim
+      speed = 0.2f + (turn_skill - 1) / 20; // slow aim
 
    // thanks Tobias "Killaruna" Heimann and Johannes "@$3.1415rin" Lampel for this one
    pEdict->v.yaw_speed = (pEdict->v.yaw_speed * exp (log (speed / 2) * frame_time * 20)
@@ -349,8 +349,8 @@ static Vector AddPredictionVelocityVaritation(const bot_t& pBot, const Vector& v
    if(velocity.x == 0 && velocity.y == 0)
       return velocity;
 
-   const float maxvar = (1.0 + skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
-   const float minvar = (1.0 - skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
+   const float maxvar = (1.0f + skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
+   const float minvar = (1.0f - skill_settings[pBot.bot_skill].ping_emu_speed_varitation);
 
 #if 0
    Vector2D flat = Vector2D(velocity.x, velocity.y);
@@ -1173,7 +1173,7 @@ static qboolean CheckWeaponFireConditions(bot_t & pBot, const bot_weapon_select_
       // check if bot needs to duck down to hit enemy...
       if (std::fabs(pBot.pBotEnemy->v.origin.z - pEdict->v.origin.z) > 16 &&
           (pBot.pBotEnemy->v.origin - pEdict->v.origin).Length() < 64)
-         pBot.f_duck_time = gpGlobals->time + 1.0;
+         pBot.f_duck_time = gpGlobals->time + 1.0f;
    }
    else if((select.type & WEAPON_THROW) == WEAPON_THROW && !HaveRoomForThrow(pBot))
    {
@@ -1189,7 +1189,7 @@ static qboolean CheckWeaponFireConditions(bot_t & pBot, const bot_weapon_select_
          const Vector v_enemy = pBot.pBotEnemy->v.origin - (pEdict->v.origin + GetGunPosition(pEdict));
 
          const float angle = ValveWeaponMP5_GetBestLaunchAngleByDistanceAndHeight(v_enemy.Length(), v_enemy.z);
-         if(angle >= -89.0 && angle <= 89.0)
+         if(angle >= -89.0f && angle <= 89.0f)
          {
             pBot.b_set_special_shoot_angle = TRUE;
             pBot.f_special_shoot_angle = angle;
@@ -1223,12 +1223,12 @@ static qboolean BotFireSelectedWeapon(bot_t & pBot, const bot_weapon_select_t &s
 
    // use secondary once to enable zoom
    if(use_primary && (select.type & WEAPON_FIRE_ZOOM) == WEAPON_FIRE_ZOOM && pEdict->v.fov == 0)
-      use_primary = !(use_secondary = TRUE);
+      use_primary = !(use_secondary == TRUE);
    
    // use secondary once to enable aimspot
    if(use_primary && select.iId == GEARBOX_WEAPON_EAGLE && pBot.eagle_secondary_state == 0)
    {
-      use_primary = !(use_secondary = TRUE);
+      use_primary = !(use_secondary == TRUE);
       pBot.eagle_secondary_state = 1;
    }
    

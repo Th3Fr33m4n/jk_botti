@@ -252,7 +252,7 @@ static int Spawn( edict_t *pent )
          need_to_open_cfg = TRUE;
          FreeCfgBotRecord();//reset on mapchange
 
-         bot_check_time = gpGlobals->time + 5.0;
+         bot_check_time = gpGlobals->time + 5.0f;
       }
       else if(FIsClassname(pent, "func_plat") || FIsClassname(pent, "func_door"))
       {
@@ -374,12 +374,12 @@ BOOL jkbotti_ClientConnect( edict_t *pEntity, const char *pszName, const char *p
    else if(strcmp(pszAddress, "::::local:jk_botti") == 0)
    {
       // don't try to add bots for 1 second, give client time to get added
-      bot_check_time = gpGlobals->time + 1.0;
+      bot_check_time = gpGlobals->time + 1.0f;
    }
    else if(strcmp(pszAddress, "::::local:other_bot") == 0)
    {
       // don't try to add bots for 1 second, give client time to get added
-      bot_check_time = gpGlobals->time + 1.0;
+      bot_check_time = gpGlobals->time + 1.0f;
    }
    
    RETURN_META_VALUE (MRES_IGNORED, 0);
@@ -598,7 +598,7 @@ static void StartFrame()
       WaypointAddSpawnObjects();
       
       // 10 times / sec, note: this is extremely slow, do checking only for max 4 players on one frame
-      waypoint_time = gpGlobals->time + (1.0/10.0);
+      waypoint_time = gpGlobals->time + (1.0f/10.0f);
       
       while(waypoint_player_index <= gpGlobals->maxClients)
       {
@@ -657,8 +657,10 @@ static void StartFrame()
          }
       }
 
-      bot_cfg_pause_time = gpGlobals->time + 0.1;
-      bot_check_time = gpGlobals->time + 1.0;
+	  // have to delay here or engine gives "Tried to write to
+      // uninitialized sizebuf_t" error and crashes... [APG]RoboCop[CL]
+      bot_cfg_pause_time = gpGlobals->time + 6.0f;
+      bot_check_time = gpGlobals->time + 6.0f;
    }
 
    if ((bot_cfg_fp) &&
@@ -667,7 +669,7 @@ static void StartFrame()
       // process jk_botti.cfg file options...
       ProcessBotCfgFile();
       
-      bot_check_time = gpGlobals->time + 1.0;
+      bot_check_time = gpGlobals->time + 1.0f;
    }
 
    // check if time to see if a bot needs to be created...
@@ -701,7 +703,7 @@ static void StartFrame()
          else
             BotCreate(nullptr, nullptr, -1, -1, -1, -1 );
          
-         bot_check_time = gpGlobals->time + 0.5;
+         bot_check_time = gpGlobals->time + 0.5f;
       }
       // more than minimum count of bots and need to lower client count
       else if(client_count > max_bots && UTIL_GetBotCount() > min_bots)
@@ -739,10 +741,10 @@ static void StartFrame()
          if(pick != -1)
             BotKick(bots[pick]);
          
-         bot_check_time = gpGlobals->time + 0.5;
+         bot_check_time = gpGlobals->time + 0.5f;
       }
       else
-         bot_check_time = gpGlobals->time + ((!!debug_minmax) ? 5.0 : 0.5);
+         bot_check_time = gpGlobals->time + ((!!debug_minmax) ? 5.0f : 0.5f);
    }
    
    // -- Run Floyds for creating waypoint path matrix

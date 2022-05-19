@@ -9,7 +9,7 @@
 
 #define	MAX_WORLD_SOUNDS	1024 	// maximum number of sounds handled by the world at one time.
 
-#define SOUNDLIST_EMPTY		-1
+#define SOUNDLIST_EMPTY		(-1)
 
 #define SOUNDLISTTYPE_FREE	1	// identifiers passed to functions that can operate on either list, to indicate which list to operate on.
 #define SOUNDLISTTYPE_ACTIVE 	2

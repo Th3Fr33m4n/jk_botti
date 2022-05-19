@@ -237,10 +237,10 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
          BotCreate(skin, name, skill, top_color, bottom_color, cfg_bot_index);
          
          if(cmdtype == CFGCMD_TYPE)
-            bot_cfg_pause_time = gpGlobals->time + 0.5;
+            bot_cfg_pause_time = gpGlobals->time + 0.5f;
       }
       
-      bot_check_time = gpGlobals->time + 1.0;
+      bot_check_time = gpGlobals->time + 1.0f;
       
       return TRUE;
    }
@@ -417,7 +417,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
          if ((temp < 1) || (temp > 100))
             printfunc(PRINTFUNC_ERROR, arg, "invalid botthinkfps value!\n");
          else
-            bot_think_spf = 1.0 / (float)temp;
+            bot_think_spf = 1.0f / (float)temp;
       }
 
       safevoid_snprintf(msg, sizeof(msg), "botthinkfps is %.2f\n", 1.0 / bot_think_spf);

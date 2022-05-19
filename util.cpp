@@ -85,12 +85,12 @@ float UTIL_WrapAngle(float angle)
 {
    // this function returns an angle normalized to the range [-180 < angle <= 180]
    
-   angle += 180.0;
+   angle += 180.0f;
    constexpr unsigned int bits = 0x80000000;
-   angle = -180.0 + ((360.0 / bits) * ((int64_t)(angle * (bits / 360.0)) & (bits-1)));
+   angle = -180.0f + ((360.0f / bits) * (int64_t(angle * (bits / 360.0f)) & (bits-1)));
    
    if(angle == -180.0f)
-      angle = 180.0;
+      angle = 180.0f;
    
    return(angle);
 }
@@ -860,7 +860,7 @@ qboolean FInShootCone(const Vector & Origin, edict_t *pEdict, float distance, fl
    
    Vector2D triangle;
    triangle.x = distance;
-   triangle.y = diameter / 2.0;
+   triangle.y = diameter / 2.0f;
    
    // full angle of shootcode at this distance (as cos(angle))   
    if(flDot > (distance / triangle.Length())) // smaller angle, bigger cosine

@@ -233,7 +233,7 @@ static qboolean BotFindWaypoint( bot_t &pBot )
       index = WaypointFindPath(path_index, pBot.curr_waypoint_index);
    }
 
-   int select_index = -1;
+   int select_index;
 
    // about 20% of the time choose a waypoint at random
    // (don't do this any more often than every 10 seconds)
@@ -241,7 +241,7 @@ static qboolean BotFindWaypoint( bot_t &pBot )
    if ((RANDOM_LONG2(1, 100) <= 20) &&
        (pBot.f_random_waypoint_time <= gpGlobals->time))
    {
-      pBot.f_random_waypoint_time = gpGlobals->time + 10.0;
+      pBot.f_random_waypoint_time = gpGlobals->time + 10.0f;
 
       if (min_index[2] != -1)
          index = RANDOM_LONG2(0, 2);
@@ -790,7 +790,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
                   pBot.b_longjump_do_jump = TRUE;
                   
                   // recognize we'll be in the air for a second most likely
-                  pBot.f_longjump_time = gpGlobals->time + 1.0;
+                  pBot.f_longjump_time = gpGlobals->time + 1.0f;
                   
                   //UTIL_ConsolePrintf("%s doing longjump! -- wp\n", STRING(pEdict->v.netname));
                }
@@ -845,34 +845,34 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
    waypoint_distance = (pEdict->v.origin - pBot.waypoint_origin).Length();
 
    // set the minimum distance from waypoint to be considered "touching" it
-   min_distance = 50.0;
+   min_distance = 50.0f;
 
    // if this is a crouch waypoint, bot must be fairly close...
    if (waypoints[pBot.curr_waypoint_index].flags & W_FL_JUMP)
-      min_distance = 25.0;
+      min_distance = 25.0f;
    
    if (waypoints[pBot.curr_waypoint_index].flags & W_FL_CROUCH)
-      min_distance = 20.0;
+      min_distance = 20.0f;
 
    // if this is a ladder waypoint, bot must be fairly close to get on ladder
    if (waypoints[pBot.curr_waypoint_index].flags & W_FL_LADDER)
-      min_distance = 20.0;
+      min_distance = 20.0f;
 
    // if this is a lift-start waypoint
    if (waypoints[pBot.curr_waypoint_index].flags & W_FL_LIFT_START)
-      min_distance = 32.0;
+      min_distance = 32.0f;
    
    // if this is a lift-end waypoint, bot must be very close
    if (waypoints[pBot.curr_waypoint_index].flags & W_FL_LIFT_END)
-      min_distance = 20.0;
+      min_distance = 20.0f;
 
    // if item waypoint, go close
    if (waypoints[pBot.curr_waypoint_index].flags & (W_FL_LONGJUMP | W_FL_HEALTH | W_FL_ARMOR | W_FL_AMMO | W_FL_WEAPON))
-      min_distance = 20.0;
+      min_distance = 20.0f;
 
    // if trying to get out of water, need to get very close to waypoint...
    if (pBot.f_exit_water_time >= gpGlobals->time)
-      min_distance = 20.0;
+      min_distance = 20.0f;
 
    touching = FALSE;
 
@@ -900,7 +900,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
       // check if the waypoint is a door waypoint
       if (waypoints[pBot.curr_waypoint_index].flags & W_FL_DOOR)
       {
-         pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+         pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
       }
 
       // check if the next waypoint is a jump waypoint...
@@ -916,14 +916,14 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
          if (waypoints[pBot.waypoint_goal].flags & (W_FL_LONGJUMP| W_FL_HEALTH | W_FL_ARMOR | W_FL_AMMO | W_FL_WEAPON))
          {
             pBot.pBotPickupItem = WaypointFindItem(pBot.waypoint_goal);
-            pBot.f_find_item = gpGlobals->time + 0.2;
+            pBot.f_find_item = gpGlobals->time + 0.2f;
             pBot.f_last_item_found = gpGlobals->time;
          }
 
          if (pBot.pBotEnemy != nullptr)
-            pBot.f_waypoint_goal_time = gpGlobals->time + 0.25;
+            pBot.f_waypoint_goal_time = gpGlobals->time + 0.25f;
          else   // a little delay time, since we'll touch the waypoint before we actually get what it has
-            pBot.f_waypoint_goal_time = gpGlobals->time + 0.25;
+            pBot.f_waypoint_goal_time = gpGlobals->time + 0.25f;
 
          // don't pick same object too often
          if(pBot.wpt_goal_type == WPT_GOAL_HEALTH || 
@@ -952,7 +952,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
          // trace a line straight up 100 units...
          v_src = pEdict->v.origin;
          v_dest = v_src;
-         v_dest.z = v_dest.z + 100.0;
+         v_dest.z = v_dest.z + 100.0f;
 
          // trace a line to destination...
          UTIL_TraceMove( v_src, v_dest, ignore_monsters, 
@@ -979,7 +979,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
                   pBot.f_waypoint_time = gpGlobals->time;
 
                   // keep trying to exit water for next 3 seconds
-                  pBot.f_exit_water_time = gpGlobals->time + 3.0;
+                  pBot.f_exit_water_time = gpGlobals->time + 3.0f;
                }
             }
          }
@@ -991,9 +991,9 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
       {
          // tracking something, pick goal much more often
          if (pBot.pBotEnemy != nullptr)
-            pBot.f_waypoint_goal_time = gpGlobals->time + 0.5;
+            pBot.f_waypoint_goal_time = gpGlobals->time + 0.5f;
          else // don't pick a goal more often than every 120 seconds...
-            pBot.f_waypoint_goal_time = gpGlobals->time + 120.0;
+            pBot.f_waypoint_goal_time = gpGlobals->time + 120.0f;
       
          BotFindWaypointGoal(pBot);
       }
@@ -2256,7 +2256,7 @@ void BotLookForDrop( bot_t &pBot )
          }
 
          // don't look for items for a while...
-         pBot.f_find_item = gpGlobals->time + 1.0;
+         pBot.f_find_item = gpGlobals->time + 1.0f;
 
          // change the bot's ideal yaw by finding surface normal
          // slightly below where the bot is standing
@@ -2300,7 +2300,7 @@ void BotLookForDrop( bot_t &pBot )
 
             while (!done)
             {
-               v_ahead.y = UTIL_WrapAngle(v_ahead.y + 30.0 * direction);
+               v_ahead.y = UTIL_WrapAngle(v_ahead.y + 30.0f * direction);
 
                v_src = pEdict->v.origin;
                v_dest = v_src + UTIL_AnglesToForward(v_ahead) * scale;

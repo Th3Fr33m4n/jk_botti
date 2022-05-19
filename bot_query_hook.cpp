@@ -97,7 +97,7 @@ const int pcount = *msg++;
 
 		const size_t offset = (size_t)msg - (size_t)message;
 		
-		BotReplaceConnectionTime(pname, (float*)&newmsg[offset]);
+		BotReplaceConnectionTime(pname, reinterpret_cast<float*>(&newmsg[offset]));
 		
 		msg+=4;
 		len-=4;

@@ -532,7 +532,7 @@ void BotChatTaunt(bot_t& pBot, const edict_t* victim_edict)
    {
 	   char chat_name[64];
 	   char chat_text[81];
-	   int taunt_index;
+	   int taunt_index = 0;
       int i;
 
       int recent_count = 0;
@@ -601,7 +601,7 @@ void BotChatWhine(bot_t &pBot)
 	   if ((RANDOM_LONG2(1,100) <= pBot.whine_percent))
        {
 	      int i;
-	      int whine_index;
+	      int whine_index = 0;
 	      char chat_name[64];
 	      char chat_text[81];
 	      int recent_count = 0;
@@ -666,13 +666,13 @@ void BotChatTalk(bot_t &pBot)
    
    if ((bot_chat_count > 0) && (pBot.f_bot_chat_time < gpGlobals->time))
    {
-      pBot.f_bot_chat_time = gpGlobals->time + 30.0;
+      pBot.f_bot_chat_time = gpGlobals->time + 30.0f;
 
       if (RANDOM_LONG2(1,100) <= pBot.chat_percent)
       {
 	      char chat_name[64];
 	      char chat_text[81];
-	      int chat_index;
+	      int chat_index = 0;
          int i;
 
          int recent_count = 0;
@@ -728,7 +728,7 @@ void BotChatEndGame(bot_t &pBot)
    {
 	   char chat_name[64];
 	   char chat_text[81];
-	   int endgame_index;
+	   int endgame_index = 0;
       int i;
       
       int recent_count = 0;

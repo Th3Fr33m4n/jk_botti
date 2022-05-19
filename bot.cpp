@@ -100,7 +100,7 @@ void BotKick(bot_t &pBot)
 static void BotSpawnInit( bot_t &pBot )
 {
    pBot.bot_think_time = -1.0;
-   pBot.f_last_think_time = gpGlobals->time - 0.1;
+   pBot.f_last_think_time = gpGlobals->time - 0.1f;
    
    pBot.f_recoil = 0;
    
@@ -1010,9 +1010,9 @@ static void BotFindItem( bot_t &pBot )
    edict_t *pEdict = pBot.pEdict;
 
    // forget about our item if it's been five seconds
-   if (pBot.f_last_item_found > 0 && pBot.f_last_item_found + 5.0 < gpGlobals->time)
+   if (pBot.f_last_item_found > 0 && pBot.f_last_item_found + 5.0f < gpGlobals->time)
    {
-      pBot.f_find_item = gpGlobals->time + 2.0;
+      pBot.f_find_item = gpGlobals->time + 2.0f;
       pBot.f_last_item_found = -1;
       pBot.pBotPickupItem = nullptr;
    }
@@ -1030,15 +1030,15 @@ static void BotFindItem( bot_t &pBot )
       return;
    
    // try find again after 0.1sec
-   pBot.f_find_item = gpGlobals->time + 0.1;
+   pBot.f_find_item = gpGlobals->time + 0.1f;
 
    // use a smaller search radius when waypoints are available
    if ((num_waypoints > 0) && (pBot.curr_waypoint_index != -1))
-      radius = 320.0;
+      radius = 320.0f;
    else
-      radius = 520.0;
+      radius = 520.0f;
 
-   min_distance = radius + 1.0;
+   min_distance = radius + 1.0f;
 
    while ((pent = UTIL_FindEntityInSphere( pent, pEdict->v.origin, radius )) != nullptr)
    {
@@ -1087,13 +1087,13 @@ static void BotFindItem( bot_t &pBot )
                // use the ladder about 100% of the time, if haven't
                // used a ladder in at least 5 seconds...
                if ((RANDOM_LONG2(1, 100) <= 100) &&
-                   ((pBot.f_end_use_ladder_time + 5.0) < gpGlobals->time))
+                   ((pBot.f_end_use_ladder_time + 5.0f) < gpGlobals->time))
                {
                   // if close to ladder...
                   if (distance < 100)
                   {
                      // don't avoid walls for a while
-                     pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+                     pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
                   }
 
                   can_pickup = TRUE;
@@ -1138,7 +1138,7 @@ static void BotFindItem( bot_t &pBot )
                      if (distance < 100)
                      {
                         // don't avoid walls for a while
-                        pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+                        pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
                      }
 
                      can_pickup = TRUE;
@@ -1175,7 +1175,7 @@ static void BotFindItem( bot_t &pBot )
                      if (distance < 100)
                      {
                         // don't avoid walls for a while
-                        pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+                        pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
                      }
 
                      can_pickup = TRUE;
@@ -1215,7 +1215,7 @@ static void BotFindItem( bot_t &pBot )
                         if (distance < 100)
                         {
                            // don't avoid walls for a while
-                           pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+                           pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
                         }
 
                         can_pickup = TRUE;
@@ -1502,7 +1502,7 @@ static void HandleWallOnLeft( bot_t &pBot )
    // 20% of the time randomly turn between 45 and 60 degrees
 
    if ((pBot.f_wall_on_left != 0) &&
-       (pBot.f_wall_on_left <= gpGlobals->time - 0.5) &&
+       (pBot.f_wall_on_left <= gpGlobals->time - 0.5f) &&
        (RANDOM_LONG2(1, 100) <= 20))
    {
       pEdict->v.ideal_yaw += RANDOM_LONG2(45, 60);
@@ -1510,7 +1510,7 @@ static void HandleWallOnLeft( bot_t &pBot )
       BotFixIdealYaw(pEdict);
 
       //pBot.f_move_speed /= 3;  // move slowly while turning
-      pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
+      pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0f;
    }
 
    pBot.f_wall_on_left = 0;  // reset wall detect time
@@ -1533,7 +1533,7 @@ static void HandleWallOnRight( bot_t &pBot )
       BotFixIdealYaw(pEdict);
 
       //pBot.f_move_speed /= 3;  // move slowly while turning
-      pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
+      pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0f;
    }
 
    pBot.f_wall_on_right = 0;  // reset wall detect time
@@ -1571,7 +1571,7 @@ static void BotCheckLogoSpraying(bot_t &pBot)
       if (tr.flFraction < 1.0f)
       {
          // already facing the correct yaw, just set pitch...
-         pEdict->v.idealpitch = RANDOM_FLOAT2(0.0, 30.0) - 15.0;
+         pEdict->v.idealpitch = RANDOM_FLOAT2(0.0f, 30.0f) - 15.0f;
       }
       else
       {
@@ -1589,7 +1589,7 @@ static void BotCheckLogoSpraying(bot_t &pBot)
 
             BotFixIdealYaw(pEdict);
 
-            pEdict->v.idealpitch = RANDOM_FLOAT2(0.0, 30.0) - 15.0;
+            pEdict->v.idealpitch = RANDOM_FLOAT2(0.0f, 30.0f) - 15.0f;
          }
          else
          {
@@ -1607,7 +1607,7 @@ static void BotCheckLogoSpraying(bot_t &pBot)
 
                BotFixIdealYaw(pEdict);
 
-               pEdict->v.idealpitch = RANDOM_FLOAT2(0.0, 30.0) - 15.0;
+               pEdict->v.idealpitch = RANDOM_FLOAT2(0.0f, 30.0f) - 15.0f;
             }
             else
             {
@@ -1625,7 +1625,7 @@ static void BotCheckLogoSpraying(bot_t &pBot)
 
                   BotFixIdealYaw(pEdict);
 
-                  pEdict->v.idealpitch = RANDOM_FLOAT2(0.0, 30.0) - 15.0;
+                  pEdict->v.idealpitch = RANDOM_FLOAT2(0.0f, 30.0f) - 15.0f;
                }
                else
                {
@@ -1653,7 +1653,7 @@ static void BotCheckLogoSpraying(bot_t &pBot)
          }
       }
 
-      pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+      pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
 
       // is there a wall close to us?
 
@@ -1721,7 +1721,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
          pBot.b_see_tripmine = FALSE;
 
          // pause for a while to allow tripmine to explode...
-         pBot.f_pause_time = gpGlobals->time + 0.5;
+         pBot.f_pause_time = gpGlobals->time + 0.5f;
       }
       else  // run away!!!
       {
@@ -1768,7 +1768,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
          // don't look for items for a while since the bot
          // could be stuck trying to get to an item
-         pBot.f_find_item = gpGlobals->time + 0.5;
+         pBot.f_find_item = gpGlobals->time + 0.5f;
       }
    }
 
@@ -1802,7 +1802,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
          // don't look for items for a while since the bot
          // could be stuck trying to get to an item
-         pBot.f_find_item = gpGlobals->time + 0.5;
+         pBot.f_find_item = gpGlobals->time + 0.5f;
       }
    }
 
@@ -1847,7 +1847,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
          // go handle the ladder movement
          BotOnLadder( pBot, moved_distance );
 
-         pBot.f_dont_avoid_wall_time = gpGlobals->time + 2.0;
+         pBot.f_dont_avoid_wall_time = gpGlobals->time + 2.0f;
          pBot.f_end_use_ladder_time = gpGlobals->time;
       }
       else
@@ -1877,7 +1877,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
                pBot.f_move_speed /= 3;  // move slowly while turning
                pBot.b_not_maxspeed = TRUE;
                
-               pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
+               pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0f;
 
                moved_distance = 2.0;  // dont use bot stuck code
             }
@@ -1933,7 +1933,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
          BotRandomTurn(pBot);
 
          // don't look for items for 2 seconds
-         pBot.f_find_item = gpGlobals->time + 2.0;
+         pBot.f_find_item = gpGlobals->time + 2.0f;
 
          pBot.f_start_use_ladder_time = 0.0;  // reset start ladder time
       }
@@ -1944,8 +1944,8 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       {
          // the bot must be stuck!
 
-         pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
-         pBot.f_look_for_waypoint_time = gpGlobals->time + 1.0;
+         pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0f;
+         pBot.f_look_for_waypoint_time = gpGlobals->time + 1.0f;
          
          // try duck
          pEdict->v.button |= IN_DUCK;  // duck down and move forward
@@ -1958,8 +1958,8 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
          
          // the bot must be stuck!
 
-         pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
-         pBot.f_look_for_waypoint_time = gpGlobals->time + 1.0;
+         pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0f;
+         pBot.f_look_for_waypoint_time = gpGlobals->time + 1.0f;
 
          if (BotCanJumpUp( pBot, &bCrouchJump ))  // can the bot jump onto something?
          {
@@ -1990,7 +1990,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
             {
                // don't look for items for a while since the bot
                // could be stuck trying to get to an item
-               pBot.f_find_item = gpGlobals->time + 0.5;
+               pBot.f_find_item = gpGlobals->time + 0.5f;
             }
          }
       }
@@ -2185,7 +2185,7 @@ static void BotDoStrafe(bot_t &pBot)
             pBot.f_strafe_direction = 1.0;
       }
       else
-         pBot.f_strafe_direction = 0.0 + RANDOM_FLOAT2(-0.005, 0.005);
+         pBot.f_strafe_direction = 0.0f + RANDOM_FLOAT2(-0.005, 0.005);
 
       if(pBot.f_dont_avoid_wall_time <= gpGlobals->time)
       {
@@ -2254,14 +2254,14 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
        std::fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 10)
    {
       // don't try to move for 1.0 seconds, otherwise the longjump is fucked up	
-      pBot.f_longjump_time = gpGlobals->time + 1.0;
+       pBot.f_longjump_time = gpGlobals->time + 1.0f;
       
       // we're done trying to do a longjump
       pBot.b_combat_longjump = FALSE;
       
       // don't do another one for a certain amount of time
       if (RANDOM_LONG2(1,100) > 10)
-         pBot.f_combat_longjump = gpGlobals->time + 1.0;
+         pBot.f_combat_longjump = gpGlobals->time + 1.0f;
       else
          pBot.f_combat_longjump = gpGlobals->time + RANDOM_FLOAT2(3.0, 5.0);
       
@@ -2479,7 +2479,7 @@ void BotThink( bot_t &pBot )
    pBot.msecval = (int)(pBot.f_frame_time * 1000.0);
    
    // count up difference that integer conversion caused
-   pBot.msecdel += pBot.f_frame_time * 1000.0 - pBot.msecval;
+   pBot.msecdel += pBot.f_frame_time * 1000.0f - pBot.msecval;
    
    // remove effect of integer conversion and lost msecs on previous frames
    if(pBot.msecdel > 1.625f)
@@ -2514,7 +2514,7 @@ void BotThink( bot_t &pBot )
       pBot.msecval = 100;
    }
    
-   pBot.total_msecval += pBot.msecval / 1000.0;
+   pBot.total_msecval += pBot.msecval / 1000.0f;
    pBot.total_frame_time += pBot.f_frame_time;
 
 #if _DEBUG
@@ -2598,9 +2598,9 @@ void BotThink( bot_t &pBot )
    {
       if (pBot.idle_angle_time <= gpGlobals->time)
       {
-         pBot.idle_angle_time = gpGlobals->time + RANDOM_FLOAT2(0.5, 2.0);
+         pBot.idle_angle_time = gpGlobals->time + RANDOM_FLOAT2(0.5f, 2.0f);
 
-         pEdict->v.ideal_yaw = pBot.idle_angle + RANDOM_FLOAT2(0.0, 60.0) - 30.0;
+         pEdict->v.ideal_yaw = pBot.idle_angle + RANDOM_FLOAT2(0.0f, 60.0f) - 30.0f;
 
          BotFixIdealYaw(pEdict);
       }
@@ -2630,7 +2630,7 @@ void BotThink( bot_t &pBot )
 
       // save current position as previous
       pBot.v_prev_origin = pEdict->v.origin;
-      pBot.f_speed_check_time = gpGlobals->time + 0.2;
+      pBot.f_speed_check_time = gpGlobals->time + 0.2f;
    }
    else
    {
@@ -2642,7 +2642,7 @@ void BotThink( bot_t &pBot )
    if (!pBot.b_in_water && pBot.b_on_ground && !pBot.b_on_ladder &&
        (pBot.f_drop_check_time < gpGlobals->time))
    {
-      pBot.f_drop_check_time = gpGlobals->time + 0.05;
+      pBot.f_drop_check_time = gpGlobals->time + 0.05f;
 
       BotLookForDrop( pBot );
    }
@@ -2826,7 +2826,7 @@ void BotThink( bot_t &pBot )
          else
          {
             // don't avoid walls for a while
-            pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0;
+            pBot.f_dont_avoid_wall_time = gpGlobals->time + 5.0f;
 
             pBot.waypoint_top_of_ladder = FALSE;
          }
@@ -2843,7 +2843,7 @@ void BotThink( bot_t &pBot )
    
    if (pBot.f_grenade_search_time <= gpGlobals->time)
    {
-      pBot.f_grenade_search_time = gpGlobals->time + 0.1;
+      pBot.f_grenade_search_time = gpGlobals->time + 0.1f;
 
       // does the bot see any grenades laying/flying about?
       if (BotLookForGrenades( pBot ))

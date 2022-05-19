@@ -2018,7 +2018,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
          Vector v_down = v_check;
          const Vector v_check_dest = v_dest - v_direction * 16.0f;
 
-         v_down.z = v_down.z - 1000.0;  // straight down 1000 units
+         v_down.z = v_down.z - 1000.0f;  // straight down 1000 units
 
          UTIL_TraceMove(v_check, v_down, ignore_monsters, nullptr, &tr);
          
@@ -2028,7 +2028,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
             return FALSE;
          }
 
-         float last_height = tr.flFraction * 1000.0;  // height from ground
+         float last_height = tr.flFraction * 1000.0f;  // height from ground
          
          //check against waterlevel
          if(v_check.z - last_height < waterlevel)
@@ -2046,7 +2046,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
             v_check = v_check + (v_direction * 10.0f);
 
             v_down = v_check;
-            v_down.z = v_down.z - 1000.0;  // straight down 1000 units
+            v_down.z = v_down.z - 1000.0f;  // straight down 1000 units
 
             UTIL_TraceMove(v_check, v_down, ignore_monsters, nullptr, &tr);
 
@@ -2056,7 +2056,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
                return FALSE;
             }
 
-            curr_height = tr.flFraction * 1000.0;  // height from ground
+            curr_height = tr.flFraction * 1000.0f;  // height from ground
 
             //check against waterlevel
             if(v_check.z - curr_height < waterlevel)
@@ -2081,7 +2081,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
          v_check = v_dest;
          
          v_down = v_check;
-         v_down.z = v_down.z - 1000.0;  // straight down 1000 units
+         v_down.z = v_down.z - 1000.0f;  // straight down 1000 units
 
          UTIL_TraceMove(v_check, v_down, ignore_monsters, nullptr, &tr);   
          
@@ -2091,7 +2091,7 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
             return FALSE;
          }
          
-         curr_height = tr.flFraction * 1000.0;  // height from ground
+         curr_height = tr.flFraction * 1000.0f;  // height from ground
 
          // is the difference in the last height and the current height
          // higher that the jump height?
@@ -2438,7 +2438,7 @@ void WaypointThink(edict_t *pEntity)
          // check if player is close enough to a waypoint and time to draw path...
          if ((min_distance <= 50.0f) && (f_path_time <= gpGlobals->time))
          {
-            f_path_time = gpGlobals->time + 1.0;
+            f_path_time = gpGlobals->time + 1.0f;
 
             const PATH &p = paths[index];
             

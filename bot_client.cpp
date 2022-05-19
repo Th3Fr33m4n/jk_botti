@@ -269,7 +269,7 @@ void BotClient_Valve_ItemPickup(void *p, int bot_index)
    if (strcmp(itemname, "item_longjump") == 0)
    {
       bots[bot_index].b_longjump = TRUE;
-      bots[bot_index].f_combat_longjump = gpGlobals->time + 0.2;
+      bots[bot_index].f_combat_longjump = gpGlobals->time + 0.2f;
       bots[bot_index].b_combat_longjump = FALSE;
    }
 }
@@ -452,7 +452,7 @@ void BotClient_Valve_ScreenFade(void *p, int bot_index)
       state = 0;
 
       const int length = (duration + hold_time) / 4096;
-      bots[bot_index].blinded_time = gpGlobals->time + length - 2.0;
+      bots[bot_index].blinded_time = gpGlobals->time + length - 2.0f;
    }
    else
    {
