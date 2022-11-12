@@ -66,7 +66,7 @@ qboolean g_path_waypoint = FALSE;
 //
 static Vector block_list[MAX_WAYPOINTS];
 static int block_list_endlist = 0;
-static constexpr int block_list_size = MAX_WAYPOINTS;
+static const int block_list_size = MAX_WAYPOINTS;
 
 // 
 qboolean g_waypoint_paths = FALSE;  // have any paths been allocated?
@@ -74,7 +74,7 @@ qboolean g_auto_waypoint = TRUE;
 qboolean g_path_waypoint_enable = TRUE;
 qboolean g_waypoint_updated = FALSE;
 qboolean g_waypoint_testing = FALSE;
-float f_path_time = 0.0;
+float f_path_time = 0.0f;
 int g_lifts_added = 0;
 
 unsigned int route_num_waypoints;
@@ -95,8 +95,8 @@ static qboolean WaypointIsRouteValid(int src, int dest)
       unlikely(from_to == NULL) || 
       unlikely(src < 0) ||
       unlikely(dest < 0) ||
-      unlikely(src >= (int)route_num_waypoints) || 
-      unlikely(dest >= (int)route_num_waypoints))
+      unlikely(src >= int(route_num_waypoints)) || 
+      unlikely(dest >= int(route_num_waypoints)))
       return(FALSE);
    
    return(TRUE);
@@ -211,11 +211,11 @@ void WaypointInit()
    
    for (i=0; i < MAX_WAYPOINTS; i++)
    {
-      wp_display_time[i] = 0.0;
+      wp_display_time[i] = 0.0f;
       memset(&paths[i], 0, sizeof(paths[i]));  // no paths allocated yet
    }
 
-   f_path_time = 0.0;  // reset waypoint path display time
+   f_path_time = 0.0f;  // reset waypoint path display time
 
    num_waypoints = 0;
 
@@ -437,7 +437,7 @@ void CollectMapSpawnItems(edict_t *pSpawn)
       if((flags & W_FL_CROUCH) != (spawnpoints[i].flags & W_FL_CROUCH))
          continue;
       
-      if((spawnpoints[i].origin - SpawnOrigin).Length() < 50.0)
+      if((spawnpoints[i].origin - SpawnOrigin).Length() < 50.0f)
       {
          spawnpoints[i].flags |= flags;
          spawnpoints[i].itemflags |= itemflag;
@@ -475,7 +475,7 @@ void WaypointAddSpawnObjects()
       for(int j = 0; j < num_waypoints; j++) {
          if (!(waypoints[j].flags & (W_FL_DELETED | W_FL_AIMING))) 
          {
-            if((waypoints[j].origin - spawnpoints[i].origin).Length() < 50.0) 
+            if((waypoints[j].origin - spawnpoints[i].origin).Length() < 50.0f) 
             {
                // just add flags and return
                if(waypoints[j].flags != spawnpoints[i].flags)
@@ -514,7 +514,7 @@ void WaypointAddSpawnObjects()
       waypoints[index].origin = spawnpoints[i].origin;
 
       // set the time that this waypoint was originally displayed...
-      wp_display_time[index] = 0.0;
+      wp_display_time[index] = 0.0f;
       
       // increment total number of waypoints if adding at end of array...
       if (index == num_waypoints)
@@ -673,7 +673,7 @@ int WaypointFindNearest(const Vector &v_origin, const Vector &v_offset, edict_t 
    // find the nearest waypoint...
 
    int min_index = -1;
-   float min_distance = 99999.0;
+   float min_distance = 99999.0f;
 
    for (int index = 0; index < num_waypoints; index++)
    {
@@ -845,7 +845,7 @@ int WaypointFindRandomGoal(int *out_indexes, int max_indexes, edict_t *pEntity, 
    }
 
    // we have extra.. take randomly
-   constexpr int out_count = 0;
+   const int out_count = 0;
    
    for(int i = 0; i < max_indexes; i++)
       out_indexes[out_count] = indexes[RANDOM_LONG2(0, count - 1)];
@@ -864,7 +864,7 @@ int WaypointFindRunawayPath(int runner, int enemy)
 
    // find the nearest waypoint...
 
-   float max_difference = 0.0;
+   float max_difference = 0.0f;
    int max_index = -1;
 
    for (int index = 0; index < num_waypoints; index++)
@@ -896,7 +896,7 @@ static int WaypointFindNearestAiming(Vector v_origin)
 {
    int index;
    int min_index = -1;
-   float min_distance = 99999.0;
+   float min_distance = 99999.0f;
    float distance;
 
    if (num_waypoints < 1)
@@ -962,14 +962,14 @@ static void WaypointDrawBeam(edict_t *pEntity, const Vector &start, const Vector
 static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wpt_index)
 {
    edict_t *pent = nullptr;
-   constexpr float radius = 40;
+   const float radius = 40.0f;
    TraceResult tr;
    char nearest_name[64];
 
    nearest_name[0] = 0;      // null out nearest_name string
    const edict_t* nearest_pent = nullptr;
 
-   float min_distance = 99999.0;
+   float min_distance = 99999.0f;
 
    //********************************************************
    // look for the nearest health, armor, ammo, weapon, etc.
@@ -1054,12 +1054,12 @@ static void WaypointSearchItems(edict_t *pEntity, const Vector &v_origin, int wp
 edict_t *WaypointFindItem( int wpt_index )
 {
    edict_t *pent = nullptr;
-   constexpr float radius = 40;
+   const float radius = 40.0f;
    TraceResult tr;
 
    edict_t* nearest_pent = nullptr;
    
-   float min_distance = 99999.0;
+   float min_distance = 99999.0f;
 
    const Vector v_origin = waypoints[wpt_index].origin;
    //********************************************************
@@ -1314,7 +1314,7 @@ static void WaypointDelete(edict_t *pEntity)
    if (num_waypoints < 1)
       return;
 
-   index = WaypointFindNearest(pEntity, 50.0);
+   index = WaypointFindNearest(pEntity, 50.0f);
 
    if (index == -1)
       return;
@@ -1325,7 +1325,7 @@ static void WaypointDelete(edict_t *pEntity)
    {
       int i;
       int min_index = -1;
-      float min_distance = 99999.0;
+      float min_distance = 99999.0f;
       float distance;
 
       // search for nearby aiming waypoint and delete it also...
@@ -1355,7 +1355,7 @@ static void WaypointDelete(edict_t *pEntity)
          waypoints[min_index].origin = Vector(0,0,0);
          waypoints[min_index].itemflags = 0;
 
-         wp_display_time[min_index] = 0.0;
+         wp_display_time[min_index] = 0.0f;
       }
    }
 
@@ -1372,7 +1372,7 @@ static void WaypointDelete(edict_t *pEntity)
    waypoints[index].origin = Vector(0,0,0);
    waypoints[index].itemflags = 0;
 
-   wp_display_time[index] = 0.0;
+   wp_display_time[index] = 0.0f;
 
    if(g_waypoint_on)
       EMIT_SOUND_DYN2(pEntity, CHAN_WEAPON, "weapons/mine_activate.wav", 1.0, ATTN_NORM, 0, 100);
@@ -1409,7 +1409,7 @@ static void WaypointCreatePath(edict_t *pEntity, int cmd)
 
    if (cmd == 1)  // assign source of path
    {
-      waypoint1 = WaypointFindNearest(pEntity, 50.0);
+      waypoint1 = WaypointFindNearest(pEntity, 50.0f);
 
       if (waypoint1 == -1)
       {
@@ -1429,7 +1429,7 @@ static void WaypointCreatePath(edict_t *pEntity, int cmd)
 
    if (cmd == 2)  // assign dest of path and make path
    {
-      waypoint2 = WaypointFindNearest(pEntity, 50.0);
+      waypoint2 = WaypointFindNearest(pEntity, 50.0f);
 
       if ((waypoint1 == -1) || (waypoint2 == -1))
       {
@@ -1458,7 +1458,7 @@ static void WaypointRemovePath(edict_t *pEntity, int cmd)
 
    if (cmd == 1)  // assign source of path
    {
-      waypoint1 = WaypointFindNearest(pEntity, 50.0);
+      waypoint1 = WaypointFindNearest(pEntity, 50.0f);
 
       if (waypoint1 == -1)
       {
@@ -1478,7 +1478,7 @@ static void WaypointRemovePath(edict_t *pEntity, int cmd)
 
    if (cmd == 2)  // assign dest of path and make path
    {
-      waypoint2 = WaypointFindNearest(pEntity, 50.0);
+      waypoint2 = WaypointFindNearest(pEntity, 50.0f);
 
       if ((waypoint1 == -1) || (waypoint2 == -1))
       {
@@ -1958,9 +1958,9 @@ static qboolean WaypointReachable(const Vector &v_src, const Vector &v_dest, con
          // check for special case of waypoint being suspended in mid-air...
 
          // is dest waypoint higher than src? (45 is max jump height)
-         if (v_dest.z > (v_src.z + 45.0))
+         if (v_dest.z > (v_src.z + 45.0f))
          {
-	         const Vector v_new_src = v_dest;
+         	const Vector& v_new_src = v_dest;
             Vector v_new_dest = v_dest;
 
             v_new_dest.z = v_new_dest.z - 50;  // straight down 50 units
@@ -2117,7 +2117,7 @@ int WaypointFindReachable(edict_t *pEntity, float range)
 
    // find the nearest waypoint...
 
-   float min_distance = 99999.0;
+   float min_distance = 99999.0f;
 
    for (int i = 0; i < num_waypoints; i++)
    {
@@ -2160,7 +2160,7 @@ void WaypointPrintInfo(edict_t *pEntity)
    int flags;
 
    // find the nearest waypoint...
-   index = WaypointFindNearest(pEntity, 50.0);
+   index = WaypointFindNearest(pEntity, 50.0f);
 
    if (index == -1)
       return;
@@ -2383,7 +2383,7 @@ void WaypointThink(edict_t *pEntity)
                min_distance = distance;
             }
 
-            if ((wp_display_time[i] + 1.0) < gpGlobals->time)
+            if ((wp_display_time[i] + 1.0f) < gpGlobals->time)
             {
                if (waypoints[i].flags & W_FL_CROUCH)
                {
@@ -2886,7 +2886,7 @@ float WaypointDistanceFromTo(int src, int dest)
 {
    // new waypoints come effective on mapchange
    if(!WaypointIsRouteValid(src, dest))
-      return (float)WAYPOINT_MAX_DISTANCE;
+      return float(WAYPOINT_MAX_DISTANCE);
    
    return (float)(shortest_path[src * route_num_waypoints + dest]);
 }

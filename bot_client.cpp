@@ -123,7 +123,7 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
       {
          if (iState == 1)
          {
-	         int found = 0;
+	        int found = 0;
             
             bots[bot_index].current_weapon.iId = iId;
             bots[bot_index].current_weapon.iClip = iClip;
@@ -132,7 +132,7 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
             bots[bot_index].current_weapon.iAmmo1 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo1];
             bots[bot_index].current_weapon.iAmmo2 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo2];
 
-            bot_weapon_select_t* pSelect = &weapon_select[0];
+	        const bot_weapon_select_t* pSelect = &weapon_select[0];
             
             for(int i = 0; pSelect && pSelect[i].iId; i++) 
             {
@@ -146,7 +146,7 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
             }
             
             if(!found)
-               bots[bot_index].current_opt_distance = 99999.0;
+               bots[bot_index].current_opt_distance = 99999.0f;
          }
       }
    }

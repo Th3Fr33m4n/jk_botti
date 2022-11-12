@@ -50,35 +50,35 @@ typedef struct event_info_s {
 
 event_info_t g_event_info[] = {
 //from valve
-   {-1, "events/glock1.sc",		0.96,  {-2.0, -2.0}},
-   {-1, "events/glock2.sc",		0.96,  {-2.0, -2.0}},
-   {-1, "events/shotgun1.sc",		0.975, {-5.0, -5.0}},
-   {-1, "events/shotgun2.sc",		0.99,  {-10.0, -10.0}},
-   {-1, "events/mp5.sc",		1.0,   {-2.0, 2.0}},
-   {-1, "events/mp52.sc",		1.0,   {-10.0, -10.0}},
-   {-1, "events/python.sc",		0.85,  {-10.0, -10.0}},
-   {-1, "events/gauss.sc",		1.0,   {-2.0, -2.0}},
-   {-1, "events/gaussspin.sc",		1.0,   {0, 0}},
+   {-1, "events/glock1.sc",		0.96,  {-2.0f, -2.0f}},
+   {-1, "events/glock2.sc",		0.96,  {-2.0f, -2.0f}},
+   {-1, "events/shotgun1.sc",		0.975, {-5.0f, -5.0f}},
+   {-1, "events/shotgun2.sc",		0.99,  {-10.0f, -10.0f}},
+   {-1, "events/mp5.sc",		1.0f,   {-2.0f, 2.0f}},
+   {-1, "events/mp52.sc",		1.0f,   {-10.0f, -10.0f}},
+   {-1, "events/python.sc",		0.85,  {-10.0f, -10.0f}},
+   {-1, "events/gauss.sc",		1.0f,   {-2.0f, -2.0f}},
+   {-1, "events/gaussspin.sc",		1.0f,   {0, 0}},
    {-1, "events/train.sc",		0.6,   {0, 0}},
-   {-1, "events/crowbar.sc",		1.0,   {0, 0}},
-   {-1, "events/crossbow1.sc",		1.0,   {-2.0, -2.0}},
-   {-1, "events/crossbow2.sc",		1.0,   {0, 0}},
-   {-1, "events/rpg.sc",		0.9,   {-5.0, -5.0}},
+   {-1, "events/crowbar.sc",		1.0f,   {0, 0}},
+   {-1, "events/crossbow1.sc",		1.0f,   {-2.0f, -2.0f}},
+   {-1, "events/crossbow2.sc",		1.0f,   {0, 0}},
+   {-1, "events/rpg.sc",		0.9,   {-5.0f, -5.0f}},
    {-1, "events/egon_fire.sc",		0.94,  {0, 0}},
    {-1, "events/egon_stop.sc",		0.98,  {0, 0}},
-   {-1, "events/firehornet.sc",		1.0,   {0.0, 2.0}},
-   {-1, "events/tripfire.sc",		0.0,   {0, 0}},
-   {-1, "events/snarkfire.sc",		0.0,   {0, 0}},
+   {-1, "events/firehornet.sc",		1.0f,   {0.0f, 2.0f}},
+   {-1, "events/tripfire.sc",		0.0f,   {0, 0}},
+   {-1, "events/snarkfire.sc",		0.0f,   {0, 0}},
 //from gearbox
-   {-1, "events/egon_effect.sc",	0.0,   {0, 0}},
-   {-1, "events/eagle.sc",		0.90,  {-20.0, -20.0}},
+   {-1, "events/egon_effect.sc",	0.0f,   {0, 0}},
+   {-1, "events/eagle.sc",		0.90,  {-20.0f, -20.0f}},
    {-1, "events/pipewrench.sc",		0.8,   {0, 0}},
-   {-1, "events/m249.sc",		0.96,  {-7.0, 7.0}},
-   {-1, "events/shock.sc",		0.96,  {0.0, 2.0}},
-   {-1, "events/sniper.sc",		1.00,  {-10.0, -10.0}},
+   {-1, "events/m249.sc",		0.96,  {-7.0f, 7.0f}},
+   {-1, "events/shock.sc",		0.96,  {0.0f, 2.0f}},
+   {-1, "events/sniper.sc",		1.0f,  {-10.0f, -10.0f}},
    {-1, "events/knife.sc",		0.6,   {0, 0}},
    {-1, "events/penguinfire.sc",	0.85,  {0, 0}},
-   {-1, "events/spore.sc",		0.96,  {-10.0, -10.0}},
+   {-1, "events/spore.sc",		0.96,  {-10.0f, -10.0f}},
    
    {-1, "", 0, {0, 0}} //NULL
 };
@@ -134,7 +134,7 @@ static void pfnPlaybackEvent( int flags, const edict_t *pInvoker, unsigned short
    // event creates sound?
    if(pei->volume > 0.0f)
    {
-	   const int ivolume = (int)(1000*pei->volume);
+	   const int ivolume = int(1000 * pei->volume);
       
       SaveSound((edict_t*)pInvoker, pInvoker->v.origin, ivolume, CHAN_WEAPON, 5.0f);
    }
@@ -162,8 +162,8 @@ static void pfnEmitSound(edict_t *entity, int channel, const char *sample, float
 {
    if (gpGlobals->deathmatch)
    {
-	   const int ivolume = (int)(1000*volume);
-      const char *classname = (const char *)STRING(entity->v.classname);
+   	  const int ivolume = int(1000 * volume);
+      const char *classname = STRING(entity->v.classname);
       float duration = 5.0f;
       
       if (strncmp("item_health", classname, 11) == 0)

@@ -99,16 +99,16 @@ void BotKick(bot_t &pBot)
 //
 static void BotSpawnInit( bot_t &pBot )
 {
-   pBot.bot_think_time = -1.0;
+   pBot.bot_think_time = -1.0f;
    pBot.f_last_think_time = gpGlobals->time - 0.1f;
    
-   pBot.f_recoil = 0;
+   pBot.f_recoil = 0.0f;
    
-   pBot.v_prev_origin = Vector(9999.0, 9999.0, 9999.0);
+   pBot.v_prev_origin = Vector(9999.0f, 9999.0f, 9999.0f);
    pBot.f_speed_check_time = gpGlobals->time;
 
    pBot.waypoint_origin = Vector(0, 0, 0);
-   pBot.f_waypoint_time = 0.0;
+   pBot.f_waypoint_time = 0.0f;
    pBot.curr_waypoint_index = -1;
    pBot.prev_waypoint_index[0] = -1;
    pBot.prev_waypoint_index[1] = -1;
@@ -119,12 +119,12 @@ static void BotSpawnInit( bot_t &pBot )
    pBot.f_random_waypoint_time = gpGlobals->time;
    pBot.waypoint_goal = -1;
    pBot.wpt_goal_type = WPT_GOAL_NONE;
-   pBot.f_waypoint_goal_time = 0.0;
-   pBot.prev_waypoint_distance = 0.0;
-   pBot.f_last_item_found = 0.0;
+   pBot.f_waypoint_goal_time = 0.0f;
+   pBot.prev_waypoint_distance = 0.0f;
+   pBot.f_last_item_found = 0.0f;
 
    pBot.pTrackSoundEdict = nullptr;
-   pBot.f_track_sound_time = 0.0;
+   pBot.f_track_sound_time = 0.0f;
    
    memset(pBot.exclude_points, 0, sizeof(pBot.exclude_points));
 
@@ -139,64 +139,64 @@ static void BotSpawnInit( bot_t &pBot )
    
    pBot.eagle_secondary_state = 0;
 
-   pBot.blinded_time = 0.0;
+   pBot.blinded_time = 0.0f;
    pBot.f_max_speed = CVAR_GET_FLOAT("sv_maxspeed");
-   pBot.f_prev_speed = 0.0;  // fake "paused" since bot is NOT stuck
-   pBot.f_find_item = 0.0;
+   pBot.f_prev_speed = 0.0f;  // fake "paused" since bot is NOT stuck
+   pBot.f_find_item = 0.0f;
    pBot.b_not_maxspeed = FALSE;
 
    pBot.ladder_dir = LADDER_UNKNOWN;
-   pBot.f_start_use_ladder_time = 0.0;
-   pBot.f_end_use_ladder_time = 0.0;
+   pBot.f_start_use_ladder_time = 0.0f;
+   pBot.f_end_use_ladder_time = 0.0f;
    pBot.waypoint_top_of_ladder = FALSE;
 
-   pBot.f_wall_check_time = 0.0;
-   pBot.f_wall_on_right = 0.0;
-   pBot.f_wall_on_left = 0.0;
-   pBot.f_dont_avoid_wall_time = 0.0;
-   pBot.f_look_for_waypoint_time = 0.0;
-   pBot.f_jump_time = 0.0;
-   pBot.f_drop_check_time = 0.0;
+   pBot.f_wall_check_time = 0.0f;
+   pBot.f_wall_on_right = 0.0f;
+   pBot.f_wall_on_left = 0.0f;
+   pBot.f_dont_avoid_wall_time = 0.0f;
+   pBot.f_look_for_waypoint_time = 0.0f;
+   pBot.f_jump_time = 0.0f;
+   pBot.f_drop_check_time = 0.0f;
 
    // pick a wander direction (50% of the time to the left, 50% to the right)
    pBot.wander_dir = (RANDOM_LONG2(1, 100) <= 50) ? WANDER_LEFT : WANDER_RIGHT;
 
    pBot.f_move_direction = 1;
 
-   pBot.f_exit_water_time = 0.0;
+   pBot.f_exit_water_time = 0.0f;
 
    pBot.pBotEnemy = nullptr;
    pBot.f_bot_see_enemy_time = gpGlobals->time;
    pBot.v_bot_see_enemy_origin = Vector(-99999,-99999,-99999);
    pBot.f_next_find_visible_sound_enemy_time = 0.0f;
 
-   pBot.f_duck_time = 0.0;
+   pBot.f_duck_time = 0.0f;
    
-   pBot.f_random_jump_time = 0.0;
-   pBot.f_random_jump_duck_time = 0.0;
-   pBot.f_random_jump_duck_end = 0.0;
-   pBot.f_random_duck_time = 0.0;
+   pBot.f_random_jump_time = 0.0f;
+   pBot.f_random_jump_duck_time = 0.0f;
+   pBot.f_random_jump_duck_end = 0.0f;
+   pBot.f_random_duck_time = 0.0f;
    pBot.prev_random_type = 0;
    
-   pBot.f_sniper_aim_time = 0.0;
+   pBot.f_sniper_aim_time = 0.0f;
       
    pBot.b_longjump_do_jump = FALSE;
    pBot.b_longjump = FALSE;
-   pBot.f_combat_longjump = 0.0;
-   pBot.f_longjump_time = 0.0;
+   pBot.f_combat_longjump = 0.0f;
+   pBot.f_longjump_time = 0.0f;
    pBot.b_combat_longjump = FALSE;
    
    pBot.f_shoot_time = gpGlobals->time;
-   pBot.f_primary_charging = -1.0;
-   pBot.f_secondary_charging = -1.0;
+   pBot.f_primary_charging = -1.0f;
+   pBot.f_secondary_charging = -1.0f;
    pBot.charging_weapon_id = 0;
-   pBot.f_grenade_search_time = 0.0;
-   pBot.f_grenade_found_time = 0.0;
+   pBot.f_grenade_search_time = 0.0f;
+   pBot.f_grenade_found_time = 0.0f;
    pBot.current_weapon_index = -1;
-   pBot.current_opt_distance = 99999.0;
+   pBot.current_opt_distance = 99999.0f;
 
-   pBot.f_pause_time = 0.0;
-   pBot.f_sound_update_time = 0.0;
+   pBot.f_pause_time = 0.0f;
+   pBot.f_sound_update_time = 0.0f;
 
    pBot.b_see_tripmine = FALSE;
    pBot.b_shoot_tripmine = FALSE;
@@ -204,26 +204,26 @@ static void BotSpawnInit( bot_t &pBot )
    pBot.tripmine_edict = nullptr;
 
    pBot.b_use_health_station = FALSE;
-   pBot.f_use_health_time = 0.0;
+   pBot.f_use_health_time = 0.0f;
    pBot.b_use_HEV_station = FALSE;
-   pBot.f_use_HEV_time = 0.0;
+   pBot.f_use_HEV_time = 0.0f;
 
    pBot.b_use_button = FALSE;
-   pBot.f_use_button_time = 0;
+   pBot.f_use_button_time = 0.0f;
    pBot.b_lift_moving = FALSE;
    
    pBot.v_use_target = Vector(0,0,0);
 
    pBot.b_spray_logo = FALSE;
 
-   pBot.f_reaction_target_time = 0.0;
+   pBot.f_reaction_target_time = 0.0f;
 
    pBot.b_set_special_shoot_angle = FALSE;
-   pBot.f_special_shoot_angle = 0.0;
+   pBot.f_special_shoot_angle = 0.0f;
 
-   pBot.f_weaponchange_time = 0.0;
+   pBot.f_weaponchange_time = 0.0f;
    
-   pBot.f_pause_look_time = 0.0;
+   pBot.f_pause_look_time = 0.0f;
 
    pBot.f_current_hearing_sensitivity = -1;
 
@@ -553,7 +553,7 @@ static void RecountTeams()
 
       if ( tm >= 0 )
       {
-         g_team_scores[tm] += (int)plr->v.frags;
+         g_team_scores[tm] += int(plr->v.frags);
       }
    }
 }
@@ -880,8 +880,8 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
       BotEnt->v.pitch_speed = 270;  // slightly faster than HLDM of 225
       BotEnt->v.yaw_speed = 250; // slightly faster than HLDM of 210
 
-      pBot.idle_angle = 0.0;
-      pBot.idle_angle_time = 0.0;
+      pBot.idle_angle = 0.0f;
+      pBot.idle_angle_time = 0.0f;
 
       pBot.chat_percent = bot_chat_percent;
       pBot.taunt_percent = bot_taunt_percent;
@@ -892,23 +892,23 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
       pBot.chat_swap_percent = bot_chat_swap_percent;
       pBot.chat_lower_percent = bot_chat_lower_percent;
       pBot.logo_percent = bot_logo_percent;
-      pBot.f_strafe_direction = 0.0;  // not strafing
-      pBot.f_strafe_time = 0.0;
+      pBot.f_strafe_direction = 0.0f;  // not strafing
+      pBot.f_strafe_time = 0.0f;
 
       pBot.bot_skill = skill - 1;  // 0 based for array indexes
       pBot.weapon_skill = skill;
 
       pBot.b_bot_say = FALSE;
-      pBot.f_bot_say = 0.0;
+      pBot.f_bot_say = 0.0f;
       pBot.bot_say_msg[0] = 0;
       pBot.f_bot_chat_time = gpGlobals->time;
       pBot.b_bot_endgame = FALSE;
       
       // use system wide timer for connection times
       // bot will stay 30-160 minutes
-      pBot.stay_time = 60 * (double)RANDOM_FLOAT2(30, 160);
+      pBot.stay_time = 60 * double(RANDOM_FLOAT2(30, 160));
       // bot has been already here for 10%-50% of the total stay time
-      pBot.connect_time = UTIL_GetSecs() - pBot.stay_time * (double)RANDOM_FLOAT2(0.2, 0.8);
+      pBot.connect_time = UTIL_GetSecs() - pBot.stay_time * double(RANDOM_FLOAT2(0.2f, 0.8f));
    }
 }
 
@@ -931,12 +931,12 @@ void BotReplaceConnectionTime(const char * name, float * timeslot)
       {
          // use system wide timer for connection times
          // bot will stay 30-160 minutes
-         pBot.stay_time = 60 * (double)RANDOM_FLOAT2(30, 160);
+         pBot.stay_time = 60 * double(RANDOM_FLOAT2(30, 160));
          // bot has been already here for 20%-80% of the total stay time
-         pBot.connect_time = current_time - pBot.stay_time * (double)RANDOM_FLOAT2(0.2, 0.8);
+         pBot.connect_time = current_time - pBot.stay_time * double(RANDOM_FLOAT2(0.2f, 0.8f));
       }
       
-      *timeslot = (float)(current_time - pBot.connect_time);
+      *timeslot = float(current_time - pBot.connect_time);
       
       break;
    }
@@ -965,7 +965,7 @@ static int BotInFieldOfView(const bot_t& pBot, const Vector& dest)
    // 45 degrees to the right is the limit of the normal view angle
 
    // rsm - START angle bug fix
-   int angle = abs((int)view_angle - (int)entity_angles.y);
+   int angle = abs(int(view_angle) - int(entity_angles.y));
 
    if (angle > 180)
       angle = 360 - angle;
@@ -1470,7 +1470,7 @@ static qboolean BotLookForGrenades( bot_t &pBot )
    if(pBot.pBotEnemy)
       return(FALSE);
 
-   constexpr float radius = 500;
+   const float radius = 500.0f;
    edict_t *pEdict = pBot.pEdict;
 
    edict_t* pent = nullptr;
@@ -1547,7 +1547,7 @@ static void BotCheckLogoSpraying(bot_t &pBot)
 
    // took too long trying to spray logo?...
    if ((pBot.b_spray_logo) &&
-       ((pBot.f_spray_logo_time + 3.0) < gpGlobals->time))
+       ((pBot.f_spray_logo_time + 3.0f) < gpGlobals->time))
    {
       pBot.b_spray_logo = FALSE;
       pEdict->v.idealpitch = 0.0f;
@@ -1741,9 +1741,9 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
    // check if should use wall mounted health station...
    else if (pBot.b_use_health_station)
    {
-      if ((pBot.f_use_health_time + 10.0) > gpGlobals->time)
+      if ((pBot.f_use_health_time + 10.0f) > gpGlobals->time)
       {
-         pBot.f_move_speed = 0;  // don't move while using health station
+         pBot.f_move_speed = 0.0f;  // don't move while using health station
          
          // block strafing before using health station
          pBot.f_strafe_time = gpGlobals->time + 1.0f;
@@ -1775,9 +1775,9 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
    // check if should use wall mounted HEV station...
    else if (pBot.b_use_HEV_station)
    {
-      if ((pBot.f_use_HEV_time + 10.0) > gpGlobals->time)
+      if ((pBot.f_use_HEV_time + 10.0f) > gpGlobals->time)
       {
-         pBot.f_move_speed = 0;  // don't move while using HEV station
+         pBot.f_move_speed = 0.0f;  // don't move while using HEV station
          
          // block strafing before using hev
          pBot.f_strafe_time = gpGlobals->time + 1.0f;
@@ -1841,7 +1841,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       if (pBot.b_on_ladder)
       {
          // check if bot JUST got on the ladder...
-         if ((pBot.f_end_use_ladder_time + 1.0) < gpGlobals->time)
+         if ((pBot.f_end_use_ladder_time + 1.0f) < gpGlobals->time)
             pBot.f_start_use_ladder_time = gpGlobals->time;
 
          // go handle the ladder movement
@@ -1853,7 +1853,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       else
       {
          // check if the bot JUST got off the ladder...
-         if ((pBot.f_end_use_ladder_time + 1.0) > gpGlobals->time)
+         if ((pBot.f_end_use_ladder_time + 1.0f) > gpGlobals->time)
          {
             pBot.ladder_dir = LADDER_UNKNOWN;
          }
@@ -1879,7 +1879,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
                
                pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0f;
 
-               moved_distance = 2.0;  // dont use bot stuck code
+               moved_distance = 2.0f;  // dont use bot stuck code
             }
             else
             {
@@ -1927,7 +1927,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       // check if bot is on a ladder and has been on a ladder for
       // more than 5 seconds...
       if (pBot.b_on_ladder && (pBot.f_start_use_ladder_time > 0.0f) &&
-          ((pBot.f_start_use_ladder_time + 5.0) <= gpGlobals->time))
+          ((pBot.f_start_use_ladder_time + 5.0f) <= gpGlobals->time))
       {
          // bot is stuck on a ladder...
          BotRandomTurn(pBot);
@@ -1935,7 +1935,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
          // don't look for items for 2 seconds
          pBot.f_find_item = gpGlobals->time + 2.0f;
 
-         pBot.f_start_use_ladder_time = 0.0;  // reset start ladder time
+         pBot.f_start_use_ladder_time = 0.0f;  // reset start ladder time
       }
       
       // check if the bot hasn't moved much since the last location
@@ -1963,7 +1963,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
          if (BotCanJumpUp( pBot, &bCrouchJump ))  // can the bot jump onto something?
          {
-            if ((pBot.f_jump_time + 2.0) <= gpGlobals->time)
+            if ((pBot.f_jump_time + 2.0f) <= gpGlobals->time)
             {
                pBot.f_jump_time = gpGlobals->time;
                pEdict->v.button |= IN_JUMP;  // jump up and move forward
@@ -2021,19 +2021,19 @@ static void BotDoStrafe(bot_t &pBot)
       {
          if(pBot.f_strafe_time <= gpGlobals->time) 
          {
-            pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.2);
-            pBot.f_strafe_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0 : -1.0;
-            pBot.f_move_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0 : -1.0;
+            pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.5f, 1.2f);
+            pBot.f_strafe_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0f : -1.0f;
+            pBot.f_move_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0f : -1.0f;
          }
          
-         pBot.f_move_speed = 1.0;
+         pBot.f_move_speed = 1.0f;
       }
       else
       {
          if(pBot.f_strafe_time <= gpGlobals->time) 
          {
-            pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.2);
-            pBot.f_strafe_direction = RANDOM_FLOAT(-0.3, 0.3);
+            pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.5f, 1.2f);
+            pBot.f_strafe_direction = RANDOM_FLOAT(-0.3f, 0.3f);
             
             if(RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].keep_optimal_dist)
             {
@@ -2046,7 +2046,7 @@ static void BotDoStrafe(bot_t &pBot)
                pBot.f_move_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0 : -1.0;
          }
          
-         pBot.f_move_speed = 32.0;
+         pBot.f_move_speed = 32.0f;
       }
       
       if(pBot.f_dont_avoid_wall_time <= gpGlobals->time)
@@ -2098,26 +2098,26 @@ static void BotDoStrafe(bot_t &pBot)
       	    if(angle_diff > 135.0f || angle_diff <= 135.0f)
       	    {
       	       // move forward
-      	       pBot.f_strafe_direction = 0.0;
-      	       pBot.f_move_direction = 1.0;
+      	       pBot.f_strafe_direction = 0.0f;
+      	       pBot.f_move_direction = 1.0f;
       	    }
       	    if(angle_diff > 45.0f)
             {
                // strafe on right
-               pBot.f_strafe_direction = -1.0;
-               pBot.f_move_direction = 1.0;
+               pBot.f_strafe_direction = -1.0f;
+               pBot.f_move_direction = 1.0f;
             }
             else if(angle_diff <= -45.0f)
             {
                // strafe on left          
-               pBot.f_strafe_direction = 1.0;
-               pBot.f_move_direction = 1.0;
+               pBot.f_strafe_direction = 1.0f;
+               pBot.f_move_direction = 1.0f;
             }
             else
             {
                // move backwards
-      	       pBot.f_strafe_direction = 0.0;
-               pBot.f_move_direction = -1.0;
+      	       pBot.f_strafe_direction = 0.0f;
+               pBot.f_move_direction = -1.0f;
             }
       	 }
       	 else
@@ -2136,34 +2136,34 @@ static void BotDoStrafe(bot_t &pBot)
       	    if(angle_diff > 135.0f || angle_diff <= 135.0f)
       	    {
       	       // move backwards
-      	       pBot.f_strafe_direction = 0.0;
-      	       pBot.f_move_direction = -1.0;
+      	       pBot.f_strafe_direction = 0.0f;
+      	       pBot.f_move_direction = -1.0f;
       	    }
       	    if(angle_diff > 45.0f)
             {
                // strafe on left
-               pBot.f_strafe_direction = 1.0;
-               pBot.f_move_direction = 1.0;
+               pBot.f_strafe_direction = 1.0f;
+               pBot.f_move_direction = 1.0f;
             }
             else if(angle_diff <= -45.0f)
             {
                // strafe on right          
-               pBot.f_strafe_direction = -1.0;
-               pBot.f_move_direction = 1.0;
+               pBot.f_strafe_direction = -1.0f;
+               pBot.f_move_direction = 1.0f;
             }
             else
             {
                // move forward
-      	       pBot.f_strafe_direction = 0.0;
-               pBot.f_move_direction = 1.0;
+      	       pBot.f_strafe_direction = 0.0f;
+               pBot.f_move_direction = 1.0f;
             }
          }
       }
       else
       {
          // move forward
-         pBot.f_strafe_direction = 0.0;
-         pBot.f_move_direction = 1.0;
+         pBot.f_strafe_direction = 0.0f;
+         pBot.f_move_direction = 1.0f;
       }
       
       pBot.f_move_speed = 150.0f;
@@ -2175,17 +2175,17 @@ static void BotDoStrafe(bot_t &pBot)
    // normal strafe - time to strafe yet?
    else if (pBot.f_strafe_time < gpGlobals->time)
    {
-      pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.1, 1.0);
+      pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.1f, 1.0f);
 
       if (RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].normal_strafe)
       {
          if (RANDOM_LONG2(1, 100) <= 50)
-            pBot.f_strafe_direction = -1.0;
+            pBot.f_strafe_direction = -1.0f;
          else
-            pBot.f_strafe_direction = 1.0;
+            pBot.f_strafe_direction = 1.0f;
       }
       else
-         pBot.f_strafe_direction = 0.0f + RANDOM_FLOAT2(-0.005, 0.005);
+         pBot.f_strafe_direction = 0.0f + RANDOM_FLOAT2(-0.005f, 0.005f);
 
       if(pBot.f_dont_avoid_wall_time <= gpGlobals->time)
       {
@@ -2210,7 +2210,7 @@ static void BotDoStrafe(bot_t &pBot)
 static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_distance)
 {
    edict_t *pEdict = pBot.pEdict;
-   float max_lj_distance = 0.0;
+   float max_lj_distance = 0.0f;
 
    // 
    // PART1 -- handle actions that are not finished
@@ -2223,7 +2223,7 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
       pEdict->v.button |= IN_DUCK;
       pEdict->v.button |= IN_JUMP;
       
-      pBot.f_duck_time = gpGlobals->time + RANDOM_FLOAT2(0.3, 0.5); //stay duck for some time to fix animation
+      pBot.f_duck_time = gpGlobals->time + RANDOM_FLOAT2(0.3f, 0.5f); //stay duck for some time to fix animation
       
       return;
    }
@@ -2235,16 +2235,16 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
        
        if(pBot.f_random_jump_duck_end > 0.0f && pBot.f_random_jump_duck_end <= gpGlobals->time) 
        {
-          pBot.f_random_jump_duck_time = 0.0;
-          pBot.f_random_jump_duck_end = 0.0;
-          pBot.f_random_jump_time = gpGlobals->time + RANDOM_FLOAT2(0.2, 0.4);
+          pBot.f_random_jump_duck_time = 0.0f;
+          pBot.f_random_jump_duck_end = 0.0f;
+          pBot.f_random_jump_time = gpGlobals->time + RANDOM_FLOAT2(0.2f, 0.4f);
        }
        
        return;
    }
 
    // stop trying to longjump after half a second
-   if (pBot.f_combat_longjump < gpGlobals->time - 0.5 && pBot.b_combat_longjump)
+   if (pBot.f_combat_longjump < gpGlobals->time - 0.5f && pBot.b_combat_longjump)
       pBot.b_combat_longjump = FALSE;
 
    // longjump
@@ -2263,7 +2263,7 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
       if (RANDOM_LONG2(1,100) > 10)
          pBot.f_combat_longjump = gpGlobals->time + 1.0f;
       else
-         pBot.f_combat_longjump = gpGlobals->time + RANDOM_FLOAT2(3.0, 5.0);
+         pBot.f_combat_longjump = gpGlobals->time + RANDOM_FLOAT2(3.0f, 5.0f);
       
       // actually do the longjump
       pEdict->v.button |= IN_DUCK;
@@ -2476,7 +2476,7 @@ void BotThink( bot_t &pBot )
    pBot.f_frame_time = gpGlobals->time - pBot.f_last_think_time;
    pBot.f_last_think_time = gpGlobals->time;
   
-   pBot.msecval = (int)(pBot.f_frame_time * 1000.0);
+   pBot.msecval = (int)(pBot.f_frame_time * 1000.0f);
    
    // count up difference that integer conversion caused
    pBot.msecdel += pBot.f_frame_time * 1000.0f - pBot.msecval;
@@ -2528,7 +2528,7 @@ void BotThink( bot_t &pBot )
 #endif
    
    pEdict->v.button = 0;
-   pBot.f_move_speed = 0.0;
+   pBot.f_move_speed = 0.0f;
 
    // Get bot physics status
    pBot.b_on_ground = (pEdict->v.flags & FL_ONGROUND) == FL_ONGROUND;
@@ -2558,7 +2558,7 @@ void BotThink( bot_t &pBot )
          BotChatEndGame(pBot);
       }
       
-      BotRunPlayerMove(pBot, pEdict->v.v_angle, 0, 0, 0, 0, 0, (byte)pBot.msecval);
+      BotRunPlayerMove(pBot, pEdict->v.v_angle, 0, 0, 0, 0, 0, byte(pBot.msecval));
       return;
    }
 
@@ -2578,7 +2578,7 @@ void BotThink( bot_t &pBot )
       if (RANDOM_LONG2(1, 100) <= 50)
          pEdict->v.button = IN_ATTACK;
             
-      BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed, 0, 0, pEdict->v.button, 0, (byte)pBot.msecval);
+      BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed, 0, 0, pEdict->v.button, 0, byte(pBot.msecval));
 
       return;
    }
@@ -2608,7 +2608,7 @@ void BotThink( bot_t &pBot )
       // turn towards ideal_yaw by yaw_speed degrees (slower than normal)
       BotChangeYaw( pBot, pEdict->v.yaw_speed / 2 );
       
-      BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed, 0, 0, pEdict->v.button, 0, (byte)pBot.msecval);
+      BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed, 0, 0, pEdict->v.button, 0, byte(pBot.msecval));
 
       return;
    }
@@ -2634,7 +2634,7 @@ void BotThink( bot_t &pBot )
    }
    else
    {
-      moved_distance = 2.0;
+      moved_distance = 2.0f;
    }
 
    // if the bot is not underwater AND not in the air (or on ladder),
@@ -2763,7 +2763,7 @@ void BotThink( bot_t &pBot )
          BotFixIdealYaw(pEdict);
          BotFixIdealPitch(pEdict);
          
-         pBot.f_pause_look_time = gpGlobals->time + RANDOM_FLOAT(0.5, 1.0);
+         pBot.f_pause_look_time = gpGlobals->time + RANDOM_FLOAT(0.5f, 1.0f);
       }
    }
    // next if lift-end and on moving platform
@@ -2850,7 +2850,7 @@ void BotThink( bot_t &pBot )
          pBot.f_grenade_found_time = gpGlobals->time;
    }
 
-   if (pBot.f_grenade_found_time + 1.0 > gpGlobals->time)
+   if (pBot.f_grenade_found_time + 1.0f > gpGlobals->time)
    {
       // move backwards for 1.0 second after seeing a grenade...
       pBot.f_move_speed = -pBot.f_move_speed;
@@ -2867,7 +2867,7 @@ void BotThink( bot_t &pBot )
 
    // is the bot "paused"? or longjumping?
    if (pBot.f_pause_time > gpGlobals->time || pBot.f_longjump_time > gpGlobals->time) 
-      pBot.f_move_speed = pBot.f_strafe_direction = 0;  // don't move while pausing
+      pBot.f_move_speed = pBot.f_strafe_direction = 0.0f;  // don't move while pausing
   
    BotDoRandomJumpingAndDuckingAndLongJumping(pBot, moved_distance);
   
@@ -2876,7 +2876,7 @@ void BotThink( bot_t &pBot )
    
    // full strafe if bot isn't moving much else
    if(pBot.f_move_speed == 0.0f)
-      f_strafe_speed = 0.0;
+      f_strafe_speed = 0.0f;
    else if(pBot.f_move_speed <= 20.0f)
       f_strafe_speed = pBot.f_strafe_direction * pBot.f_max_speed;
    else
@@ -2909,7 +2909,7 @@ void BotThink( bot_t &pBot )
    }
    
    BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed,
-                                f_strafe_speed, 0, pEdict->v.button, 0, (byte)pBot.msecval);
+                                f_strafe_speed, 0, pEdict->v.button, 0, byte(pBot.msecval));
    
    return;
 }

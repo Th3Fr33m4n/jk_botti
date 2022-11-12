@@ -159,7 +159,7 @@ void BotAimPost( bot_t &pBot )
       pBot.pEdict->v.angles.x = UTIL_WrapAngle (-pBot.pEdict->v.v_angle.x / 3);
       
       pBot.b_set_special_shoot_angle = FALSE;
-      pBot.f_special_shoot_angle = 0.0;
+      pBot.f_special_shoot_angle = 0.0f;
    }
    
    // special case for m249
@@ -466,7 +466,7 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
    const float older_diff = std::fabs(older->time - time);
    const float total_diff = newer_diff + older_diff;
    
-   if(total_diff <= 0.0) 
+   if(total_diff <= 0.0f) 
    {
       // zero div would crash server.. 
       // zero diff means that both data are from same time
@@ -633,7 +633,7 @@ static edict_t *BotFindEnemyNearestToPoint(const bot_t& pBot, const Vector& v_po
 
          // skip this player if respawned lately
          const float time_since_respawn = UTIL_GetTimeSinceRespawn(pPlayer);
-         if(time_since_respawn != -1.0 && time_since_respawn < skill_settings[pBot.bot_skill].respawn_react_delay)
+         if(time_since_respawn != -1.0f && time_since_respawn < skill_settings[pBot.bot_skill].respawn_react_delay)
             continue;
 
          // skip this player if facing wall
@@ -700,7 +700,7 @@ static edict_t *BotFindVisibleSoundEnemy( bot_t &pBot )
    CSound *pCurrentSound;
    edict_t *pMinDistanceEdict = nullptr;
    
-   float mindistance = 99999.0;
+   float mindistance = 99999.0f;
       
    // walk through active sound linked list
    for(int iSound = CSoundEnt::ActiveList(); iSound != SOUNDLIST_EMPTY; iSound = pCurrentSound->m_iNext)
@@ -726,7 +726,7 @@ static edict_t *BotFindVisibleSoundEnemy( bot_t &pBot )
       
       // any enemy near sound?
       Vector v_enemy = Vector(0,0,0);
-      edict_t * pNewEnemy = BotFindEnemyNearestToPoint(pBot, pCurrentSound->m_vecOrigin, 512.0, &v_enemy);
+      edict_t * pNewEnemy = BotFindEnemyNearestToPoint(pBot, pCurrentSound->m_vecOrigin, 512.0f, &v_enemy);
       if(FNullEnt(pNewEnemy))
          continue;
       
@@ -887,7 +887,7 @@ edict_t *pEdict = pBot.pEdict;
             continue;
          
          // cannot take damage
-         if((int)pBreakable->pEdict->v.takedamage == DAMAGE_NO ||
+         if(int(pBreakable->pEdict->v.takedamage) == DAMAGE_NO ||
             pBreakable->pEdict->v.solid == SOLID_NOT || 
             pBreakable->pEdict->v.deadflag == DEAD_DEAD ||
             !pBreakable->material_breakable ||
@@ -937,7 +937,7 @@ edict_t *pEdict = pBot.pEdict;
       pMonster = nullptr;
       while (!FNullEnt (pMonster = UTIL_FindEntityInSphere (pMonster, pEdict->v.origin, 1000)))
       {
-         if (!(pMonster->v.flags & FL_MONSTER) || (int)pMonster->v.takedamage == DAMAGE_NO)
+         if (!(pMonster->v.flags & FL_MONSTER) || int(pMonster->v.takedamage) == DAMAGE_NO)
             continue; // discard anything that is not a monster
                   
          if (!IsAlive (pMonster))
@@ -1020,7 +1020,7 @@ edict_t *pEdict = pBot.pEdict;
               
             // skip this player if respawned lately
             float time_since_respawn = UTIL_GetTimeSinceRespawn(pPlayer);
-            if(time_since_respawn != -1.0 && time_since_respawn < skill_settings[pBot.bot_skill].respawn_react_delay)
+            if(time_since_respawn != -1.0f && time_since_respawn < skill_settings[pBot.bot_skill].respawn_react_delay)
                continue;
 
             vecEnd = GetGunPosition(pPlayer);
@@ -1108,7 +1108,7 @@ edict_t *pEdict = pBot.pEdict;
    }
 
    // has the bot NOT seen an ememy for at least 5 seconds (time to reload)?
-   else if ((pBot.f_bot_see_enemy_time > 0) && ((pBot.f_bot_see_enemy_time + 5.0) <= gpGlobals->time))
+   else if ((pBot.f_bot_see_enemy_time > 0) && ((pBot.f_bot_see_enemy_time + 5.0f) <= gpGlobals->time))
    {
       pBot.f_bot_see_enemy_time = -1;  // so we won't keep reloading
       pBot.v_bot_see_enemy_origin = Vector(-99999,-99999,-99999);

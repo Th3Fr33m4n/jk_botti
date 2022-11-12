@@ -30,7 +30,7 @@ extern qboolean checked_teamplay;
 extern bot_weapon_t weapon_defs[MAX_WEAPONS];
 
 // SET THIS UP BASED ON MOD!!!
-constexpr int max_drop_height = 800;
+const int max_drop_height = 800;
 
 // returns the number of degrees left to turn toward ideal pitch...
 float BotChangePitch(const bot_t& pBot, float speed)
@@ -184,7 +184,7 @@ static qboolean BotFindWaypoint( bot_t &pBot )
    
    for (index=0; index < 3; index++)
    {
-      min_distance[index] = 99999.0;
+      min_distance[index] = 99999.0f;
       min_index[index] = -1;
    }
 
@@ -445,7 +445,7 @@ static void BotFindWaypointGoal( bot_t &pBot )
          
          if(temp_index != -1)
          {
-            if(RANDOM_FLOAT2(0.0, 1.0) < 0.5f)
+            if(RANDOM_FLOAT2(0.0f, 1.0f) < 0.5f)
             {
 	            const float track_time = RANDOM_FLOAT2(skill_settings[pBot.bot_skill].track_sound_time_min, skill_settings[pBot.bot_skill].track_sound_time_max);
                
@@ -709,16 +709,16 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
 
 
    // check if the bot has been trying to get to this waypoint for a while...
-   if ((pBot.f_waypoint_time + 5.0) < gpGlobals->time)
+   if ((pBot.f_waypoint_time + 5.0f) < gpGlobals->time)
    {
       pBot.curr_waypoint_index = -1;  // forget about this waypoint
       pBot.waypoint_goal = -1;  // also forget about a goal
    }
 
    // no goal, no goal time
-   if ((pBot.waypoint_goal == -1) && (pBot.f_waypoint_goal_time > gpGlobals->time + 2) &&
-       (pBot.f_waypoint_goal_time != 0.0))
-      pBot.f_waypoint_goal_time = 0.0;
+   if ((pBot.waypoint_goal == -1) && (pBot.f_waypoint_goal_time > gpGlobals->time + 2.0f) &&
+       (pBot.f_waypoint_goal_time != 0.0f))
+      pBot.f_waypoint_goal_time = 0.0f;
 
    // find new waypoint for sound we are tracking
    if(pBot.wpt_goal_type == WPT_GOAL_TRACK_SOUND)
@@ -732,7 +732,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
       pBot.waypoint_top_of_ladder = FALSE;
 
       // did we just come off of a ladder or are we underwater?
-      if (((pBot.f_end_use_ladder_time + 2.0) > gpGlobals->time) || pBot.b_in_water)
+      if (((pBot.f_end_use_ladder_time + 2.0f) > gpGlobals->time) || pBot.b_in_water)
       {
          // find the nearest visible waypoint
          i = WaypointFindNearest(pEdict, REACHABLE_RANGE);
@@ -816,7 +816,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
          if (tr.flFraction < 1.0f)
          {
             // did we just come off of a ladder or are we under water?
-            if (((pBot.f_end_use_ladder_time + 2.0) > gpGlobals->time) || pBot.b_in_water)
+            if (((pBot.f_end_use_ladder_time + 2.0f) > gpGlobals->time) || pBot.b_in_water)
             {
                // find the nearest visible waypoint
                i = WaypointFindNearest(pEdict, REACHABLE_RANGE);
@@ -892,7 +892,7 @@ qboolean BotHeadTowardWaypoint( bot_t &pBot )
    {
       qboolean waypoint_found = FALSE;
 
-      pBot.prev_waypoint_distance = 0.0;
+      pBot.prev_waypoint_distance = 0.0f;
 
       // reeval our goal
       BotEvaluateGoal( pBot );
@@ -1200,7 +1200,7 @@ void BotOnLadder( bot_t &pBot, float moved_distance )
       pEdict->v.v_angle.x = -60;  // look upwards
 
       // check if the bot hasn't moved much since the last location...
-      if ((moved_distance <= 1) && (pBot.f_prev_speed >= 1.0))
+      if ((moved_distance <= 1) && (pBot.f_prev_speed >= 1.0f))
       {
          // the bot must be stuck, change directions...
 
@@ -1213,7 +1213,7 @@ void BotOnLadder( bot_t &pBot, float moved_distance )
       pEdict->v.v_angle.x = 60;  // look downwards
 
       // check if the bot hasn't moved much since the last location...
-      if ((moved_distance <= 1) && (pBot.f_prev_speed >= 1.0))
+      if ((moved_distance <= 1) && (pBot.f_prev_speed >= 1.0f))
       {
          // the bot must be stuck, change directions...
 
@@ -1311,7 +1311,7 @@ void BotUseLift( bot_t &pBot, float moved_distance )
    edict_t *pEdict = pBot.pEdict;
 
    // just need to press the button once, when the flag gets set...
-   if (pBot.f_use_button_time + 0.0 >= gpGlobals->time)
+   if (pBot.f_use_button_time + 0.0f >= gpGlobals->time)
    {     
       // aim at the button..
       Vector v_target = pBot.v_use_target - GetGunPosition( pEdict );
@@ -1351,7 +1351,7 @@ void BotUseLift( bot_t &pBot, float moved_distance )
    }
 
    // check if the bot has waited too long for the lift to move...
-   else if (((pBot.f_use_button_time + 2.0) < gpGlobals->time) &&
+   else if (((pBot.f_use_button_time + 2.0f) < gpGlobals->time) &&
        (!pBot.b_lift_moving))
    {
       // clear use button flag
@@ -1459,7 +1459,7 @@ qboolean BotStuckInCorner(const bot_t& pBot)
 {
    TraceResult tr;
    const edict_t *pEdict = pBot.pEdict;
-   constexpr float offsets[1] = {0};
+   const float offsets[1] = {0};
    const int right_first = RANDOM_LONG2(0,1);
    Vector v_forward, v_right, v_up;
    
@@ -1529,14 +1529,14 @@ void BotTurnAtWall(const bot_t& pBot, const TraceResult* tr, qboolean negative)
    float Y1 = Normal.y - 90;
    if (RANDOM_LONG2(1, 100) <= 50)
    {
-      Y1 = Y1 - RANDOM_FLOAT2(5.0, 20.0);
+      Y1 = Y1 - RANDOM_FLOAT2(5.0f, 20.0f);
    }
    if (Y1 < 0) Y1 += 360;
 
    float Y2 = Normal.y + 90;
    if (RANDOM_LONG2(1, 100) <= 50)
    {
-      Y2 = Y2 + RANDOM_FLOAT2(5.0, 20.0);
+      Y2 = Y2 + RANDOM_FLOAT2(5.0f, 20.0f);
    }
    if (Y2 > 359) Y2 -= 360;
 
@@ -2111,7 +2111,7 @@ qboolean BotCheckWallOnLeft( bot_t &pBot )
    // check if the trace hit something...
    if (tr.flFraction < 1.0f)
    {
-      if (pBot.f_wall_on_left < 1.0)
+      if (pBot.f_wall_on_left < 1.0f)
          pBot.f_wall_on_left = gpGlobals->time;
 
       return TRUE;
@@ -2136,7 +2136,7 @@ qboolean BotCheckWallOnRight( bot_t &pBot )
    // check if the trace hit something...
    if (tr.flFraction < 1.0f)
    {
-      if (pBot.f_wall_on_right < 1.0)
+      if (pBot.f_wall_on_right < 1.0f)
          pBot.f_wall_on_right = gpGlobals->time;
 
       return TRUE;
@@ -2161,7 +2161,7 @@ qboolean BotCheckWallOnForward( bot_t &pBot )
    // check if the trace hit something...
    if (tr.flFraction < 1.0f)
    {
-      if (pBot.f_wall_on_right < 1.0)
+      if (pBot.f_wall_on_right < 1.0f)
          pBot.f_wall_on_right = gpGlobals->time;
 
       return TRUE;
@@ -2186,7 +2186,7 @@ qboolean BotCheckWallOnBack( bot_t &pBot )
    // check if the trace hit something...
    if (tr.flFraction < 1.0f)
    {
-      if (pBot.f_wall_on_right < 1.0)
+      if (pBot.f_wall_on_right < 1.0f)
          pBot.f_wall_on_right = gpGlobals->time;
 
       return TRUE;

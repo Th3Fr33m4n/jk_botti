@@ -78,16 +78,16 @@ int bot_chat_lower_percent = 50; // percent of the time to lowercase chat
 int team_balancetype = 1;
 char *team_blockedlist;
 
-float bot_think_spf = 1.0/30.0; // == 1 / (30 fps)
+float bot_think_spf = 1.0f/30.0f; // == 1 / (30 fps)
 
 qboolean b_random_color = TRUE;
-float bot_check_time = 60.0;
+float bot_check_time = 60.0f;
 int min_bots = -1;
 int max_bots = -1;
 int num_bots = 0;
 int prev_num_bots = 0;;
 edict_t *listenserver_edict = nullptr;
-float welcome_time = 0.0;
+float welcome_time = 0.0f;
 qboolean welcome_sent = FALSE;
 int bot_stop = 0;
 int frame_count = 0;
@@ -100,9 +100,9 @@ qboolean checked_teamplay = FALSE;
 FILE *bot_cfg_fp = nullptr;
 int bot_cfg_linenumber = 0;
 qboolean need_to_open_cfg = TRUE;
-float bot_cfg_pause_time = 0.0;
+float bot_cfg_pause_time = 0.0f;
 qboolean spawn_time_reset = FALSE;
-float waypoint_time = 0.0;
+float waypoint_time = 0.0f;
 player_t players[32];
 
 static void (*old_PM_PlaySound)(int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch) = nullptr;
@@ -241,8 +241,8 @@ static int Spawn( edict_t *pent )
 
          frame_count = 0;
 
-         bot_cfg_pause_time = 0.0;
-         waypoint_time = -1.0;
+         bot_cfg_pause_time = 0.0f;
+         waypoint_time = -1.0f;
          spawn_time_reset = FALSE;
 
          for(int i = 0; i < 32; i++)
@@ -299,7 +299,7 @@ static int Spawn_Post( edict_t *pent )
    }
    else if(FIsClassname(pent, "func_door"))
    {
-      constexpr int SF_DOOR_START_OPEN = 1;
+      const int SF_DOOR_START_OPEN = 1;
       
       Vector v_position1 = m_origin;
       // Subtract 2 from size because the engine expands bboxes by 1 in all directions making the size too big
@@ -522,7 +522,7 @@ static void new_PM_PlaySound(int channel, const char *sample, float volume, floa
    
          if(!FNullEnt(pPlayer))
          {
-	         const int ivolume = (int)(1000*((volume+1)/2));
+	         const int ivolume = int(1000 * ((volume + 1) / 2));
             SaveSound(pPlayer, pPlayer->v.origin, ivolume, channel, 5.0f);
          }
       }

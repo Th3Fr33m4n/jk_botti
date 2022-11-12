@@ -45,7 +45,7 @@ typedef int BOOL;
 
 
 // global defines
-#define PLAYER_SEARCH_RADIUS (64 - 4.0)
+#define PLAYER_SEARCH_RADIUS (64 - 4.0f)
 
 
 // define a new bit flag for bot identification

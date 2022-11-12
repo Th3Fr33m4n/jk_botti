@@ -417,7 +417,7 @@ static qboolean ProcessCommand(const int cmdtype, const printfunc_t printfunc, v
          if ((temp < 1) || (temp > 100))
             printfunc(PRINTFUNC_ERROR, arg, "invalid botthinkfps value!\n");
          else
-            bot_think_spf = 1.0f / (float)temp;
+            bot_think_spf = 1.0f / float(temp);
       }
 
       safevoid_snprintf(msg, sizeof(msg), "botthinkfps is %.2f\n", 1.0 / bot_think_spf);
@@ -1263,7 +1263,7 @@ void ProcessBotCfgFile()
 
       bot_cfg_fp = nullptr;
 
-      bot_cfg_pause_time = 0.0;
+      bot_cfg_pause_time = 0.0f;
    }
 
    cmd_line[cmd_index] = 0;  // terminate the command line

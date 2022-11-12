@@ -122,7 +122,7 @@ inline Vector UTIL_GetOriginWithExtent(bot_t &pBot, edict_t *pTarget)
 
 inline void UTIL_ParticleEffect( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount )
 {
-   PARTICLE_EFFECT( vecOrigin, vecDirection, (float)ulColor, (float)ulCount );
+   PARTICLE_EFFECT( vecOrigin, vecDirection, float(ulColor), float(ulCount) );
 }
 
 inline qboolean FIsClassname(edict_t * pent, const char * cname)

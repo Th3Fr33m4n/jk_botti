@@ -167,7 +167,7 @@ void safevoid_vsnprintf(char* s, size_t n, const char *format, va_list ap)
 	
 	// w32api returns -1 on too long write, glibc returns number of bytes it could have written if there were enough space
 	// w32api doesn't write null at all, some buggy glibc don't either
-	if(res < 0 || (size_t)res >= n)
+	if(res < 0 || size_t(res) >= n)
 		s[n-1]=0;
 }
 

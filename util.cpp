@@ -62,13 +62,13 @@ double UTIL_GetSecs()
    QueryPerformanceFrequency(&freq);
    QueryPerformanceCounter(&count);
 
-   return (double)count.QuadPart / (double)freq.QuadPart;
+   return double(count.QuadPart) / double(freq.QuadPart);
 #else
    struct timeval tv;
    
    gettimeofday (&tv, NULL);
    
-   return (double) tv.tv_sec + ((double) tv.tv_usec) / 1000000.0;
+   return double(tv.tv_sec) + double(tv.tv_usec) / 1000000.0;
 #endif
 }
 
@@ -86,7 +86,7 @@ float UTIL_WrapAngle(float angle)
    // this function returns an angle normalized to the range [-180 < angle <= 180]
    
    angle += 180.0f;
-   constexpr unsigned int bits = 0x80000000;
+   const unsigned int bits = 0x80000000;
    angle = -180.0f + ((360.0f / bits) * (int64_t(angle * (bits / 360.0f)) & (bits-1)));
    
    if(angle == -180.0f)
@@ -257,31 +257,31 @@ void fast_random_seed(unsigned int seed)
 /* supports range INT_MIN, INT_MAX */
 int RANDOM_LONG2(int lLow, int lHigh) 
 {
-   constexpr double c_divider = ((unsigned long long)1) << 32; // div by (1<<32)
+   const double c_divider = ((unsigned long long)1) << 32; // div by (1<<32)
 
    if(unlikely(lLow >= lHigh))
       return(lLow);
    
    double rnd = fast_generate_random();
-   rnd *= (double)lHigh - (double)lLow + 1.0;
+   rnd *= double(lHigh) - double(lLow) + 1.0;
    rnd /= c_divider; // div by (1<<32)
    
-   return (int)(rnd + (double)lLow);
+   return int(rnd + double(lLow));
 }
 
 
 float RANDOM_FLOAT2(float flLow, float flHigh) 
 {
-   constexpr double c_divider = (((unsigned long long)1) << 32) - 1; // div by (1<<32)-1
+   const double c_divider = (((unsigned long long)1) << 32) - 1; // div by (1<<32)-1
 
    if(unlikely(flLow >= flHigh))
       return(flLow);
    
    double rnd = fast_generate_random();
-   rnd *= (double)flHigh - (double)flLow;
+   rnd *= double(flHigh) - double(flLow);
    rnd /= c_divider; // div by (1<<32)-1
    
-   return (float)(rnd + (double)flLow);
+   return float(rnd + double(flLow));
 }
 
 
@@ -509,12 +509,12 @@ float UTIL_GetTimeSinceRespawn(edict_t * pPlayer)
 {
 	const int idx = ENTINDEX(pPlayer) - 1;
    if(idx < 0 || idx >= gpGlobals->maxClients)
-      return(-1.0);
+      return(-1.0f);
    
    if(!IsAlive(pPlayer))
    {
       //we are dead, so time since respawn is... 
-      return(-1.0);
+      return(-1.0f);
    }
    else
    {
@@ -587,7 +587,7 @@ qboolean IsPlayerChatProtected(edict_t * pPlayer)
    if(idx < 0 || idx >= gpGlobals->maxClients)
       return(FALSE);
    
-   if(players[idx].last_time_not_facing_wall + 2.0 < gpGlobals->time)
+   if(players[idx].last_time_not_facing_wall + 2.0f < gpGlobals->time)
    {
       return TRUE;
    }
@@ -649,7 +649,7 @@ void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message )
       safevoid_snprintf( text, sizeof(text), "%c%s: ", 2, STRING( pEntity->v.netname ) );
 
 	const int j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
-   if ( (int)strlen(message) > j )
+   if ( int(strlen(message)) > j )
       message[j] = 0;
 
    strcat( text, message );
@@ -1041,13 +1041,13 @@ Vector VecBModelOrigin(edict_t *pEdict)
 qboolean IsAlive(const edict_t *pEdict)
 {
    return (pEdict->v.deadflag == DEAD_NO) && (pEdict->v.health > 0) &&
-	!(pEdict->v.flags & FL_NOTARGET) && ((int)pEdict->v.takedamage != 0) &&
+	!(pEdict->v.flags & FL_NOTARGET) && (int(pEdict->v.takedamage) != 0) &&
 	(pEdict->v.solid != SOLID_NOT);
 }
 
 qboolean FInViewCone(const Vector & Origin, edict_t *pEdict)
 {
-   constexpr float fov_angle = 80;
+   const float fov_angle = 80.0f;
 
    return(DotProduct((Origin - pEdict->v.origin).Normalize(), UTIL_AnglesToForward(pEdict->v.v_angle)) > cos(deg2rad(fov_angle)));
 }

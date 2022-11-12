@@ -120,7 +120,7 @@ void CSoundEnt :: Spawn()
 //=========================================================
 void CSoundEnt :: Think ()
 {
-    constexpr float add_time = 1.0f/15.0f;
+    const float add_time = 1.0f/15.0f;
    
    m_nextthink = gpGlobals->time + add_time;// how often to check the sound list.
 
@@ -168,7 +168,7 @@ void CSoundEnt :: Think ()
       
       for(iSound = ActiveList(); iSound != SOUNDLIST_EMPTY; iSound = pCurrentSound->m_iNext)
       {
-         pCurrentSound = CSoundEnt::SoundPointerForIndex( iSound );
+         pCurrentSound = SoundPointerForIndex( iSound );
       
          if(pCurrentSound->m_iVolume <= 0)
             continue;
@@ -269,7 +269,7 @@ void CSoundEnt :: InsertSound ( edict_t* pEdict, int channel, const Vector &vecO
          return;
       }
 
-      pSound = CSoundEnt::SoundPointerForIndex( iThisSound );
+      pSound = SoundPointerForIndex( iThisSound );
    }
    
    if(pSound)
@@ -312,8 +312,8 @@ CSound *CSoundEnt::GetEdictChannelSound( edict_t * pEdict, int iChannel )
             UTIL_ConsolePrintf( "Could not AllocSound() for GetEdictChannelSound() (DLL)\n" );
          return nullptr;
       }
-      
-      CSound *pSound = CSoundEnt::SoundPointerForIndex( iSound );
+
+      const CSound *pSound = SoundPointerForIndex( iSound );
       
       if(pSound)
       {

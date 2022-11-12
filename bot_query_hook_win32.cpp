@@ -101,7 +101,7 @@ bool hook_sendto_function()
 	
 	is_sendto_hook_setup = false;
 	
-	sendto_original = (sendto_func)GetProcAddress(GetModuleHandle("wsock32.dll"), "sendto");
+	sendto_original = sendto_func(GetProcAddress(GetModuleHandle("wsock32.dll"), "sendto"));
 	
 	//Backup old bytes of "sendto" function
 	memcpy(sendto_old_bytes, (void*)sendto_original, BYTES_SIZE);

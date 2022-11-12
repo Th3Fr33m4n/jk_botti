@@ -77,7 +77,7 @@ void LoadBotChat()
 
    while (bfp != nullptr)
    {
-      char* stat = fgets(buffer, 80, bfp);
+   	const char* stat = fgets(buffer, 80, bfp);
 
       if (stat == nullptr)
       {
@@ -432,7 +432,7 @@ static void BotChatGetPlayers()
 
    for (int index = 1; index <= gpGlobals->maxClients; index++)
    {
-      edict_t *pPlayer = INDEXENT(index);
+	  const edict_t *pPlayer = INDEXENT(index);
 
       // skip invalid players
       if ((pPlayer) && (!pPlayer->free) && !FBitSet(pPlayer->v.flags, FL_PROXY))
@@ -581,7 +581,7 @@ void BotChatTaunt(bot_t& pBot, const edict_t* victim_edict)
 
       // set chat flag and time to chat (typing one character takes 0.2sec) ...
       pBot.b_bot_say = TRUE;
-      pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.0) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2, 0.3);
+      pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.5f, 1.0f) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2f, 0.3f);
    }
 }
 
@@ -596,7 +596,7 @@ void BotChatWhine(bot_t &pBot)
    
    // has the bot been alive for at least 15 seconds AND
    if ((pBot.killer_edict != nullptr) && (bot_whine_count > 0) &&
-       ((pBot.f_bot_spawn_time + 15.0) <= gpGlobals->time))
+       ((pBot.f_bot_spawn_time + 15.0f) <= gpGlobals->time))
    {
 	   if ((RANDOM_LONG2(1,100) <= pBot.whine_percent))
        {
@@ -650,7 +650,7 @@ void BotChatWhine(bot_t &pBot)
 
          // set chat flag and time to chat (typing one character takes 0.2sec) ...
          pBot.b_bot_say = TRUE;
-         pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.0) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2, 0.3);
+         pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.5f, 1.0f) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2f, 0.3f);
       }
    }
 }
@@ -713,7 +713,7 @@ void BotChatTalk(bot_t &pBot)
 
          // set chat flag and time to chat (typing one character takes 0.2sec) ...
          pBot.b_bot_say = TRUE;
-         pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.0) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2, 0.3);
+         pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.5f, 1.0f) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2f, 0.3f);
       }
    }
 }
@@ -769,7 +769,7 @@ void BotChatEndGame(bot_t &pBot)
 
       // set chat flag and time to chat (typing one character takes 0.2sec) ...
       pBot.b_bot_say = TRUE;
-      pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.3, 2.0) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2, 0.3);
+      pBot.f_bot_say = gpGlobals->time + RANDOM_FLOAT2(0.3f, 2.0f) + strlen(pBot.bot_say_msg) * RANDOM_FLOAT2(0.2f, 0.3f);
    }
 }
 
