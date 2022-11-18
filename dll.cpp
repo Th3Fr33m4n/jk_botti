@@ -659,8 +659,8 @@ static void StartFrame()
 
 	  // have to delay here or engine gives "Tried to write to
       // uninitialized sizebuf_t" error and crashes... [APG]RoboCop[CL]
-      bot_cfg_pause_time = gpGlobals->time + 6.0f;
-      bot_check_time = gpGlobals->time + 6.0f;
+      bot_cfg_pause_time = gpGlobals->time + 7.0f;
+      bot_check_time = gpGlobals->time + 7.0f;
    }
 
    if ((bot_cfg_fp) &&
