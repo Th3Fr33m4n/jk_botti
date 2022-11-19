@@ -32,7 +32,7 @@ void ClientPrint( edict_t *pEdict, int msg_dest, const char *msg_name);
 void UTIL_HostSay( edict_t *pEntity, int teamonly, char *message );
 char* UTIL_GetTeam(edict_t *pEntity, char *teamstr, size_t slen);
 
-qboolean FInShootCone( const Vector & Origin, edict_t *pEdict, float distance, float target_radius, float min_angle);
+qboolean FInShootCone( const Vector & Origin, edict_t *pEdict, float distance, float diameter, float min_angle);
 qboolean FVisible( const Vector &vecOrigin, edict_t *pEdict, edict_t ** pHit);
 qboolean FVisibleEnemy( const Vector &vecOrigin, edict_t *pEdict, edict_t *pEnemy );
 

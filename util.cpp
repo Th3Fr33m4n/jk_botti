@@ -596,12 +596,12 @@ qboolean IsPlayerChatProtected(edict_t * pPlayer)
 }
 
 
-void ClientPrint( edict_t *pEntity, int msg_dest, const char *msg_name)
+void ClientPrint( edict_t *pEdict, int msg_dest, const char *msg_name)
 {       
    if (GET_USER_MSG_ID (PLID, "TextMsg", nullptr) <= 0)
       REG_USER_MSG ("TextMsg", -1);
 
-   MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "TextMsg", nullptr), nullptr, pEntity );
+   MESSAGE_BEGIN( MSG_ONE, GET_USER_MSG_ID (PLID, "TextMsg", nullptr), nullptr, pEdict );
 
    WRITE_BYTE( msg_dest );
    WRITE_STRING( msg_name );
@@ -850,7 +850,7 @@ qboolean FInShootCone(const Vector & Origin, edict_t *pEdict, float distance, fl
    
    */
    
-   if(distance < 0.01)
+   if(distance < 0.01f)
       return TRUE;
    
    // angle between forward-view-vector and vector to player (as cos(angle))
