@@ -1176,7 +1176,7 @@ static void WaypointAdd(edict_t *pEntity)
       }
       else
       {
-         waypoints[index].origin.z += 36/2;
+         waypoints[index].origin.z += 36.0f / 2.0f;
          
          start = waypoints[index].origin - Vector(0, 0, 34);
          end = start + Vector(0, 0, 68);
@@ -1532,7 +1532,7 @@ static qboolean WaypointFixOldWaypoints()
          crouch_to_normal_count++;
          
          waypoints[k].flags &= ~W_FL_CROUCH;
-         waypoints[k].origin.z += 36/2;
+         waypoints[k].origin.z += 36.0f / 2.0f;
 
          g_waypoint_updated = TRUE;
          Changed = TRUE;
@@ -1553,13 +1553,13 @@ static qboolean WaypointFixOldWaypoints()
       
       if(waypoints[k].flags & W_FL_CROUCH)
       {
-         v_dest.z -= 72/2 + 1;
+         v_dest.z -= 72.0f / 2.0f + 1;
 
          UTIL_TraceMove(v_src, v_dest, ignore_monsters, nullptr, &tr);
       }
       else
       {
-         v_dest.z -= 72/2 - 36/2 + 1;
+         v_dest.z -= 72.0f / 2.0f - 36.0f / 2.0f + 1;
          
          UTIL_TraceDuck(v_src, v_dest, ignore_monsters, nullptr, &tr);
       }
