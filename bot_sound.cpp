@@ -44,15 +44,15 @@ void SaveSound(edict_t * pEdict, const Vector & origin, int volume, int channel,
    // check if bot is close to sound and mark as owner if it is
    for (int i = 0; i < 32; i++)
    {
-	  if(bots[i].is_used)
-	  {
-		 // is owner of object?
-		 if(pEdict->v.owner == bots[i].pEdict)
-		 {
-			bot_index = i;
-			break;
-		 }
-
+      if(bots[i].is_used)
+      {
+         // is owner of object?
+         if(pEdict && pEdict->v.owner == bots[i].pEdict)
+         {
+            bot_index = i;
+            break;
+         }
+         
 		 const double distance = (bots[i].pEdict->v.origin - origin).Length();
 		 
 		 if(distance < min_distance)

@@ -794,9 +794,9 @@ void BotFindEnemy( bot_t &pBot )
 #endif
    edict_t *pNewEnemy; 
    Vector v_newenemy;
-   double nearestdistance;
+   float nearestdistance = 4096.0f;
 
-edict_t *pEdict = pBot.pEdict;
+   edict_t *pEdict = pBot.pEdict;
    
    /*if (b_botdontshoot) //Rogue Code? [APG]RoboCop[CL]
    {
@@ -870,7 +870,6 @@ edict_t *pEdict = pBot.pEdict;
 
    pNewEnemy = nullptr;
    v_newenemy = Vector(0,0,0);
-   nearestdistance = 99999.0f;
 
    if (pNewEnemy == nullptr)
    {
@@ -895,22 +894,26 @@ edict_t *pEdict = pBot.pEdict;
 			pBreakable->pEdict->v.health <= 0)
 			continue;
 
-		 if (pBreakable->pEdict->v.health > 8000)
-		continue; // skip breakables with large health
-		 
-		 Vector v_origin = UTIL_GetOriginWithExtent(pBot, pBreakable->pEdict);
+         if (pBreakable->pEdict->v.health > 300)
+	         continue; // skip breakables with large health
+         
+         Vector v_origin = UTIL_GetOriginWithExtent(pBot, pBreakable->pEdict);
 
-		 // 0,0,0 is considered invalid
-		 if(v_origin.is_zero_vector())
-			continue;
-		 
-		 double distance = GetModifiedEnemyDistance(pBot, v_origin - pEdict->v.origin).Length();
-		 if (distance >= nearestdistance)
-			continue;
-		 
-		 // see if bot can't see ...
-		 if (!(FInViewCone( v_origin, pEdict ) && FVisible( v_origin, pEdict, pBreakable->pEdict )))
-			continue;
+         // 0,0,0 is considered invalid
+         if(v_origin.is_zero_vector())
+            continue;
+         
+         float distance = GetModifiedEnemyDistance(pBot, v_origin - pEdict->v.origin).Length();
+
+         if (distance > 128.0)
+            continue;
+
+         if (distance >= nearestdistance)
+            continue;
+         
+         // see if bot can't see ...
+         if (!(FInViewCone( v_origin, pEdict ) && FVisible( v_origin, pEdict, pBreakable->pEdict )))
+            continue;
 
 		 nearestdistance = distance;
 		 pNewEnemy = pBreakable->pEdict;
@@ -992,12 +995,11 @@ edict_t *pEdict = pBot.pEdict;
 	  {
 		  edict_t *pPlayer = INDEXENT(i);
 
-		 // skip invalid players and skip self (i.e. this bot)
-		 if ((pPlayer) && (!pPlayer->free) && (pPlayer != pEdict) && !FBitSet(pPlayer->v.flags, FL_PROXY))
-		 {
-			 Vector v_player;
-			 if ((b_observer_mode) && !(FBitSet(pPlayer->v.flags, FL_FAKECLIENT) || FBitSet(pPlayer->v.flags, FL_THIRDPARTYBOT)))
-			   continue;
+         // skip invalid players and skip self (i.e. this bot)
+         if ((pPlayer) && (!pPlayer->free) && (pPlayer != pEdict) && !FBitSet(pPlayer->v.flags, FL_PROXY))
+         {
+	         if ((b_observer_mode) && !(FBitSet(pPlayer->v.flags, FL_FAKECLIENT) || FBitSet(pPlayer->v.flags, FL_THIRDPARTYBOT)))
+               continue;
 
 			// 0,0,0 is considered invalid
 			if(pPlayer->v.origin.is_zero_vector())
@@ -1030,9 +1032,9 @@ edict_t *pEdict = pBot.pEdict;
 			if (!(FInViewCone( vecEnd, pEdict ) && FVisibleEnemy( vecEnd, pEdict, pPlayer )))
 			   continue;
 
-			nearestdistance = distance;
-			pNewEnemy = pPlayer;
-			v_newenemy = v_player;
+            nearestdistance = distance;
+            pNewEnemy = pPlayer;
+            v_newenemy = vecEnd;
 
 #if DEBUG_ENEMY_SELECT
 		enemy_type = "player";
@@ -1111,8 +1113,9 @@ edict_t *pEdict = pBot.pEdict;
    // has the bot NOT seen an ememy for at least 5 seconds (time to reload)?
    else if ((pBot.f_bot_see_enemy_time > 0) && ((pBot.f_bot_see_enemy_time + 5.0f) <= gpGlobals->time))
    {
-	  pBot.f_bot_see_enemy_time = -1;  // so we won't keep reloading
-	  pBot.v_bot_see_enemy_origin = Vector(-99999,-99999,-99999);
+
+      pBot.f_bot_see_enemy_time = -1;  // so we won't keep reloading
+      pBot.v_bot_see_enemy_origin = Vector(-9999,-9999,-9999);
 
 	  pEdict->v.button |= IN_RELOAD;  // press reload button
    }
@@ -1515,8 +1518,14 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
    }
 
    // don't change weapon too fast
-   if(pBot.f_weaponchange_time >= gpGlobals->time && pBot.current_weapon_index >= 0 && weapon_choice == 0)
-	  return FALSE;
+
+   if(pBot.f_weaponchange_time >= gpGlobals->time && pBot.current_weapon_index >= 0 && weapon_choice == 0) {
+      //keep tracking the enemy even if we cannot hit him right now
+      if(weapon_select[pBot.current_weapon_index].type & WEAPON_MELEE)
+         return TRUE;
+      
+      return FALSE;
+   }
 
    pBot.current_weapon_index = -1; // forget current weapon
 
@@ -1638,15 +1647,16 @@ static qboolean BotFireWeapon(const Vector & v_enemy, bot_t &pBot, int weapon_ch
 	  if(!(weapon_choice == pSelect[select_index].iId || weapon_choice == 0))
 		 continue;
 
-	  if(!IsValidWeaponChoose(pBot, pSelect[select_index]))
-		 continue;
-	  
-	  // Underwater: only use avoidable weapon if can be used underwater
-	  if(pBot.b_in_water)
-	  {
-		 if(!pSelect[select_index].can_use_underwater)
-			continue;
-	  }
+      if(!IsValidWeaponChoose(pBot, pSelect[select_index]) ||
+      !BotIsCarryingWeapon(pBot, pSelect[select_index].iId))
+         continue;
+      
+      // Underwater: only use avoidable weapon if can be used underwater
+      if(pBot.b_in_water)
+      {
+         if(!pSelect[select_index].can_use_underwater)
+            continue;
+      }
 
 	  // Check if this weapon is ok for current contitions
 	  use_primary = IsValidPrimaryAttack(pBot, pSelect[select_index], distance, height, weapon_choice != 0);

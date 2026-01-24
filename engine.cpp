@@ -122,17 +122,17 @@ static void pfnPlaybackEvent( int flags, const edict_t *pInvoker, unsigned short
    // get event info
    event_info_t *pei;
    
-   for(pei = g_event_info; pei->eventname; pei++)
+   for(pei = g_event_info; pei->eventname && pei->eventname[0]; pei++)
    {
 	  if(eventindex == pei->eventindex)
 		 break;
    }
    
-   if(!pei->eventname)
-	  RETURN_META (MRES_IGNORED);
+   if(!pei->eventname || !pei->eventname[0])
+      RETURN_META (MRES_IGNORED);
    
    // event creates sound?
-   if(pei->volume > 0.0f)
+   if(pei->volume > 0.0f && !FNullEnt(pInvoker))
    {
 	   const int ivolume = static_cast<int>(1000 * pei->volume);
 	  
@@ -162,22 +162,24 @@ static void pfnEmitSound(edict_t *entity, int channel, const char *sample, float
 {
    if (gpGlobals->deathmatch)
    {
-	  const int ivolume = static_cast<int>(1000 * volume);
-	  const char *classname = STRING(entity->v.classname);
-	  float duration = 5.0f;
-	  
-	  if (strncmp("item_health", classname, 11) == 0)
-		 duration = 8.0f;
-	  else if (strncmp("item_battery", classname, 12) == 0)
-		 duration = 8.0f;
-	  else if (GetAmmoItemFlag(classname) != 0)
-		 duration = 8.0f;
-	  else if (GetWeaponItemFlag(classname) != 0 && (entity->v.owner == nullptr))
-		 duration = 8.0f;
-	  else if (strcmp("item_longjump", classname) == 0)
-		 duration = 8.0f;
-	  
-	  SaveSound(entity, entity->v.origin, ivolume, channel, duration);
+   	const int ivolume = int(1000 * volume);
+      const char *classname = STRING(entity->v.classname);
+      float duration = 5.0f;
+      
+      if (strncmp("item_health", classname, 11) == 0)
+         duration = 8.0f;
+      else if (strncmp("item_battery", classname, 12) == 0)
+         duration = 8.0f;
+      else if (GetAmmoItemFlag(classname) != 0)
+         duration = 8.0f;
+      else if (GetWeaponItemFlag(classname) != 0 && (entity->v.owner == nullptr))
+         duration = 8.0f;
+      else if (strcmp("item_longjump", classname) == 0)
+         duration = 8.0f;
+      
+      if(!FNullEnt(entity)) {
+         SaveSound(entity, entity->v.origin, ivolume, channel, duration);
+      }
    }
 
    RETURN_META (MRES_IGNORED);
