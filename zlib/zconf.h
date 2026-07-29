@@ -1,5 +1,5 @@
 /* zconf.h -- configuration of the zlib compression library
- * Copyright (C) 1995-2005 Jean-loup Gailly.
+ * Copyright (C) 1995-2026 Jean-loup Gailly, Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -11,52 +11,169 @@
 /*
  * If you *really* need a unique prefix for all types and library functions,
  * compile with -DZ_PREFIX. The "standard" zlib should be compiled without it.
+ * Even better than compiling with -DZ_PREFIX would be to use configure to set
+ * this permanently in zconf.h using "./configure --zprefix".
  */
-#ifdef Z_PREFIX
-#  define deflateInit_          jkbotti_deflateInit_
+#ifdef Z_PREFIX     /* may be set to #if 1 by ./configure */
+#  define Z_PREFIX_SET
+
+/* all linked symbols and init macros */
+#  define _dist_code            jkbotti__dist_code
+#  define _length_code          jkbotti__length_code
+#  define _tr_align             jkbotti__tr_align
+#  define _tr_flush_bits        jkbotti__tr_flush_bits
+#  define _tr_flush_block       jkbotti__tr_flush_block
+#  define _tr_init              jkbotti__tr_init
+#  define _tr_stored_block      jkbotti__tr_stored_block
+#  define _tr_tally             jkbotti__tr_tally
+#  define adler32               jkbotti_adler32
+#  define adler32_combine       jkbotti_adler32_combine
+#  define adler32_combine64     jkbotti_adler32_combine64
+#  define adler32_z             jkbotti_adler32_z
+#  ifndef Z_SOLO
+#    define compress              jkbotti_compress
+#    define compress2             jkbotti_compress2
+#    define compress_z            jkbotti_compress_z
+#    define compress2_z           jkbotti_compress2_z
+#    define compressBound         jkbotti_compressBound
+#    define compressBound_z       jkbotti_compressBound_z
+#  endif
+#  define crc32                 jkbotti_crc32
+#  define crc32_combine         jkbotti_crc32_combine
+#  define crc32_combine64       jkbotti_crc32_combine64
+#  define crc32_combine_gen     jkbotti_crc32_combine_gen
+#  define crc32_combine_gen64   jkbotti_crc32_combine_gen64
+#  define crc32_combine_op      jkbotti_crc32_combine_op
+#  define crc32_z               jkbotti_crc32_z
 #  define deflate               jkbotti_deflate
-#  define deflateEnd            jkbotti_deflateEnd
-#  define inflateInit_          jkbotti_inflateInit_
-#  define inflate               jkbotti_inflate
-#  define inflateEnd            jkbotti_inflateEnd
-#  define deflateInit2_         jkbotti_deflateInit2_
-#  define deflateSetDictionary  jkbotti_deflateSetDictionary
-#  define deflateCopy           jkbotti_deflateCopy
-#  define deflateReset          jkbotti_deflateReset
-#  define deflateParams         jkbotti_deflateParams
 #  define deflateBound          jkbotti_deflateBound
+#  define deflateBound_z        jkbotti_deflateBound_z
+#  define deflateCopy           jkbotti_deflateCopy
+#  define deflateEnd            jkbotti_deflateEnd
+#  define deflateGetDictionary  jkbotti_deflateGetDictionary
+#  define deflateInit           jkbotti_deflateInit
+#  define deflateInit2          jkbotti_deflateInit2
+#  define deflateInit2_         jkbotti_deflateInit2_
+#  define deflateInit_          jkbotti_deflateInit_
+#  define deflateParams         jkbotti_deflateParams
+#  define deflatePending        jkbotti_deflatePending
 #  define deflatePrime          jkbotti_deflatePrime
+#  define deflateReset          jkbotti_deflateReset
+#  define deflateResetKeep      jkbotti_deflateResetKeep
+#  define deflateSetDictionary  jkbotti_deflateSetDictionary
+#  define deflateSetHeader      jkbotti_deflateSetHeader
+#  define deflateTune           jkbotti_deflateTune
+#  define deflateUsed           jkbotti_deflateUsed
+#  define deflate_copyright     jkbotti_deflate_copyright
+#  define get_crc_table         jkbotti_get_crc_table
+#  ifndef Z_SOLO
+#    define gz_error              jkbotti_gz_error
+#    define gz_intmax             jkbotti_gz_intmax
+#    define gz_strwinerror        jkbotti_gz_strwinerror
+#    define gzbuffer              jkbotti_gzbuffer
+#    define gzclearerr            jkbotti_gzclearerr
+#    define gzclose               jkbotti_gzclose
+#    define gzclose_r             jkbotti_gzclose_r
+#    define gzclose_w             jkbotti_gzclose_w
+#    define gzdirect              jkbotti_gzdirect
+#    define gzdopen               jkbotti_gzdopen
+#    define gzeof                 jkbotti_gzeof
+#    define gzerror               jkbotti_gzerror
+#    define gzflush               jkbotti_gzflush
+#    define gzfread               jkbotti_gzfread
+#    define gzfwrite              jkbotti_gzfwrite
+#    define gzgetc                jkbotti_gzgetc
+#    define gzgetc_               jkbotti_gzgetc_
+#    define gzgets                jkbotti_gzgets
+#    define gzoffset              jkbotti_gzoffset
+#    define gzoffset64            jkbotti_gzoffset64
+#    define gzopen                jkbotti_gzopen
+#    define gzopen64              jkbotti_gzopen64
+#    ifdef _WIN32
+#      define gzopen_w              jkbotti_gzopen_w
+#    endif
+#    define gzprintf              jkbotti_gzprintf
+#    define gzputc                jkbotti_gzputc
+#    define gzputs                jkbotti_gzputs
+#    define gzread                jkbotti_gzread
+#    define gzrewind              jkbotti_gzrewind
+#    define gzseek                jkbotti_gzseek
+#    define gzseek64              jkbotti_gzseek64
+#    define gzsetparams           jkbotti_gzsetparams
+#    define gztell                jkbotti_gztell
+#    define gztell64              jkbotti_gztell64
+#    define gzungetc              jkbotti_gzungetc
+#    define gzvprintf             jkbotti_gzvprintf
+#    define gzwrite               jkbotti_gzwrite
+#  endif
+#  define inflate               jkbotti_inflate
+#  define inflateBack           jkbotti_inflateBack
+#  define inflateBackEnd        jkbotti_inflateBackEnd
+#  define inflateBackInit       jkbotti_inflateBackInit
+#  define inflateBackInit_      jkbotti_inflateBackInit_
+#  define inflateCodesUsed      jkbotti_inflateCodesUsed
+#  define inflateCopy           jkbotti_inflateCopy
+#  define inflateEnd            jkbotti_inflateEnd
+#  define inflateGetDictionary  jkbotti_inflateGetDictionary
+#  define inflateGetHeader      jkbotti_inflateGetHeader
+#  define inflateInit           jkbotti_inflateInit
+#  define inflateInit2          jkbotti_inflateInit2
 #  define inflateInit2_         jkbotti_inflateInit2_
+#  define inflateInit_          jkbotti_inflateInit_
+#  define inflateMark           jkbotti_inflateMark
+#  define inflatePrime          jkbotti_inflatePrime
+#  define inflateReset          jkbotti_inflateReset
+#  define inflateReset2         jkbotti_inflateReset2
+#  define inflateResetKeep      jkbotti_inflateResetKeep
 #  define inflateSetDictionary  jkbotti_inflateSetDictionary
 #  define inflateSync           jkbotti_inflateSync
 #  define inflateSyncPoint      jkbotti_inflateSyncPoint
-#  define inflateCopy           jkbotti_inflateCopy
-#  define inflateReset          jkbotti_inflateReset
-#  define inflateBack           jkbotti_inflateBack
-#  define inflateBackEnd        jkbotti_inflateBackEnd
-#  define compress              jkbotti_compress
-#  define compress2             jkbotti_compress2
-#  define compressBound         jkbotti_compressBound
-#  define uncompress            jkbotti_uncompress
-#  define adler32               jkbotti_adler32
-#  define crc32                 jkbotti_crc32
-#  define get_crc_table         jkbotti_get_crc_table
+#  define inflateUndermine      jkbotti_inflateUndermine
+#  define inflateValidate       jkbotti_inflateValidate
+#  define inflate_copyright     jkbotti_inflate_copyright
+#  define inflate_fast          jkbotti_inflate_fast
+#  define inflate_table         jkbotti_inflate_table
+#  define inflate_fixed         jkbotti_inflate_fixed
+#  ifndef Z_SOLO
+#    define uncompress            jkbotti_uncompress
+#    define uncompress2           jkbotti_uncompress2
+#    define uncompress_z          jkbotti_uncompress_z
+#    define uncompress2_z         jkbotti_uncompress2_z
+#  endif
 #  define zError                jkbotti_zError
+#  ifndef Z_SOLO
+#    define zcalloc               jkbotti_zcalloc
+#    define zcfree                jkbotti_zcfree
+#  endif
+#  define zlibCompileFlags      jkbotti_zlibCompileFlags
+#  define zlibVersion           jkbotti_zlibVersion
 
-#  define alloc_func            jkbotti_alloc_func
-#  define free_func             jkbotti_free_func
-#  define in_func               jkbotti_in_func
-#  define out_func              jkbotti_out_func
+/* all zlib typedefs in zlib.h and zconf.h */
 #  define Byte                  jkbotti_Byte
-#  define uInt                  jkbotti_uInt
-#  define uLong                 jkbotti_uLong
 #  define Bytef                 jkbotti_Bytef
+#  define alloc_func            jkbotti_alloc_func
 #  define charf                 jkbotti_charf
+#  define free_func             jkbotti_free_func
+#  ifndef Z_SOLO
+#    define gzFile                jkbotti_gzFile
+#  endif
+#  define gz_header             jkbotti_gz_header
+#  define gz_headerp            jkbotti_gz_headerp
+#  define in_func               jkbotti_in_func
 #  define intf                  jkbotti_intf
+#  define out_func              jkbotti_out_func
+#  define uInt                  jkbotti_uInt
 #  define uIntf                 jkbotti_uIntf
+#  define uLong                 jkbotti_uLong
 #  define uLongf                jkbotti_uLongf
-#  define voidpf                jkbotti_voidpf
 #  define voidp                 jkbotti_voidp
+#  define voidpc                jkbotti_voidpc
+#  define voidpf                jkbotti_voidpf
+
+/* all zlib structs in zlib.h and zconf.h */
+#  define gz_header_s           jkbotti_gz_header_s
+#  define internal_state        jkbotti_internal_state
+
 #endif
 
 #if defined(__MSDOS__) && !defined(MSDOS)
@@ -125,9 +242,31 @@
 #  endif
 #endif
 
-/* Some Mac compilers merge all .h files incorrectly: */
-#if defined(__MWERKS__)||defined(applec)||defined(THINK_C)||defined(__SC__)
-#  define NO_DUMMY_DECL
+#ifndef z_const
+#  ifdef ZLIB_CONST
+#    define z_const const
+#  else
+#    define z_const
+#  endif
+#endif
+
+#ifdef Z_SOLO
+#  ifdef _WIN64
+     typedef unsigned long long z_size_t;
+#  else
+     typedef unsigned long z_size_t;
+#  endif
+#else
+#  define z_longlong long long
+#  if defined(NO_SIZE_T)
+     typedef unsigned NO_SIZE_T z_size_t;
+#  elif defined(STDC)
+#    include <stddef.h>
+     typedef size_t z_size_t;
+#  else
+     typedef unsigned long z_size_t;
+#  endif
+#  undef z_longlong
 #endif
 
 /* Maximum value for memLevel in deflateInit2 */
@@ -157,7 +296,7 @@
  Of course this will generally degrade compression (there's no free lunch).
 
    The memory requirements for inflate are (in bytes) 1 << windowBits
- that is, 32K for windowBits=15 (default value) plus a few kilobytes
+ that is, 32K for windowBits=15 (default value) plus about 7 kilobytes
  for small objects.
 */
 
@@ -218,6 +357,9 @@
 #  ifdef ZLIB_WINAPI
 #    ifdef FAR
 #      undef FAR
+#    endif
+#    ifndef WIN32_LEAN_AND_MEAN
+#      define WIN32_LEAN_AND_MEAN
 #    endif
 #    include <windows.h>
      /* No need for _export, use ZLIB.DEF instead. */
@@ -284,49 +426,126 @@ typedef uLong FAR uLongf;
    typedef Byte       *voidp;
 #endif
 
-#if 1           /* HAVE_UNISTD_H -- this line is updated by ./configure */
-#  include <sys/types.h> /* for off_t */
-#  include <unistd.h>    /* for SEEK_* and off_t */
-#  ifdef VMS
-#    include <unixio.h>   /* for off_t */
+#if !defined(Z_U4) && !defined(Z_SOLO) && defined(STDC)
+#  include <limits.h>
+#  if (UINT_MAX == 0xffffffffUL)
+#    define Z_U4 unsigned
+#  elif (ULONG_MAX == 0xffffffffUL)
+#    define Z_U4 unsigned long
+#  elif (USHRT_MAX == 0xffffffffUL)
+#    define Z_U4 unsigned short
 #  endif
-#  define z_off_t off_t
 #endif
-#ifndef SEEK_SET
+
+#ifdef Z_U4
+   typedef Z_U4 z_crc_t;
+#else
+   typedef unsigned long z_crc_t;
+#endif
+
+#if 1     /* was set to #if 1 by ./configure */
+#  define Z_HAVE_UNISTD_H
+#endif
+
+#if 1     /* was set to #if 1 by ./configure */
+#  define Z_HAVE_STDARG_H
+#endif
+
+#ifdef STDC
+#  ifndef Z_SOLO
+#    include <sys/types.h>      /* for off_t */
+#  endif
+#endif
+
+#if defined(STDC) || defined(Z_HAVE_STDARG_H)
+#  ifndef Z_SOLO
+#    include <stdarg.h>         /* for va_list */
+#  endif
+#endif
+
+#ifdef _WIN32
+#  ifndef Z_SOLO
+#    include <stddef.h>         /* for wchar_t */
+#  endif
+#endif
+
+/* a little trick to accommodate both "#define _LARGEFILE64_SOURCE" and
+ * "#define _LARGEFILE64_SOURCE 1" as requesting 64-bit operations, (even
+ * though the former does not conform to the LFS document), but considering
+ * both "#undef _LARGEFILE64_SOURCE" and "#define _LARGEFILE64_SOURCE 0" as
+ * equivalently requesting no 64-bit operations
+ */
+#if defined(_LARGEFILE64_SOURCE) && -_LARGEFILE64_SOURCE - -1 == 1
+#  undef _LARGEFILE64_SOURCE
+#endif
+
+#ifndef Z_HAVE_UNISTD_H
+#  if defined(__WATCOMC__) || defined(__GO32__) || \
+      (defined(_LARGEFILE64_SOURCE) && !defined(_WIN32))
+#    define Z_HAVE_UNISTD_H
+#  endif
+#endif
+#ifndef Z_SOLO
+#  if defined(Z_HAVE_UNISTD_H)
+#    include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
+#    ifdef VMS
+#      include <unixio.h>       /* for off_t */
+#    endif
+#    ifndef z_off_t
+#      define z_off_t off_t
+#    endif
+#  endif
+#endif
+
+#if defined(_LFS64_LARGEFILE) && _LFS64_LARGEFILE-0
+#  define Z_LFS64
+#endif
+
+#if defined(_LARGEFILE64_SOURCE) && defined(Z_LFS64)
+#  define Z_LARGE64
+#endif
+
+#if defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS-0 == 64 && defined(Z_LFS64)
+#  define Z_WANT64
+#endif
+
+#if !defined(SEEK_SET) && !defined(Z_SOLO)
 #  define SEEK_SET        0       /* Seek from beginning of file.  */
 #  define SEEK_CUR        1       /* Seek from current position.  */
 #  define SEEK_END        2       /* Set file pointer to EOF plus "offset" */
 #endif
+
 #ifndef z_off_t
-#  define z_off_t long
+#  define z_off_t long long
 #endif
 
-#if defined(__OS400__)
-#  define NO_vsnprintf
-#endif
-
-#if defined(__MVS__)
-#  define NO_vsnprintf
-#  ifdef FAR
-#    undef FAR
-#  endif
+#if !defined(_WIN32) && defined(Z_LARGE64)
+#  define z_off64_t off64_t
+#elif defined(__MINGW32__)
+#  define z_off64_t long long
+#elif defined(_WIN32) && !defined(__GNUC__)
+#  define z_off64_t __int64
+#elif defined(__GO32__)
+#  define z_off64_t offset_t
+#else
+#  define z_off64_t z_off_t
 #endif
 
 /* MVS linker does not support external names larger than 8 bytes */
 #if defined(__MVS__)
-#   pragma map(deflateInit_,"DEIN")
-#   pragma map(deflateInit2_,"DEIN2")
-#   pragma map(deflateEnd,"DEEND")
-#   pragma map(deflateBound,"DEBND")
-#   pragma map(inflateInit_,"ININ")
-#   pragma map(inflateInit2_,"ININ2")
-#   pragma map(inflateEnd,"INEND")
-#   pragma map(inflateSync,"INSY")
-#   pragma map(inflateSetDictionary,"INSEDI")
-#   pragma map(compressBound,"CMBND")
-#   pragma map(inflate_table,"INTABL")
-#   pragma map(inflate_fast,"INFA")
-#   pragma map(inflate_copyright,"INCOPY")
+  #pragma map(deflateInit_,"DEIN")
+  #pragma map(deflateInit2_,"DEIN2")
+  #pragma map(deflateEnd,"DEEND")
+  #pragma map(deflateBound,"DEBND")
+  #pragma map(inflateInit_,"ININ")
+  #pragma map(inflateInit2_,"ININ2")
+  #pragma map(inflateEnd,"INEND")
+  #pragma map(inflateSync,"INSY")
+  #pragma map(inflateSetDictionary,"INSEDI")
+  #pragma map(compressBound,"CMBND")
+  #pragma map(inflate_table,"INTABL")
+  #pragma map(inflate_fast,"INFA")
+  #pragma map(inflate_copyright,"INCOPY")
 #endif
 
 #endif /* ZCONF_H */
