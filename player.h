@@ -9,16 +9,12 @@
 
 typedef struct posdata_s 
 {
-   qboolean inuse;
-   
    float time;
    qboolean was_alive;
    qboolean ducking;
    Vector origin;
    Vector velocity;
    //Vector accel;
-   posdata_s * older;
-   posdata_s * newer;
    
 } posdata_t;
 
@@ -36,8 +32,8 @@ typedef struct player_s
    float last_time_not_facing_wall;
    float last_time_dead;
    
-   posdata_t * position_latest;
-   posdata_t * position_oldest;
+   int posdata_head;
+   int posdata_count;
    posdata_t posdata_mem[POSDATA_SIZE];
 
 } player_t;

@@ -211,119 +211,65 @@ void free_posdata_list(int idx)
 {
    memset(players[idx].posdata_mem, 0, sizeof(players[idx].posdata_mem));
 
-	players[idx].position_oldest = nullptr;
-	players[idx].position_latest = nullptr;
+   players[idx].posdata_head = 0;
+   players[idx].posdata_count = 0;
 }
 
 
-
-static posdata_t *get_posdata_slot(int idx)
+//
+static posdata_t &posdata_at(player_t &p, int n)
 {
-   int i, oldest_idx = -1;
-   float oldest_time = gpGlobals->time;
+   return(p.posdata_mem[(p.posdata_head + n) % POSDATA_SIZE]);
+}
 
-   for(i = 0; i < POSDATA_SIZE; i++)
-   {
-	  if(!players[idx].posdata_mem[i].inuse)
-		 break;
 
-	  /* ugly fix */
-	  /* we cannot have future time, there has been some error. */
-	  if (players[idx].posdata_mem[i].time > gpGlobals->time)
-		  players[idx].posdata_mem[i].time = gpGlobals->time;
-
-	  if (players[idx].posdata_mem[i].time <= oldest_time)
-	  {
-		 oldest_time = players[idx].posdata_mem[i].time;
-		 oldest_idx = i;
-	  }
-   }
-   
-   if(i >= POSDATA_SIZE)
-   {
-	  if(oldest_idx == -1)
-		 return(nullptr);
-	  
-	  i = oldest_idx;
-   }
-   
-   memset(&players[idx].posdata_mem[i], 0, sizeof(players[idx].posdata_mem[i]));
-   players[idx].posdata_mem[i].time = gpGlobals->time;
-   players[idx].posdata_mem[i].inuse = TRUE;
-   
-   return(&players[idx].posdata_mem[i]);
+//
+static double posdata_max_age()
+{
+   return(skill_settings[4].ping_emu_latency + 0.1);
 }
 
 
 //
 static void add_next_posdata(int idx, edict_t *pEdict)
 {
-   posdata_t * new_latest = get_posdata_slot(idx);
+   player_t &p = players[idx];
    
-   JKASSERT(new_latest == NULL);
-   if(new_latest == nullptr)
+   for(int n = p.posdata_count - 1; n >= 0 && posdata_at(p, n).time > gpGlobals->time; n--)
+	  posdata_at(p, n).time = gpGlobals->time;
+   
+   if(p.posdata_count > 0 && gpGlobals->time - posdata_at(p, p.posdata_count - 1).time < posdata_max_age() / POSDATA_SIZE)
 	  return;
    
-   posdata_t * curr_latest = players[idx].position_latest;
-   players[idx].position_latest = new_latest;
-   
-   if(curr_latest != nullptr) 
+   if(p.posdata_count >= POSDATA_SIZE)
    {
-	  curr_latest->newer = players[idx].position_latest;
+	  p.posdata_head = (p.posdata_head + 1) % POSDATA_SIZE;
+	  p.posdata_count = POSDATA_SIZE - 1;
    }
    
-   players[idx].position_latest->older = curr_latest;
-   players[idx].position_latest->newer = nullptr;
+   posdata_t &latest = posdata_at(p, p.posdata_count);
+   p.posdata_count++;
    
-   players[idx].position_latest->origin = pEdict->v.origin;
-   players[idx].position_latest->velocity = pEdict->v.basevelocity + pEdict->v.velocity;   
+   latest.origin = pEdict->v.origin;
+   latest.velocity = pEdict->v.basevelocity + pEdict->v.velocity;   
    
-   players[idx].position_latest->was_alive = !!IsAlive(pEdict);
-   players[idx].position_latest->ducking = (pEdict->v.flags & FL_DUCKING) == FL_DUCKING;
+   latest.was_alive = !!IsAlive(pEdict);
+   latest.ducking = (pEdict->v.flags & FL_DUCKING) == FL_DUCKING;
    
-   players[idx].position_latest->time = gpGlobals->time;
-   
-   if(!players[idx].position_oldest)
-	  players[idx].position_oldest = players[idx].position_latest;
+   latest.time = gpGlobals->time;
 }
 
 
 // remove data older than max + 100ms
 static void timetrim_posdata(int idx) 
 {
-   posdata_t * list;
+   player_t &p = players[idx];
+   const double max_age = posdata_max_age();
    
-   if(!(list = players[idx].position_oldest))
-	  return;
-   
-   while(list) 
+   while(p.posdata_count > 0 && posdata_at(p, 0).time + max_age <= gpGlobals->time) 
    {
-	  // max + 100ms
-	  // max is maximum by skill + max randomness added in GetPredictedPlayerPosition()
-	  if(list->time + (skill_settings[4].ping_emu_latency + 0.1) <= gpGlobals->time) 
-	  {
-		 posdata_t * next = list->newer;
-		 
-		 //mark slot free
-		 list->inuse = FALSE;
-		 
-		 list = next;
-		 list->older = nullptr;
-		 players[idx].position_oldest = list;
-	  }
-	  else 
-	  {
-		 // new enough.. so are all the rest
-		 break;
-	  }
-   }
-   
-   if(!players[idx].position_oldest) 
-   {
-	   JKASSERT(players[idx].position_latest != nullptr);
-	  
-	  players[idx].position_oldest = nullptr;
-	  players[idx].position_latest = nullptr;
+	  p.posdata_head = (p.posdata_head + 1) % POSDATA_SIZE;
+	  p.posdata_count--;
    }
 }
 
@@ -408,37 +354,40 @@ static Vector GetPredictedPlayerPosition(bot_t &pBot, edict_t * pPlayer, qboolea
 	  return(Vector(0,0,0));
 
 	const int idx = ENTINDEX(pPlayer) - 1;
-   if(idx < 0 || idx >= gpGlobals->maxClients || !players[idx].position_latest || !players[idx].position_oldest)
+   if(idx < 0 || idx >= gpGlobals->maxClients || players[idx].posdata_count <= 0)
 	  return(UTIL_GetOrigin(pPlayer));
    
    // get prediction time based on bot skill
 	const float time = gpGlobals->time - skill_settings[pBot.bot_skill].ping_emu_latency;
    
    // find position data slots that are around 'time'
-	const posdata_t* newer = players[idx].position_latest;
+	player_t &p = players[idx];
+	const posdata_t* newer = nullptr;
 	const posdata_t* older = nullptr;
-   while(newer) 
+   for(int n = p.posdata_count - 1; n >= 0; n--) 
    {
-	  if(newer->time > time) 
+	  const posdata_t &d = posdata_at(p, n);
+	  if(d.time > time) 
 	  {
 		 //this is too new for us.. proceed
-		 newer = newer->older;
 		 continue;
 	  }
-	  if(newer->time == time) 
+	  if(d.time == time) 
 	  {
-		 return(TracePredictedMovement(pBot, pPlayer, newer->origin, newer->velocity, std::fabs(gpGlobals->time - newer->time) * AHEAD_MULTIPLIER, newer->ducking, without_velocity)); 
+		 return(TracePredictedMovement(pBot, pPlayer, d.origin, d.velocity, std::fabs(gpGlobals->time - d.time) * AHEAD_MULTIPLIER, d.ducking, without_velocity)); 
 	  }
 	  
 	  //this time is older than previous..
-	  older = newer;
-	  newer = older->newer;
+	  older = &d;
+	  if(n + 1 < p.posdata_count)
+		 newer = &posdata_at(p, n + 1);
 	  break;
    }
    
    if(!older) 
    {
-	  return(TracePredictedMovement(pBot, pPlayer, players[idx].position_oldest->origin, players[idx].position_oldest->velocity, std::fabs(gpGlobals->time - players[idx].position_oldest->time) * AHEAD_MULTIPLIER, players[idx].position_oldest->ducking, without_velocity)); 
+	  const posdata_t &oldest = posdata_at(p, 0);
+	  return(TracePredictedMovement(pBot, pPlayer, oldest.origin, oldest.velocity, std::fabs(gpGlobals->time - oldest.time) * AHEAD_MULTIPLIER, oldest.ducking, without_velocity)); 
    }
    
    if(!newer) 
@@ -498,45 +447,6 @@ qboolean FPredictedVisible(bot_t &pBot)
 
 
 #if 0
-//
-static qboolean GetPredictedIsAlive(edict_t * pPlayer, float time) 
-{
-   posdata_t * newer;
-   int idx;
-   
-   idx = ENTINDEX(pPlayer) - 1;
-   if(idx < 0 || idx >= gpGlobals->maxClients || !players[idx].position_latest || !players[idx].position_oldest)
-	  return(!!IsAlive(pPlayer));
-   
-   // find position data slots that are around 'time'
-   newer = players[idx].position_latest;
-   while(newer) 
-   {
-	  if(newer->time > time) 
-	  {
-		 //this is too new for us.. proceed
-		 newer = newer->older;
-		 continue;
-	  }
-	  if(newer->time == time) 
-	  {
-		 return(newer->was_alive);
-	  }
-	  
-	  //this time is older than previous..
-	  newer = newer->newer;
-	  break;
-   }
-   
-   if(!newer) 
-   {
-	  return(!!IsAlive(pPlayer));
-   }
-   
-   return(newer->was_alive);
-}
-
-
 //
 static qboolean HaveSameModels(edict_t * pEnt1, edict_t * pEnt2) 
 {
@@ -709,7 +619,7 @@ static edict_t *BotFindVisibleSoundEnemy( bot_t &pBot )
 	  pCurrentSound = CSoundEnt::SoundPointerForIndex( iSound );
 	  
 	  if(!pCurrentSound)
-		 continue;
+		 break;
 	  
 	  // ignore sounds created by bot itself
 	  if(pCurrentSound->m_iBotOwner == (&pBot - &bots[0]))

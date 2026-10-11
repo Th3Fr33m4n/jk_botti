@@ -920,7 +920,7 @@ void BotReplaceConnectionTime(const char* name, float* timeslot)
 	for (auto& p_bot : bots)
 	{
 		// find bot by name
-		if (strcmp(p_bot.name, name) != 0)
+		if (!p_bot.is_used || strcmp(p_bot.name, name) != 0)
 			continue;
 
 		const double current_time = UTIL_GetSecs();

@@ -7,7 +7,7 @@
 ifeq ($(OSTYPE),win32)
 	CPP = i686-w64-mingw32-g++ -m32
 	CC = i686-w64-mingw32-gcc -m32
-	AR = i686-w64-mingw32-ar rc
+	AR = i686-w64-mingw32-ar
 	RANLIB = i686-w64-mingw32-ranlib
 	LINKFLAGS = -mdll -lm -lwsock32 -lws2_32 -Xlinker --add-stdcall-alias -s
 	DLLEND = .dll
@@ -15,7 +15,7 @@ ifeq ($(OSTYPE),win32)
 else
 	CPP = g++ -m32
 	CC = gcc -m32
-	AR = ar rc
+	AR = ar
 	RANLIB = ranlib
 	ARCHFLAG = -fPIC
 	LINKFLAGS = -fPIC -shared -ldl -lm -s
@@ -40,7 +40,7 @@ INCLUDES = -I"./metamod" \
 	-I"./engine" \
 	-I"./pm_shared"
 
-CFLAGS = ${BASEFLAGS} ${OPTFLAGS} ${ARCHFLAG} ${INCLUDES}
+CFLAGS = ${BASEFLAGS} ${OPTFLAGS} ${ARCHFLAG} ${ZLIB_OSFLAGS} ${INCLUDES}
 CPPFLAGS = -fno-rtti -fno-exceptions ${CFLAGS}
 
 SRC = 	bot.cpp \
@@ -71,7 +71,7 @@ ${TARGET}${DLLEND}: zlib/libz.a ${OBJ}
 	cp $@ addons/jk_botti/dlls/
 
 zlib/libz.a:
-	(cd zlib; AR="${AR}" RANLIB="${RANLIB}" CC="${CC} ${OPTFLAGS} ${ARCHFLAG} ${ZLIB_OSFLAGS} -DASMV" ./configure; $(MAKE) OBJA=match.o; cd ..)
+	cd zlib && AR="${AR}" RANLIB="${RANLIB}" CC="${CC} ${OPTFLAGS} ${ARCHFLAG} ${ZLIB_OSFLAGS}" ./configure && $(MAKE) libz.a
 
 clean:
 	rm -f *.o ${TARGET}${DLLEND} Rules.depend zlib/*.exe

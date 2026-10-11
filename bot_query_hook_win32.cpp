@@ -107,7 +107,7 @@ bool hook_sendto_function()
 	memcpy(sendto_old_bytes, (void*)(sendto_original), BYTES_SIZE);
 	
 	//Construct new bytes: "jmp offset[replacement_sendto] @ sendto_original"
-	construct_jmp_instruction((void*)&sendto_new_bytes[0], (void*)(sendto_original), (void*)(&__replacement_sendto))
+	construct_jmp_instruction((void*)&sendto_new_bytes[0], (void*)(sendto_original), (void*)(&__replacement_sendto));
 
 	//Remove readonly restriction
 	if(!VirtualProtect((void*)(sendto_original), BYTES_SIZE, PAGE_READWRITE, &tmp))

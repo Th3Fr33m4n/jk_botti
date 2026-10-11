@@ -181,7 +181,7 @@ Vector UTIL_VecToAngles(const Vector &forward)
 int UTIL_GetBotIndex(const edict_t *pEdict)
 {
 	for (int index = 0; index < 32; index++)
-	  if (bots[index].pEdict == pEdict)
+	  if (bots[index].is_used && bots[index].pEdict == pEdict)
 		 return index;
 
    return -1;  // return -1 if edict is not a bot
