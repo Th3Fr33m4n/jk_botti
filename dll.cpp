@@ -455,7 +455,7 @@ static void ClientDisconnect( edict_t *pEntity )
 
 	  for (auto& bot : bots)
 	  {
-		 if (bot.pEdict == pEntity)
+		 if (bot.is_used && bot.pEdict == pEntity)
 		 {
 			// someone kicked this bot off of the server...
 
@@ -628,6 +628,12 @@ static void StartFrame()
 	  char mapname[64];
 
 	  need_to_open_cfg = FALSE;  // only do this once!!!
+
+	  if (bot_cfg_fp != nullptr)
+	  {
+		 fclose(bot_cfg_fp);
+		 bot_cfg_fp = nullptr;
+	  }
 
 	  // check if jk_botti_mapname.cfg file exists...
 	  if(stricmp(STRING(gpGlobals->mapname), "logo") == 0)
@@ -935,6 +941,12 @@ C_DLLEXPORT int Meta_Detach (PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 	  free_posdata_list(i);
    UTIL_FreeFuncBreakables();
    FreeCfgBotRecord();
+   
+   if (bot_cfg_fp != nullptr)
+   {
+	  fclose(bot_cfg_fp);
+	  bot_cfg_fp = nullptr;
+   }
    
    // remove pm_move hook
    if(old_ppmove)

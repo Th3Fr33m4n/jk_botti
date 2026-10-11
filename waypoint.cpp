@@ -206,6 +206,7 @@ void WaypointInit()
    shortest_path = nullptr;
    from_to = nullptr;
    wp_matrix_initialized = FALSE;
+   WaypointSlowFloydsStop();
 
    memset(waypoints, 0, sizeof(waypoints));
    
@@ -2694,6 +2695,7 @@ static void WaypointRouteInit(qboolean ForceRebuild)
 
 	wp_matrix_initialized = FALSE;
    wp_matrix_save_on_mapend = FALSE;
+   WaypointSlowFloydsStop();
 
    if (num_waypoints == 0)
 	  return;
